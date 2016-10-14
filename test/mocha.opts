@@ -1,0 +1,4 @@
+--ui tdd
+-r test/helpers/setup
+-w
+-G
