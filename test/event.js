@@ -10,6 +10,8 @@ describe('route of events', function() {
 
   describe('POST', function() {
     it('should create an event', function(done) {
+      this.timeout(5000); // Per fer proves, però no cal
+
       let event = {
         'title': 'title testing 01',
         'description': 'description testing 01'

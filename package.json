@@ -12,7 +12,8 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "lodash": "^4.16.4"
+    "lodash": "^4.16.4",
+    "mysql": "^2.11.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
