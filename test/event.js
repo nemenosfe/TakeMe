@@ -212,5 +212,47 @@ describe('route of events', function() {
     });
   })
 
+  describe('DELETE:  /events/:id', function() {
+    it('should delete an event', function(done) {
+      this.timeout(5000); // Per fer proves
+
+      pool.getConnection().then(function(mysqlConnection) {
+        mysqlConnection.query("DROP TABLE IF EXISTS events")
+        .then((res) => {
+          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
+          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+        })
+        .then((res) => {
+          //console.log("Table events created: " + JSON.stringify(res));
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, title: "Títol 01", description: "Descripció random"})
+        })
+        .then((res) => {
+          //console.log("Insert event1 done: " + JSON.stringify(res));
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+        })
+        .then((res) => {
+          //console.log("Insert event2 done: " + JSON.stringify(res));
+        })
+        .catch((err) => {
+          console.log("Error: " + JSON.stringify(err));
+        })
+        .finally(() => {
+          request
+            .delete('/events/' + 2)
+            .set('Accept', 'application/json')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+          .then((res) => {
+            let body = res.body
+
+            expect(body).to.be.empty
+
+            done();
+          }, done)
+        });
+      });
+    })
+  })
+
 
 });

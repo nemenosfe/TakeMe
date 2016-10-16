@@ -116,4 +116,27 @@ router
     }
   })
 
+  .delete('/:id', function(req, res, next) {
+    console.log("DELETE:id", req.params.id)
+    if(!req.params.id) {
+      res
+        .status(403)
+        .json({error: true, message: 'Params empty'})
+    } else {
+      pool.getConnection().then(function(mysqlConnection) {
+        mysqlConnection.query("DELETE FROM events WHERE id = ?;", req.params.id)
+        .then((result) => {
+          res
+            .status(200)
+            .json({})
+        })
+        .catch((err) => {
+          res
+            .status(500)
+            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+        });
+      });
+    }
+  })
+
 module.exports = router
