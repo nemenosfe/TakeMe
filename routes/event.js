@@ -4,8 +4,6 @@ const _ = require('lodash')
 const router = express.Router()
 const mysql = require('mysql');
 
-var Event = {}
-
 var pool  = mysql.createPool({
   host     : 'localhost',
   user     : 'root',
@@ -24,9 +22,7 @@ router
     }
 
     let _event = req.body
-    _event._id = 1
-
-    Event[_event._id] = _event
+    _event._id = 1 // L'ID es pot fer com AUTOICREMENT però crec que hauríem de guardar l'ID que ens envien de la API que usem.
 
     pool.getConnection(function(err, mysqlConnection) {
       mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));", function(err, result) {
@@ -37,7 +33,7 @@ router
               console.log("Insert event done: " + JSON.stringify(result));
               res
                 .status(201)
-                .json({event: Event[_event._id]})
+                .json({event: _event})
             } else {
               console.log("Error: " + JSON.stringify(err));
               res
@@ -54,7 +50,7 @@ router
         }
       });
     });
-    
+
   })
 
 module.exports = router
