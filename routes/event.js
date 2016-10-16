@@ -50,17 +50,16 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       mysqlConnection.query("SELECT * FROM events;")
       .then((result) => {
-          res
-            //console.log("Get events done: " + JSON.stringify(result));
-            res
-              .status(200)
-              .json({events: result})
-            })
+      //console.log("Get events done: " + JSON.stringify(result));
+      res
+        .status(200)
+        .json({events: result})
+      })
       .catch((err) => {
-          //console.log("Error GEEEEEET: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+      //console.log("Error GEEEEEET: " + JSON.stringify(err));
+      res
+        .status(500)
+        .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
       });
     });
   })
