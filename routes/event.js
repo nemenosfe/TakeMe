@@ -19,7 +19,6 @@ router
         .status(403)
         .json({error: true, message: 'Body empty'})
     } else {
-
       let _event = req.body
       _event.ID = 1 // L'ID es pot fer com AUTOICREMENT però crec que hauríem de guardar l'ID que ens envien de la API que usem.
 
@@ -42,7 +41,6 @@ router
             .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
         });
       });
-
     }
   })
 
@@ -51,46 +49,70 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       mysqlConnection.query("SELECT * FROM events;")
       .then((result) => {
-      //console.log("Get events done: " + JSON.stringify(result));
-      res
-        .status(200)
-        .json({events: result})
+        //console.log("Get events done: " + JSON.stringify(result));
+        res
+          .status(200)
+          .json({events: result})
       })
       .catch((err) => {
-      //console.log("Error GEEEEEET: " + JSON.stringify(err));
-      res
-        .status(500)
-        .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+        //console.log("Error GEEEEEET: " + JSON.stringify(err));
+        res
+          .status(500)
+          .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
       });
     });
   })
 
   .get('/:id', function(req, res, next) {
-    console.log('GET:id', req.params.id)
-
+    //console.log('GET:id', req.params.id)
     if(!req.params.id) {
       res
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
-
       let _id = req.params.id
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("SELECT * FROM events WHERE ID = ?;", _id)
         .then((result) => {
-        //console.log("Get events done: " + JSON.stringify(result));
-        res
-          .status(200)
-          .json({event: result[0]})
+          //console.log("Get events done: " + JSON.stringify(result));
+          res
+            .status(200)
+            .json({event: result[0]})
         })
         .catch((err) => {
-        //console.log("Error GEEEEEET: " + JSON.stringify(err));
-        res
-          .status(500)
-          .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+          //console.log("Error GEEEEEET: " + JSON.stringify(err));
+          res
+            .status(500)
+            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
         });
       });
+    }
+  })
 
+  .put('/:id', function(req, res, next) {
+    //console.log("PUT:id", req.params.id)
+    if(!req.params.id || !req.body) {
+      res
+        .status(403)
+        .json({error: true, message: 'Params empty'})
+    } else {
+      //console.log("REQ.BODY: " + JSON.stringify(req.body));
+      const event = req.body;
+      pool.getConnection().then(function(mysqlConnection) {
+        mysqlConnection.query("UPDATE events SET title='"+event.title+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
+        .then((result) => {
+          //console.log("PUT events done: " + JSON.stringify(result));
+          res
+            .status(200)
+            .json({event: event})
+        })
+        .catch((err) => {
+          //console.log("Error PUT: " + JSON.stringify(err));
+          res
+            .status(500)
+            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+        });
+      });
     }
   })
 

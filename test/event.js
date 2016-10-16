@@ -160,5 +160,57 @@ describe('route of events', function() {
     });
   });
 
+  describe('PUT:  /events/:id', function() {
+    it('should update an event', function(done) {
+      this.timeout(5000); // Per fer proves
+
+      var event = {id: 2, title: "Títol 01", description: "Descripció random"}
+
+      pool.getConnection().then(function(mysqlConnection) {
+        mysqlConnection.query("DROP TABLE IF EXISTS events")
+        .then((res) => {
+          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
+          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+        })
+        .then((res) => {
+          //console.log("Table events created: " + JSON.stringify(res));
+          return mysqlConnection.query("INSERT INTO events SET ?", event)
+        })
+        .then((res) => {
+          //console.log("Insert event1 done: " + JSON.stringify(res));
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+        })
+        .then((res) => {
+          //console.log("Insert event2 done: " + JSON.stringify(res));
+        })
+        .catch((err) => {
+          console.log("Error: " + JSON.stringify(err));
+        })
+        .finally(() => {
+          event.title = 'Nou Títol de levent';
+          event.description = 'Nova descripció random';
+          request
+            .put('/events/' + event.id)
+            .set('Accept', 'application/json')
+            .send(event)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+          .then((res) => {
+            let body = res.body
+
+            expect(body).to.have.property('event')
+            let event_res = body.event;
+
+            expect(event_res).to.have.property('id', 2)
+            expect(event_res).to.have.property('title', 'Nou Títol de levent')
+            expect(event_res).to.have.property('description', 'Nova descripció random')
+
+            done();
+          }, done)
+        });
+      });
+    });
+  })
+
 
 });
