@@ -1,12 +1,33 @@
 "use strict"
-let request = require('supertest-as-promised')
-const _ = require('lodash')
-const api = require('../app')
-const host = api
+let request = require('supertest-as-promised');
+const _ = require('lodash');
+const api = require('../app');
+const host = api;
+const mysql = require('mysql');
 
-request = request(host)
+request = request(host);
+
+var pool  = mysql.createPool({ // No vull repetir codi però quan estigui més complet ja faré un refactor.
+  host     : 'localhost',
+  user     : 'root',
+  password : '12345678',
+  database : 'takemelegends'
+});
 
 describe('route of events', function() {
+
+  beforeEach(function() {
+    pool.getConnection(function(err, mysqlConnection) {
+      mysqlConnection.query("DROP TABLE IF EXISTS events", function(err, result) {
+        if (!err) {
+          console.log("Table events doesn't exist now: " + JSON.stringify(result));
+          mysqlConnection.release();
+        } else {
+          console.log("Error: " + JSON.stringify(err));
+        }
+      });
+    });
+  });
 
   describe('POST', function() {
     it('should create an event', function(done) {
