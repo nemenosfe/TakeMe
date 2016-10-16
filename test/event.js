@@ -16,6 +16,8 @@ var pool  = mysql.createPool({ // No vull repetir codi però quan estigui més c
 
 describe('route of events', function() {
 
+  // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
+
   beforeEach(function() {
     pool.getConnection(function(err, mysqlConnection) {
       mysqlConnection.query("DROP TABLE IF EXISTS events", function(err, result) {
@@ -29,7 +31,20 @@ describe('route of events', function() {
     });
   });
 
-  describe('POST', function() {
+  after(function() { // Al final netejo la BD de les proves que he fet
+    pool.getConnection(function(err, mysqlConnection) {
+      mysqlConnection.query("DROP TABLE IF EXISTS events", function(err, result) {
+        if (!err) {
+          console.log("Table events doesn't exist now: " + JSON.stringify(result));
+          mysqlConnection.release();
+        } else {
+          console.log("Error: " + JSON.stringify(err));
+        }
+      });
+    });
+  });
+
+  describe('POST /events', function() {
     it('should create an event', function(done) {
       this.timeout(5000); // Per fer proves, però no cal
 
@@ -58,5 +73,7 @@ describe('route of events', function() {
       })
     })
   })
+
+
 
 });
