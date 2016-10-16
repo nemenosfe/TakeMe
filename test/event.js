@@ -19,7 +19,6 @@ describe('route of events', function() {
   // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
 
   describe('POST /events', function() {
-
     it('should create an event', function(done) {
       this.timeout(5000); // Per fer proves, però no cal
 
@@ -31,7 +30,7 @@ describe('route of events', function() {
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          console.log("Table events doesn't exist now: " + JSON.stringify(res));
+          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
@@ -58,32 +57,28 @@ describe('route of events', function() {
         });
       });
     })
-
-
   })
 
   describe('GET /events', function() {
-
     it('should obtain all the events', function(done) {
-
       this.timeout(5000); // Per fer proves
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          console.log("Table events doesn't exist now: " + JSON.stringify(res));
+          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
           return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
         })
         .then((res) => {
-          console.log("Table events created: " + JSON.stringify(res));
+          //console.log("Table events created: " + JSON.stringify(res));
           return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, title: "Títol 01", description: "Descripció random"})
         })
         .then((res) => {
-          console.log("Insert event1 done: " + JSON.stringify(res));
+          //console.log("Insert event1 done: " + JSON.stringify(res));
           return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
         })
         .then((res) => {
-          console.log("Insert event2 done: " + JSON.stringify(res));
+          //console.log("Insert event2 done: " + JSON.stringify(res));
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
@@ -102,7 +97,7 @@ describe('route of events', function() {
             expect(Object.keys(body.events).length).to.eql(2);
 
             let events = body.events;
-            console.log("BODY.EVENTS: " + JSON.stringify(events));
+            //console.log("BODY.EVENTS: " + JSON.stringify(events));
 
             expect(events[0]).to.have.property('ID', 2)
             expect(events[0]).to.have.property('title', 'Títol 01')
@@ -115,8 +110,10 @@ describe('route of events', function() {
           }, done)
         });
       });
-
     });
   });
+
+
+
 
 });
