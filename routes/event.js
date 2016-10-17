@@ -17,7 +17,6 @@ var pool  = mysql.createPool({
 
 router
   .post('/', function(req, res, next) {
-    //console.log("POST events ")
     if(!req.body || !req.body.name || !req.body.startTime || !req.body.endTime) {
       res
         .status(403)
@@ -48,7 +47,6 @@ router
           if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
           //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
           if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity };
-          console.log("Fa la Resquest a EventBrite API");
           var optionsRequest = {
             url: urlEventbriteApi+"events/",
             method: "POST",
@@ -61,18 +59,10 @@ router
           return rp(optionsRequest);
         })
         .then((result) => { // Inserta a la nostra BD
-          console.log("Resultat Request a API: " + JSON.stringify(result));
           eventResEventBrite = result;
-          console.log("Inserta a la nostra BD")
           return mysqlConnection.query("INSERT INTO events SET ?", {id: eventResEventBrite.id});
-          /*
-          const resultQuery = mysqlConnection.query("INSERT INTO events SET id="+parseInt(eventResEventBrite.id));
-          console.log("resultQuery: " + JSON.stringify(resultQuery));
-          return resultQuery;
-          */
         })
         .then((result) => { // Fa el Response bo :)
-          console.log("Fa el Response bo :)");
           let eventResponse = {
             id: eventResEventBrite.id,
             name: eventResEventBrite.name.text,
@@ -85,11 +75,9 @@ router
             category_id: eventResEventBrite.category_id,
             logo: eventResEventBrite.logo
           };
-          console.log("Arriba?: " + JSON.stringify(eventResponse));
           res
             .status(201)
             .json({ event: eventResponse });
-          console.log("WTF?");
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
