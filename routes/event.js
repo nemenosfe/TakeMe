@@ -3,6 +3,10 @@ const express = require('express')
 const _ = require('lodash')
 const router = express.Router()
 const mysql = require('promise-mysql');
+const rp = require('request-promise');
+
+const oauthTokenEventbrite = "VOYBQID3OWOAMLM6FFLQ";
+const urlEventbriteApi = "https://www.eventbriteapi.com/v3/";
 
 var pool  = mysql.createPool({
   host     : 'localhost',
@@ -14,31 +18,84 @@ var pool  = mysql.createPool({
 router
   .post('/', function(req, res, next) {
     //console.log("POST events ")
-    if(!req.body) {
+    if(!req.body || !req.body.name || !req.body.startTime || !req.body.endTime) {
       res
         .status(403)
-        .json({error: true, message: 'Body empty'})
+        .json({error: true, message: 'Params empty'})
     } else {
-      let _event = req.body
-      _event.ID = 1 // L'ID es pot fer com AUTOICREMENT però crec que hauríem de guardar l'ID que ens envien de la API que usem.
+      const eventRequest = req.body;
+      const timeZone = "Europe/Madrid";
+      const currency = "EUR";
+      let eventResEventBrite;
 
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
-        .then((result) => {
-          //console.log("Table events created: " + JSON.stringify(result));
-          return mysqlConnection.query("INSERT INTO events SET ?", {ID: _event.ID, title: _event.title, description: _event.description});
+        mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(id bigint NOT NULL PRIMARY KEY)")
+        .then((result) => { // Fa la Resquest a EventBrite API
+          let eventReqEventBrite = {
+                                event: {
+                                  name: { html: eventRequest.name },
+                                  start: {
+                                    utc: eventRequest.startTime,
+                                    timezone: timeZone
+                                  },
+                                  end: {
+                                    utc: eventRequest.endTime,
+                                    timezone: timeZone
+                                  },
+                                  currency: currency
+                                }
+                              };
+          if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
+          //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
+          if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity };
+          console.log("Fa la Resquest a EventBrite API");
+          var optionsRequest = {
+            url: urlEventbriteApi+"events/",
+            method: "POST",
+            'auth': {
+              'bearer': oauthTokenEventbrite
+            },
+            json: true,   // Important!
+            body: eventReqEventBrite
+          };
+          return rp(optionsRequest);
         })
-        .then((result) => {
-          //console.log("Insert event done: " + JSON.stringify(result));
+        .then((result) => { // Inserta a la nostra BD
+          console.log("Resultat Request a API: " + JSON.stringify(result));
+          eventResEventBrite = result;
+          console.log("Inserta a la nostra BD")
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: eventResEventBrite.id});
+          /*
+          const resultQuery = mysqlConnection.query("INSERT INTO events SET id="+parseInt(eventResEventBrite.id));
+          console.log("resultQuery: " + JSON.stringify(resultQuery));
+          return resultQuery;
+          */
+        })
+        .then((result) => { // Fa el Response bo :)
+          console.log("Fa el Response bo :)");
+          let eventResponse = {
+            id: eventResEventBrite.id,
+            name: eventResEventBrite.name.text,
+            description: eventResEventBrite.description.text,
+            url: eventResEventBrite.url,
+            resource_uri: eventResEventBrite.resource_uri,
+            start: eventResEventBrite.start,
+            end: eventResEventBrite.end,
+            capacity: eventResEventBrite.capacity,
+            category_id: eventResEventBrite.category_id,
+            logo: eventResEventBrite.logo
+          };
+          console.log("Arriba?: " + JSON.stringify(eventResponse));
           res
             .status(201)
-            .json({event: _event})
+            .json({ event: eventResponse });
+          console.log("WTF?");
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
           res
             .status(500)
-            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+            .json({error: true, message: 'Error: ' +  JSON.stringify(err)});
         });
       });
     }
@@ -72,7 +129,7 @@ router
     } else {
       let _id = req.params.id
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("SELECT * FROM events WHERE ID = ?;", _id)
+        mysqlConnection.query("SELECT * FROM events WHERE id = ?;", _id)
         .then((result) => {
           //console.log("Get events done: " + JSON.stringify(result));
           res
@@ -99,7 +156,7 @@ router
       //console.log("REQ.BODY: " + JSON.stringify(req.body));
       const event = req.body;
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("UPDATE events SET title='"+event.title+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
+        mysqlConnection.query("UPDATE events SET name='"+event.name+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
         .then((result) => {
           //console.log("PUT events done: " + JSON.stringify(result));
           res

@@ -19,13 +19,18 @@ describe('route of events', function() {
   // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
 
   describe('POST /events', function() {
-    it('should create an event', function(done) {
+    it.only('should create an event', function(done) {
       this.timeout(5000); // Per fer proves, però no cal
 
       let event = {
-        'title': 'title testing 01',
-        'description': 'description testing 01'
+        'name': 'name testing 01',
+        'description': 'description testing 01',
+        'startTime' : "2017-01-12T13:00:00Z",
+        'endTime' : "2017-02-12T13:00:00Z",
+        'category_id' : '1',
+        'capacity' : '200'
       }
+      // QUEDA PENDENT EL CATEGORY!!
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
@@ -48,9 +53,16 @@ describe('route of events', function() {
             expect(body).to.have.property('event')
             event = body.event
 
-            expect(event).to.have.property('title', 'title testing 01')
+            expect(event).to.have.property('id')
+            expect(event).to.have.property('name', 'name testing 01')
             expect(event).to.have.property('description', 'description testing 01')
-            expect(event).to.have.property('ID')
+            expect(event).to.have.property('url')
+            expect(event).to.have.property('resource_uri')
+            expect(event).to.have.property('start')
+            expect(event).to.have.property('end')
+            expect(event).to.have.property('capacity')
+            expect(event).to.have.property('category_id')
+            expect(event).to.have.property('logo')
 
             done(err)
           })
@@ -67,15 +79,15 @@ describe('route of events', function() {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
           //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
         })
         .then((res) => {
           //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, title: "Títol 01", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, name: "Títol 01", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event2 done: " + JSON.stringify(res));
@@ -99,12 +111,12 @@ describe('route of events', function() {
             let events = body.events;
             //console.log("BODY.EVENTS: " + JSON.stringify(events));
 
-            expect(events[0]).to.have.property('ID', 2)
-            expect(events[0]).to.have.property('title', 'Títol 01')
+            expect(events[0]).to.have.property('id', 2)
+            expect(events[0]).to.have.property('name', 'Títol 01')
             expect(events[0]).to.have.property('description', 'Descripció random')
 
-            expect(events[1]).to.have.property('ID', 3)
-            expect(events[1]).to.have.property('title', 'Títol 02')
+            expect(events[1]).to.have.property('id', 3)
+            expect(events[1]).to.have.property('name', 'Títol 02')
             expect(events[1]).to.have.property('description', 'Descripció random')
             done();
           }, done)
@@ -121,15 +133,15 @@ describe('route of events', function() {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
           //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
         })
         .then((res) => {
           //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, title: "Títol 01", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, name: "Títol 01", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event2 done: " + JSON.stringify(res));
@@ -149,8 +161,8 @@ describe('route of events', function() {
             expect(body).to.have.property('event')
             let event = body.event;
 
-            expect(event).to.have.property('ID', 2)
-            expect(event).to.have.property('title', 'Títol 01')
+            expect(event).to.have.property('id', 2)
+            expect(event).to.have.property('name', 'Títol 01')
             expect(event).to.have.property('description', 'Descripció random')
 
             done();
@@ -164,13 +176,13 @@ describe('route of events', function() {
     it('should update an event', function(done) {
       this.timeout(5000); // Per fer proves
 
-      var event = {id: 2, title: "Títol 01", description: "Descripció random"}
+      var event = {id: 2, name: "Títol 01", description: "Descripció random"}
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
           //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
         })
         .then((res) => {
           //console.log("Table events created: " + JSON.stringify(res));
@@ -178,7 +190,7 @@ describe('route of events', function() {
         })
         .then((res) => {
           //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event2 done: " + JSON.stringify(res));
@@ -187,7 +199,7 @@ describe('route of events', function() {
           console.log("Error: " + JSON.stringify(err));
         })
         .finally(() => {
-          event.title = 'Nou Títol de levent';
+          event.name = 'Nou Títol de levent';
           event.description = 'Nova descripció random';
           request
             .put('/events/' + event.id)
@@ -202,7 +214,7 @@ describe('route of events', function() {
             let event_res = body.event;
 
             expect(event_res).to.have.property('id', 2)
-            expect(event_res).to.have.property('title', 'Nou Títol de levent')
+            expect(event_res).to.have.property('name', 'Nou Títol de levent')
             expect(event_res).to.have.property('description', 'Nova descripció random')
 
             done();
@@ -220,15 +232,15 @@ describe('route of events', function() {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
           //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(ID int NOT NULL, title varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (ID));")
+          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
         })
         .then((res) => {
           //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, title: "Títol 01", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, name: "Títol 01", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, title: "Títol 02", description: "Descripció random"})
+          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
         })
         .then((res) => {
           //console.log("Insert event2 done: " + JSON.stringify(res));
