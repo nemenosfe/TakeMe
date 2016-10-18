@@ -15,6 +15,15 @@ var pool  = mysql.createPool({
   database : 'takemelegends'
 });
 
+function fillExtraInfo(varFrom, varTo) {
+  if (varFrom.price) { varTo.price = varFrom.price; }
+  if (varFrom.address) { varTo.address = varFrom.address; }
+  if (varFrom.coords && varFrom.coords.latitude && varFrom.coords.longitude) {
+    varTo.latitude = varFrom.coords.latitude;
+    varTo.longitude = varFrom.coords.longitude;
+  }
+}
+
 router
   .post('/', function(req, res, next) {
     if(!req.body || !req.body.name || !req.body.startTime || !req.body.endTime) {
@@ -26,9 +35,11 @@ router
       const timeZone = "Europe/Madrid";
       const currency = "EUR";
       let eventResEventBrite;
+      let insertEventDB;
+      let eventResponse;
 
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(id bigint NOT NULL PRIMARY KEY)")
+        mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(id bigint NOT NULL PRIMARY KEY, price DECIMAL(10, 2), address VARCHAR(500), latitude DECIMAL(10, 8), longitude DECIMAL(11, 8));")
         .then((result) => { // Fa la Resquest a EventBrite API
           let eventReqEventBrite = {
                                 event: {
@@ -60,7 +71,9 @@ router
         })
         .then((result) => { // Inserta a la nostra BD
           eventResEventBrite = result;
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: eventResEventBrite.id});
+          insertEventDB = {id: eventResEventBrite.id};
+          fillExtraInfo(eventRequest, insertEventDB);
+          return mysqlConnection.query("INSERT INTO events SET ?", insertEventDB);
         })
         .then((result) => { // Fa el Response bo :)
           let eventResponse = {
@@ -75,6 +88,7 @@ router
             category_id: eventResEventBrite.category_id,
             logo: eventResEventBrite.logo
           };
+          fillExtraInfo(eventRequest, eventResponse);
           res
             .status(201)
             .json({ event: eventResponse });
