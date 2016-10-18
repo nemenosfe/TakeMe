@@ -1,6 +1,5 @@
 "use strict"
 let request = require('supertest-as-promised');
-const _ = require('lodash');
 const api = require('../app');
 const host = api;
 const mysql = require('promise-mysql');
@@ -21,61 +20,53 @@ var event = {
   'endTime' : "2017-02-12T13:00:00Z",
   'category_id' : '1',
   'capacity' : '15000',
-  'price' : '257.13',
+  'price' : 257.13,
   'address' : 'carrer fals, Barcelona',
   'coords' : {
-    'latitude' : '41.38879',
-    'longitude' : '2.15899'
+    'latitude' : 41.38879,
+    'longitude' : 2.15899
   }
 }
+var aux_id;
 
 describe('route of events', function() {
 
   // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
+  // QUEDA PENDENT EL CATEGORY!!
+  // Queda pendent fer el DELETE al final del que he creat aquí
 
   describe('POST /events', function() {
-    it.only('should create an event', function(done) {
+    it('should create an event', function(done) {
       this.timeout(5000); // Per fer proves, però no cal
 
-      // QUEDA PENDENT EL CATEGORY!!
-
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("DROP TABLE IF EXISTS events")
-        .then((res) => {
-          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-        })
-        .catch((err) => {
-          console.log("Error: " + JSON.stringify(err));
-        })
-        .finally(() => {
-          request
-            .post('/events')
-            .set('Accept', 'application/json')
-            .send(event)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-          .end((err, res) => {
-            expect(res.body).to.have.property('event')
-            const eventResponse = res.body.event
+        request
+          .post('/events')
+          .set('Accept', 'application/json')
+          .send(event)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+        .end((err, res) => {
+          expect(res.body).to.have.property('event')
+          const eventResponse = res.body.event
 
-            expect(eventResponse).to.have.property('id')
-            expect(eventResponse).to.have.property('name', event.name)
-            expect(eventResponse).to.have.property('description', event.description)
-            expect(eventResponse).to.have.property('url')
-            expect(eventResponse).to.have.property('resource_uri')
-            expect(eventResponse).to.have.property('start')
-            expect(eventResponse).to.have.property('end')
-            expect(eventResponse).to.have.property('capacity')
-            expect(eventResponse).to.have.property('category_id')
-            expect(eventResponse).to.have.property('logo')
-            expect(eventResponse).to.have.property('price', event.price)
-            expect(eventResponse).to.have.property('address', event.address)
-            expect(eventResponse).to.have.property('latitude', event.coords.latitude)
-            expect(eventResponse).to.have.property('longitude', event.coords.longitude)
+          expect(eventResponse).to.have.property('id')
+          expect(eventResponse).to.have.property('name', event.name)
+          expect(eventResponse).to.have.property('description', event.description)
+          expect(eventResponse).to.have.property('url')
+          expect(eventResponse).to.have.property('resource_uri')
+          expect(eventResponse).to.have.property('start')
+          expect(eventResponse).to.have.property('end')
+          expect(eventResponse).to.have.property('capacity')
+          expect(eventResponse).to.have.property('category_id')
+          expect(eventResponse).to.have.property('logo')
+          expect(eventResponse).to.have.property('price', event.price)
+          expect(eventResponse).to.have.property('address', event.address)
+          expect(eventResponse).to.have.property('latitude', event.coords.latitude)
+          expect(eventResponse).to.have.property('longitude', event.coords.longitude)
 
-            done(err)
-          })
-        });
+          done(err)
+        })
       });
     })
   })
@@ -90,10 +81,10 @@ describe('route of events', function() {
           let event_aux = event;
           event_aux.name = "Títol 01";
           event_aux.description = "Descripció random 01";
-          request
+          return request
             .post('/events')
             .set('Accept', 'application/json')
-            .send(event)
+            .send(event_aux)
             .expect(201)
             .expect('Content-Type', /application\/json/)
         })
@@ -101,15 +92,15 @@ describe('route of events', function() {
           let event_aux = event;
           event_aux.name = "Títol 02";
           event_aux.description = "Descripció random 02";
-          request
+          return request
             .post('/events')
             .set('Accept', 'application/json')
-            .send(event)
+            .send(event_aux)
             .expect(201)
             .expect('Content-Type', /application\/json/)
         })
         .catch((err) => {
-          console.log("Error: " + JSON.stringify(err));
+          console.log("Error catch Test Get: " + JSON.stringify(err));
         })
         .finally(() => {
           request
@@ -136,7 +127,10 @@ describe('route of events', function() {
             expect(events[0]).to.have.property('capacity')
             expect(events[0]).to.have.property('category_id')
             expect(events[0]).to.have.property('logo')
-            // location, price, etc
+            expect(events[0]).to.have.property('price', event.price)
+            expect(events[0]).to.have.property('address', event.address)
+            expect(events[0]).to.have.property('latitude', event.coords.latitude)
+            expect(events[0]).to.have.property('longitude', event.coords.longitude)
 
             expect(events[1]).to.have.property('id')
             expect(events[1]).to.have.property('name', 'Títol 02')
@@ -148,6 +142,10 @@ describe('route of events', function() {
             expect(events[1]).to.have.property('capacity')
             expect(events[1]).to.have.property('category_id')
             expect(events[1]).to.have.property('logo')
+            expect(events[1]).to.have.property('price', event.price)
+            expect(events[1]).to.have.property('address', event.address)
+            expect(events[1]).to.have.property('latitude', event.coords.latitude)
+            expect(events[1]).to.have.property('longitude', event.coords.longitude)
             done();
           }, done)
         });
@@ -156,44 +154,63 @@ describe('route of events', function() {
   });
 
   describe('GET /events/:id', function() {
-    it('should obtain an event', function(done) {
+    it.only('should obtain an event with all its info when that event was created from our app', function(done) {
       this.timeout(5000); // Per fer proves
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
+          let event_aux = event;
+          event_aux.name = "Títol 01";
+          event_aux.description = "Descripció random 01";
+          return request
+            .post('/events')
+            .set('Accept', 'application/json')
+            .send(event_aux)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
         })
         .then((res) => {
-          //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, name: "Títol 01", description: "Descripció random"})
+          let event_aux = event;
+          event_aux.name = "Títol 02";
+          event_aux.description = "Descripció random 02";
+          return request
+            .post('/events')
+            .set('Accept', 'application/json')
+            .send(event_aux)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
         })
         .then((res) => {
-          //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
-        })
-        .then((res) => {
-          //console.log("Insert event2 done: " + JSON.stringify(res));
+          aux_id = res.body.event.id;
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
         })
         .finally(() => {
           request
-            .get('/events/' + 2)
+            .get('/events/' + aux_id)
             .set('Accept', 'application/json')
             .expect(200)
             .expect('Content-Type', /application\/json/)
           .then((res) => {
-            let body = res.body
+            expect(JSON.parse(res.text)).to.have.property('event')
+            const eventResponse = JSON.parse(res.text).event;
 
-            expect(body).to.have.property('event')
-            let event = body.event;
-
-            expect(event).to.have.property('id', 2)
-            expect(event).to.have.property('name', 'Títol 01')
-            expect(event).to.have.property('description', 'Descripció random')
+            expect(eventResponse).to.have.property('id', parseInt(aux_id))
+            expect(eventResponse).to.have.property('name', 'Títol 02')
+            expect(eventResponse).to.have.property('description', 'Descripció random 02')
+            expect(eventResponse).to.have.property('url')
+            expect(eventResponse).to.have.property('resource_uri')
+            expect(eventResponse).to.have.property('start')
+            expect(eventResponse).to.have.property('end')
+            expect(eventResponse).to.have.property('capacity')
+            expect(eventResponse).to.have.property('category_id')
+            expect(eventResponse).to.have.property('logo')
+            expect(eventResponse).to.have.property('price', event.price)
+            expect(eventResponse).to.have.property('address', event.address)
+            expect(eventResponse).to.have.property('latitude', event.coords.latitude)
+            expect(eventResponse).to.have.property('longitude', event.coords.longitude)
 
             done();
           }, done)

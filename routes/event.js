@@ -1,6 +1,5 @@
 "use strict"
 const express = require('express')
-const _ = require('lodash')
 const router = express.Router()
 const mysql = require('promise-mysql');
 const rp = require('request-promise');
@@ -23,6 +22,8 @@ function fillExtraInfo(varFrom, varTo) {
     varTo.longitude = varFrom.coords.longitude;
   }
 }
+
+// Falta Refactor d'optionsRequest
 
 router
   .post('/', function(req, res, next) {
@@ -58,7 +59,7 @@ router
           if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
           //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
           if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity };
-          var optionsRequest = {
+          const optionsRequest = {
             url: urlEventbriteApi+"events/",
             method: "POST",
             'auth': {
@@ -108,13 +109,13 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       mysqlConnection.query("SELECT * FROM events;")
       .then((result) => {
-        //console.log("Get events done: " + JSON.stringify(result));
+        console.log("Get events done: " + JSON.stringify(result));
         res
           .status(200)
           .json({events: result})
       })
       .catch((err) => {
-        //console.log("Error GEEEEEET: " + JSON.stringify(err));
+        console.log("Error GEEEEEET: " + JSON.stringify(err));
         res
           .status(500)
           .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
@@ -123,26 +124,46 @@ router
   })
 
   .get('/:id', function(req, res, next) {
-    //console.log('GET:id', req.params.id)
     if(!req.params.id) {
       res
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
-      let _id = req.params.id
+      let id = req.params.id;
+      let eventResponse;
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("SELECT * FROM events WHERE id = ?;", _id)
+        mysqlConnection.query("SELECT * FROM events WHERE id = ?;", id)
         .then((result) => {
-          //console.log("Get events done: " + JSON.stringify(result));
+          eventResponse = result[0];
+          const optionsRequest = {
+            url: urlEventbriteApi + "events/" + id,
+            method: "GET",
+            'auth': {
+              'bearer': oauthTokenEventbrite
+            },
+            json: true
+          };
+          return rp(optionsRequest);
+        })
+        .then((result) => {
+          eventResponse.name = result.name.text;
+          eventResponse.description = result.description.text;
+          eventResponse.url = result.url;
+          eventResponse.resource_uri = result.resource_uri;
+          eventResponse.capacity = result.capacity;
+          eventResponse.start = result.start;
+          eventResponse.end = result.end;
+          eventResponse.category_id = result.category_id;
+          eventResponse.logo = result.logo;
           res
             .status(200)
-            .json({event: result[0]})
+            .json({event: eventResponse})
         })
         .catch((err) => {
-          //console.log("Error GEEEEEET: " + JSON.stringify(err));
+          console.log("Error GEEEEEET: " + JSON.stringify(err));
           res
             .status(500)
-            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+            .json({error: true, message: 'Eerror: ' +  JSON.stringify(err)})
         });
       });
     }
