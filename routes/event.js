@@ -83,8 +83,8 @@ router
             description: eventResEventBrite.description.text,
             url: eventResEventBrite.url,
             resource_uri: eventResEventBrite.resource_uri,
-            start: eventResEventBrite.start,
-            end: eventResEventBrite.end,
+            start: eventResEventBrite.start.local,
+            end: eventResEventBrite.end.local,
             capacity: eventResEventBrite.capacity,
             category_id: eventResEventBrite.category_id,
             logo: eventResEventBrite.logo
@@ -134,7 +134,8 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("SELECT * FROM events WHERE id = ?;", id)
         .then((result) => {
-          eventResponse = result[0];
+          if (result.length > 0) { eventResponse = result[0]; eventResponse.appEvent = true; }
+          else { eventResponse = {}; eventResponse.appEvent = false; }
           const optionsRequest = {
             url: urlEventbriteApi + "events/" + id,
             method: "GET",
@@ -151,10 +152,24 @@ router
           eventResponse.url = result.url;
           eventResponse.resource_uri = result.resource_uri;
           eventResponse.capacity = result.capacity;
-          eventResponse.start = result.start;
-          eventResponse.end = result.end;
+          eventResponse.start = result.start.local;
+          eventResponse.end = result.end.local;
           eventResponse.category_id = result.category_id;
           eventResponse.logo = result.logo;
+          if ( !eventResponse.appEvent ) {
+            eventResponse.id = parseInt(result.id);
+            eventResponse.price = null;
+            eventResponse.address = null;
+            eventResponse.latitude = null;
+            eventResponse.longitude = null;
+
+            if (result.price) { eventResponse.price = result.price; }
+            if (result.location) {
+              if (result.address) { eventResponse.address = result.location.address; }
+              if (result.latitude) { eventResponse.latitude = result.location.latitude; }
+              if (result.longitude) { eventResponse.longitude = result.location.longitude; }
+            }
+          }
           res
             .status(200)
             .json({event: eventResponse})

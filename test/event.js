@@ -16,8 +16,8 @@ var pool  = mysql.createPool({ // No vull repetir codi però quan estigui més c
 var event = {
   'name': 'name testing 01',
   'description': 'description testing 01',
-  'startTime' : "2017-01-12T13:00:00Z",
-  'endTime' : "2017-02-12T13:00:00Z",
+  'startTime' : "2017-01-12T15:30:00Z",
+  'endTime' : "2017-02-12T09:00:00Z",
   'category_id' : '1',
   'capacity' : '15000',
   'price' : 257.13,
@@ -34,6 +34,7 @@ describe('route of events', function() {
   // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
   // QUEDA PENDENT EL CATEGORY!!
   // Queda pendent fer el DELETE al final del que he creat aquí
+  // Em sembla que la API d'Eventbrite suma 1h al temps que li envio LOL
 
   describe('POST /events', function() {
     it('should create an event', function(done) {
@@ -71,6 +72,7 @@ describe('route of events', function() {
     })
   })
 
+/*
   describe('GET /events', function() {
     it('should obtain all the events', function(done) {
       this.timeout(5000); // Per fer proves
@@ -122,8 +124,8 @@ describe('route of events', function() {
             expect(events[0]).to.have.property('description', 'Descripció random 01')
             expect(events[0]).to.have.property('url')
             expect(events[0]).to.have.property('resource_uri')
-            expect(events[0]).to.have.property('start')
-            expect(events[0]).to.have.property('end')
+            expect(events[0]).to.have.property('start', event.startTime)
+            expect(events[0]).to.have.property('end', event.endTime)
             expect(events[0]).to.have.property('capacity')
             expect(events[0]).to.have.property('category_id')
             expect(events[0]).to.have.property('logo')
@@ -137,8 +139,8 @@ describe('route of events', function() {
             expect(events[1]).to.have.property('description', 'Descripció random 02')
             expect(events[1]).to.have.property('url')
             expect(events[1]).to.have.property('resource_uri')
-            expect(events[1]).to.have.property('start')
-            expect(events[1]).to.have.property('end')
+            expect(events[1]).to.have.property('start', event.startTime)
+            expect(events[1]).to.have.property('end', event.endTime)
             expect(events[1]).to.have.property('capacity')
             expect(events[1]).to.have.property('category_id')
             expect(events[1]).to.have.property('logo')
@@ -152,9 +154,10 @@ describe('route of events', function() {
       });
     });
   });
+*/
 
   describe('GET /events/:id', function() {
-    it.only('should obtain an event with all its info when that event was created from our app', function(done) {
+    it('should obtain an event with all its info when that event was created from our app', function(done) {
       this.timeout(5000); // Per fer proves
 
       pool.getConnection().then(function(mysqlConnection) {
@@ -217,8 +220,39 @@ describe('route of events', function() {
         });
       });
     });
+    it('should obtain an event with all its info when that event was not created from our app', function(done) {
+      this.timeout(5000); // Per fer proves
+      let aux_id = 27817268198;  // 27817268198 27880689894
+      request
+        .get('/events/' + aux_id)
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(JSON.parse(res.text)).to.have.property('event')
+        const eventResponse = JSON.parse(res.text).event;
+
+        expect(eventResponse).to.have.property('id', parseInt(aux_id))
+        expect(eventResponse).to.have.property('name')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('resource_uri')
+        expect(eventResponse).to.have.property('start')
+        expect(eventResponse).to.have.property('end')
+        expect(eventResponse).to.have.property('capacity')
+        expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('logo')
+        expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+
+        done();
+      }, done)
+    });
   });
 
+/*
   describe('PUT:  /events/:id', function() {
     it('should update an event', function(done) {
       this.timeout(5000); // Per fer proves
@@ -312,6 +346,6 @@ describe('route of events', function() {
       });
     })
   })
-
+*/
 
 });
