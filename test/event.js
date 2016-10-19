@@ -14,7 +14,7 @@ var pool  = mysql.createPool({ // No vull repetir codi però quan estigui més c
 });
 
 var event = {
-  'name': 'name testing 01',
+  'name': 'name proves 01',
   'description': 'description testing 01',
   'startTime' : "2017-01-12T15:30:00Z",
   'endTime' : "2017-02-12T09:00:00Z",
@@ -252,36 +252,33 @@ describe('route of events', function() {
     });
   });
 
-/*
-  describe('PUT:  /events/:id', function() {
-    it('should update an event', function(done) {
-      this.timeout(5000); // Per fer proves
 
-      var event = {id: 2, name: "Títol 01", description: "Descripció random"}
+  describe('PUT: /events/:id', function() {
+    it.skip('should update an event when that event was created from our app', function(done) {
+      this.timeout(5000); // Per fer proves
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
+          let event_aux = event;
+          event_aux.name = "Esdeveniment per ser modificaaaaat!";
+          event_aux.description = "Descripció de l'esdeveniment que serà actualitzat";
+          return request
+            .post('/events')
+            .set('Accept', 'application/json')
+            .send(event_aux)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
         })
         .then((res) => {
-          //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", event)
-        })
-        .then((res) => {
-          //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
-        })
-        .then((res) => {
-          //console.log("Insert event2 done: " + JSON.stringify(res));
+          aux_id = res.body.event.id;
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
         })
         .finally(() => {
-          event.name = 'Nou Títol de levent';
-          event.description = 'Nova descripció random';
+          event.name = 'Nou Títol de lesdeveniment editat';
+          event.description = 'Nova descripció de lesdeveniment editat';
           request
             .put('/events/' + event.id)
             .set('Accept', 'application/json')
@@ -295,57 +292,64 @@ describe('route of events', function() {
             let event_res = body.event;
 
             expect(event_res).to.have.property('id', 2)
-            expect(event_res).to.have.property('name', 'Nou Títol de levent')
-            expect(event_res).to.have.property('description', 'Nova descripció random')
+            expect(event_res).to.have.property('name', 'Nou Títol de lesdeveniment editat')
+            expect(event_res).to.have.property('description', 'Nova descripció de lesdeveniment editat')
 
             done();
           }, done)
         });
       });
     });
+    it.skip('should not update an event when that event was not created from our app', function(done) {
+      //
+      done();
+    })
   })
 
+
   describe('DELETE:  /events/:id', function() {
-    it('should delete an event', function(done) {
+    /*
+    it('should delete an event when that event was created from our app', function(done) {
       this.timeout(5000); // Per fer proves
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          //console.log("Table events doesn't exist now: " + JSON.stringify(res));
-          return mysqlConnection.query("CREATE TABLE events(id int NOT NULL, name varchar(255) NOT NULL, description varchar(2000), PRIMARY KEY (id));")
+          let event_aux = event;
+          event_aux.name = "Esdeveniment per ser esborrat - més proves";
+          event_aux.description = "Descripció de l'esdeveniment que serà esborrat";
+          return request
+            .post('/events')
+            .set('Accept', 'application/json')
+            .send(event_aux)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
         })
         .then((res) => {
-          //console.log("Table events created: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 2, name: "Títol 01", description: "Descripció random"})
-        })
-        .then((res) => {
-          //console.log("Insert event1 done: " + JSON.stringify(res));
-          return mysqlConnection.query("INSERT INTO events SET ?", {id: 3, name: "Títol 02", description: "Descripció random"})
-        })
-        .then((res) => {
-          //console.log("Insert event2 done: " + JSON.stringify(res));
+          aux_id = res.body.event.id;
         })
         .catch((err) => {
           console.log("Error: " + JSON.stringify(err));
         })
         .finally(() => {
           request
-            .delete('/events/' + 2)
+            .delete('/events/' + aux_id)
             .set('Accept', 'application/json')
             .expect(200)
             .expect('Content-Type', /application\/json/)
           .then((res) => {
-            let body = res.body
-
-            expect(body).to.be.empty
-
+            expect(res.body).to.be.empty
             done();
           }, done)
         });
       });
+    });
+    */
+    it.skip('should not delete an event when that event was not created from our app', function(done) {
+      //
+      done();
     })
   })
-*/
+
 
 });

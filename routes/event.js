@@ -185,52 +185,100 @@ router
   })
 
   .put('/:id', function(req, res, next) {
-    //console.log("PUT:id", req.params.id)
     if(!req.params.id || !req.body) {
       res
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
-      //console.log("REQ.BODY: " + JSON.stringify(req.body));
-      const event = req.body;
-      pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("UPDATE events SET name='"+event.name+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
-        .then((result) => {
-          //console.log("PUT events done: " + JSON.stringify(result));
-          res
-            .status(200)
-            .json({event: event})
-        })
-        .catch((err) => {
-          //console.log("Error PUT: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-        });
+      console.log("0000000000000000000000000000000");
+      const eventRequest = req.body;
+      let eventReqEventBrite = { event: {} };
+      if (eventRequest.name)  { eventReqEventBrite.event.name = {html: eventRequest.name} };
+      if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description}; }
+      if (eventRequest.startTime) {
+        eventReqEventBrite.event.start = {
+          utc: eventRequest.startTime,
+          timezone: timeZone
+        }
+      }
+      if (eventRequest.endTime) {
+        eventReqEventBrite.event.end = {
+          utc: eventRequest.endTime,
+          timezone: timeZone
+        }
+      }
+      if (eventRequest.currency) { eventReqEventBrite.event.currency = eventRequest.currency; }
+      //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
+      if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity; };
+      const optionsRequest = {
+        url: urlEventbriteApi+"events/"+req.params.id,
+        method: "POST",
+        'auth': {
+          'bearer': oauthTokenEventbrite
+        },
+        json: true,
+        body: eventReqEventBrite
+      };
+      console.log("111111111111111111111111111111111111111111111111");
+      rp(optionsRequest)
+      .then((result) => {
+        console.log("it worked! :)");
+        return pool.getConnection();
+      })
+      .then((mysqlConnection) => {
+        //return mysqlConnection.query("UPDATE events SET name='"+event.name+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
+        return 1;
+      })
+      .then((result) => {
+        res
+          .status(200)
+          .json({})
+      })
+      .catch((err) => {
+        console.log("Error message: " + JSON.stringify(err));
+        res
+          .status(500)
+          .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
       });
+
     }
   })
 
   .delete('/:id', function(req, res, next) {
-    console.log("DELETE:id", req.params.id)
     if(!req.params.id) {
       res
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
-      pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("DELETE FROM events WHERE id = ?;", req.params.id)
-        .then((result) => {
-          res
-            .status(200)
-            .json({})
-        })
-        .catch((err) => {
-          res
-            .status(500)
-            .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-        });
+
+      const optionsRequest = {
+        method: "DELETE",
+        uri: urlEventbriteApi+"events/"+req.params.id,
+        headers: {
+        'Authorization' : 'Bearer VOYBQID3OWOAMLM6FFLQ'
+        }
+      };
+
+      rp(optionsRequest)
+      .then((result) => {
+        console.log("it worked! :)");
+        return pool.getConnection();
+      })
+      .then((mysqlConnection) => {
+        return mysqlConnection.query("DELETE FROM events WHERE id = ?;", req.params.id)
+      })
+      .then((result) => {
+        res
+          .status(200)
+          .json({})
+      })
+      .catch((err) => {
+        console.log("Error message: " + JSON.stringify(err));
+        res
+          .status(500)
+          .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
       });
+
     }
   })
 
