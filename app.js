@@ -1,13 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const event = require('./routes/event');
 const cors = require('cors');
+const event = require('./routes/event');
+const user = require('./routes/users');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-app.use('/events', event)
+app.use('/events', event);
+app.use('/users', user);
 
 app.use(cors());
 

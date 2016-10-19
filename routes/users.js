@@ -2,12 +2,13 @@
 const express = require('express')
 const router = express.Router()
 const mysql = require('promise-mysql');
+const rp = require('request-promise');
 
-var pool = mysql.createPool({
-    host    : 'localhost'
-    user    : 'root'
-    password: '12345678'
-    database: 'takemelegends'
+var pool  = mysql.createPool({
+  host     : 'localhost',
+  user     : 'root',
+  password : '12345678',
+  database : 'takemelegends'
 });
 
 router
@@ -24,7 +25,7 @@ router
           mysqlConnection.query("CREATE TABLE IF NOT EXISTS users(id int NOT NULL, provider varchar(255) NOT NULL, name varchar(30) NOT NULL, surname varchar(30), PRIMARY KEY (ID));")
           .then((result) => {
             //console.log("Table users created: " + JSON.stringify(result));
-            return mysqlConnection.query("INSERT INTO users SET ?", {id: user.uid, provider: user.provider, name: user.name, surname: user.surname);
+            return mysqlConnection.query("INSERT INTO users SET ?", {id: user.uid, provider: user.provider, name: user.name, surname: user.surname});
           })
           .then((result) => {
             //console.log("User inserted: " + JSON.stringify(result));
