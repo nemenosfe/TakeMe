@@ -17,6 +17,20 @@ var pool  = mysql.createPool({
   database : 'takemelegends'
 });
 
+function fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse) {
+  eventResponse.id = parseInt(eventResEventBrite.id);
+  eventResponse.name = eventResEventBrite.name.text;
+  eventResponse.description = eventResEventBrite.description.text;
+  eventResponse.url = eventResEventBrite.url;
+  eventResponse.resource_uri = eventResEventBrite.resource_uri;
+  eventResponse.capacity = eventResEventBrite.capacity;
+  eventResponse.start = eventResEventBrite.start.local;
+  eventResponse.end = eventResEventBrite.end.local;
+  if (eventResEventBrite.category_id) { eventResponse.category_id = eventResEventBrite.category_id; }
+  else { eventResponse.category_id = null; }
+  eventResponse.logo = eventResEventBrite.logo;
+}
+
 function fillExtraInfo(varFrom, varTo) {
   if (varFrom.price != undefined && varFrom.price != null) { varTo.price = varFrom.price; }
   if (varFrom.address) { varTo.address = varFrom.address; }
@@ -67,7 +81,7 @@ router
       const eventRequest = req.body;
       let eventResEventBrite;
       let insertEventDB;
-      let eventResponse;
+      let eventResponse = {};
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("CREATE TABLE IF NOT EXISTS events(id bigint NOT NULL PRIMARY KEY, price DECIMAL(10, 2), address VARCHAR(500), latitude DECIMAL(10, 8), longitude DECIMAL(11, 8));")
@@ -98,18 +112,7 @@ router
           return mysqlConnection.query("INSERT INTO events SET ?", insertEventDB);
         })
         .then((result) => { // Fa el Response bo :)
-          let eventResponse = {
-            id: eventResEventBrite.id,
-            name: eventResEventBrite.name.text,
-            description: eventResEventBrite.description.text,
-            url: eventResEventBrite.url,
-            resource_uri: eventResEventBrite.resource_uri,
-            start: eventResEventBrite.start.local,
-            end: eventResEventBrite.end.local,
-            capacity: eventResEventBrite.capacity,
-            category_id: eventResEventBrite.category_id,
-            logo: eventResEventBrite.logo
-          };
+          fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
           fillExtraInfo(eventRequest, eventResponse);
           res
             .status(201)
@@ -138,28 +141,19 @@ router
           else { eventResponse = {}; eventResponse.appEvent = false; }
           return doRequest(urlEventbriteApi + "events/" + id + "/", "GET");
         })
-        .then((result) => {
-          eventResponse.name = result.name.text;
-          eventResponse.description = result.description.text;
-          eventResponse.url = result.url;
-          eventResponse.resource_uri = result.resource_uri;
-          eventResponse.capacity = result.capacity;
-          eventResponse.start = result.start.local;
-          eventResponse.end = result.end.local;
-          eventResponse.category_id = result.category_id;
-          eventResponse.logo = result.logo;
+        .then((eventResEventBrite) => {
+          fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
           if ( !eventResponse.appEvent ) {
-            eventResponse.id = parseInt(result.id);
             eventResponse.price = null;
             eventResponse.address = null;
             eventResponse.latitude = null;
             eventResponse.longitude = null;
 
-            if (result.price) { eventResponse.price = result.price; }
-            if (result.location) {
-              if (result.address) { eventResponse.address = result.location.address; }
-              if (result.latitude) { eventResponse.latitude = result.location.latitude; }
-              if (result.longitude) { eventResponse.longitude = result.location.longitude; }
+            if (eventResEventBrite.price) { eventResponse.price = eventResEventBrite.price; }
+            if (eventResEventBrite.location) {
+              if (eventResEventBrite.address) { eventResponse.address = eventResEventBrite.location.address; }
+              if (eventResEventBrite.latitude) { eventResponse.latitude = eventResEventBrite.location.latitude; }
+              if (eventResEventBrite.longitude) { eventResponse.longitude = eventResEventBrite.location.longitude; }
             }
           }
           res
@@ -176,7 +170,7 @@ router
   .put('/:id', function(req, res, next) {
     if(!req.params.id || !req.body)  { handleNoParams(res); }
     else {
-      let eventResponse;
+      let eventResponse = {};
       const eventRequest = req.body;
       let eventReqEventBrite = { event: {} };
       let eventResEventBrite = {};
@@ -208,18 +202,7 @@ router
         return mysqlConnection.query("UPDATE events SET ? WHERE id = ?;", [eventEditDB, req.params.id]);
       })
       .then((result) => {
-        let eventResponse = {
-          id: parseInt(eventResEventBrite.id),
-          name: eventResEventBrite.name.text,
-          description: eventResEventBrite.description.text,
-          url: eventResEventBrite.url,
-          resource_uri: eventResEventBrite.resource_uri,
-          start: eventResEventBrite.start.local,
-          end: eventResEventBrite.end.local,
-          capacity: eventResEventBrite.capacity,
-          category_id: eventResEventBrite.category_id,
-          logo: eventResEventBrite.logo
-        };
+        fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
         fillExtraInfo(eventRequest, eventResponse);
         res
           .status(200)

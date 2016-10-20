@@ -31,6 +31,8 @@ var aux_id;
 
 describe('route of events', function() {
 
+  this.timeout(6000); // Per fer proves
+
   // Evidentment el DROP TABLE IF EXISTS és temporal i quan tinguem esdeveniments de debó, només borraré els creats en les proves i no tots XD
   // QUEDA PENDENT EL CATEGORY!!
   // Queda pendent fer el DELETE al final del que he creat aquí
@@ -38,8 +40,6 @@ describe('route of events', function() {
 
   describe('POST /events', function() {
     it('should create an event', function(done) {
-      this.timeout(5000); // Per fer proves, però no cal
-
       pool.getConnection().then(function(mysqlConnection) {
         request
           .post('/events')
@@ -75,8 +75,6 @@ describe('route of events', function() {
 /*
   describe('GET /events', function() {
     it('should obtain all the events', function(done) {
-      this.timeout(5000); // Per fer proves
-
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
@@ -158,8 +156,6 @@ describe('route of events', function() {
 
   describe('GET /events/:id', function() {
     it('should obtain an event with all its info when that event was created from our app', function(done) {
-      this.timeout(5000); // Per fer proves
-
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
@@ -221,7 +217,6 @@ describe('route of events', function() {
       });
     });
     it('should obtain an event with all its info when that event was not created from our app', function(done) {
-      this.timeout(5000); // Per fer proves
       let aux_id = 27817268198;  // 27817268198 27880689894
       request
         .get('/events/' + aux_id)
@@ -255,10 +250,7 @@ describe('route of events', function() {
 
   describe('PUT: /events/:id', function() {
     it('should update an event when that event was created from our app', function(done) {
-      this.timeout(60000); // Per fer proves
-
       let event_aux = event;
-
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
@@ -305,7 +297,7 @@ describe('route of events', function() {
             expect(event_res).to.have.property('start')
             expect(event_res).to.have.property('end')
             expect(event_res).to.have.property('capacity')
-            expect(event_res).to.have.property('category_id')
+            //expect(event_res).to.have.property('category_id')
             expect(event_res).to.have.property('logo')
             expect(event_res).to.have.property('price', event_aux.price)
             expect(event_res).to.have.property('address', event.address)
@@ -334,8 +326,6 @@ describe('route of events', function() {
 
   describe('DELETE:  /events/:id', function() {
     it('should delete an event when that event was created from our app', function(done) {
-      this.timeout(5000); // Per fer proves
-
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
