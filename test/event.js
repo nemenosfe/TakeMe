@@ -21,12 +21,19 @@ var event = {
 }
 var aux_id;
 
+function removeCreatedEventDuringTest(id) {
+  request
+    .delete('/events/' + id)
+    .set('Accept', 'application/json')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+}
+
 describe('route of events', function() {
 
   this.timeout(6000); // Per fer proves
 
   // QUEDA PENDENT EL CATEGORY!!
-  // Queda pendent fer el DELETE al final del que he creat aquí
   // Em sembla que la API d'Eventbrite suma 1h al temps que li envio LOL
 
   describe('POST /events', function() {
@@ -55,6 +62,9 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('address', event.address)
         expect(eventResponse).to.have.property('latitude', event.coords.latitude)
         expect(eventResponse).to.have.property('longitude', event.coords.longitude)
+
+        // Elimina l'esdeveniment creat a la prova:
+        removeCreatedEventDuringTest(eventResponse.id)
 
         done(err)
       });
@@ -108,6 +118,9 @@ describe('route of events', function() {
           expect(eventResponse).to.have.property('address', event.address)
           expect(eventResponse).to.have.property('latitude', event.coords.latitude)
           expect(eventResponse).to.have.property('longitude', event.coords.longitude)
+
+          // Elimina l'esdeveniment creat a la prova:
+          removeCreatedEventDuringTest(aux_id)
 
           done();
         }, done)
@@ -197,6 +210,9 @@ describe('route of events', function() {
           expect(event_res).to.have.property('latitude', event_aux.coords.latitude)
           expect(event_res).to.have.property('longitude', event_aux.coords.longitude)
 
+          // Elimina l'esdeveniment creat a la prova:
+          removeCreatedEventDuringTest(aux_id)
+
           done();
         }, done)
       });
@@ -248,7 +264,7 @@ describe('route of events', function() {
     it('should not delete an event when that event was not created from our app', function(done) {
       aux_id = 27817268198;  // 27817268198 27880689894
       request
-        .put('/events/' + aux_id)
+        .delete('/events/' + aux_id)
         .set('Accept', 'application/json')
         .send(event)
         .expect(403)
