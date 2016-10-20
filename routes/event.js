@@ -39,15 +39,18 @@ function handleError(err, res, requestVerb) {
   }
 }
 
+function handleNoParams(res) {
+  res
+    .status(403)
+    .json({error: true, message: 'Params empty'})
+}
+
 // Falta Refactor d'optionsRequest
 
 router
   .post('/', function(req, res, next) {
-    if(!req.body || !req.body.name || !req.body.startTime || !req.body.endTime) {
-      res
-        .status(403)
-        .json({error: true, message: 'Params empty'})
-    } else {
+    if(!req.body || !req.body.name || !req.body.startTime || !req.body.endTime) { handleNoParams(res); }
+    else {
       const eventRequest = req.body;
       let eventResEventBrite;
       let insertEventDB;
@@ -120,11 +123,8 @@ router
   })
 
   .get('/:id', function(req, res, next) {
-    if(!req.params.id) {
-      res
-        .status(403)
-        .json({error: true, message: 'Params empty'})
-    } else {
+    if(!req.params.id) { handleNoParams(res); }
+    else {
       let id = req.params.id;
       let eventResponse;
       pool.getConnection().then(function(mysqlConnection) {
@@ -178,11 +178,8 @@ router
   })
 
   .put('/:id', function(req, res, next) {
-    if(!req.params.id || !req.body) {
-      res
-        .status(403)
-        .json({error: true, message: 'Params empty'})
-    } else {
+    if(!req.params.id || !req.body)  { handleNoParams(res); }
+    else {
       let eventResponse;
       const eventRequest = req.body;
       let eventReqEventBrite = { event: {} };
@@ -249,11 +246,8 @@ router
   })
 
   .delete('/:id', function(req, res, next) {
-    if(!req.params.id) {
-      res
-        .status(403)
-        .json({error: true, message: 'Params empty'})
-    } else {
+    if(!req.params.id)  { handleNoParams(res); }
+    else {
 
       const optionsRequest = {
         method: "DELETE",
