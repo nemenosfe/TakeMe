@@ -26,6 +26,19 @@ function fillExtraInfo(varFrom, varTo) {
   }
 }
 
+function handleError(err, res, requestVerb) {
+  if (err.error && err.error.status_code && err.error.status_code == 403) {
+    res
+      .status(err.error.status_code)
+      .json({error: true, message: err.error.error_description})
+  } else {
+    console.log("Error "+requestVerb+" : " + JSON.stringify(err));
+    res
+      .status(500)
+      .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+  }
+}
+
 // Falta Refactor d'optionsRequest
 
 router
@@ -96,32 +109,14 @@ router
             .json({ event: eventResponse });
         })
         .catch((err) => {
-          console.log("Error: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'Error: ' +  JSON.stringify(err)});
+          handleError(err, res, "POST");
         });
       });
     }
   })
 
   .get('/', function(req, res, next) {
-    //console.log("GET events");
-    pool.getConnection().then(function(mysqlConnection) {
-      mysqlConnection.query("SELECT * FROM events;")
-      .then((result) => {
-        console.log("Get events done: " + JSON.stringify(result));
-        res
-          .status(200)
-          .json({events: result})
-      })
-      .catch((err) => {
-        console.log("Error GEEEEEET: " + JSON.stringify(err));
-        res
-          .status(500)
-          .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-      });
-    });
+    // PER FER
   })
 
   .get('/:id', function(req, res, next) {
@@ -176,16 +171,7 @@ router
             .json({event: eventResponse})
         })
         .catch((err) => {
-          if (err.error && err.error.status_code && err.error.status_code == 403) {
-            res
-              .status(err.error.status_code)
-              .json({error: true, message: err.error.error_description})
-          } else {
-            console.log("Error GEEEEEET: " + JSON.stringify(err));
-            res
-              .status(500)
-              .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-          }
+          handleError(err, res, "GET/:id");
         });
       });
     }
@@ -256,16 +242,7 @@ router
           .json({ event: eventResponse });
       })
       .catch((err) => {
-        if (err.error && err.error.status_code && err.error.status_code == 403) {
-          res
-            .status(err.error.status_code)
-            .json({error: true, message: err.error.error_description})
-        } else {
-          console.log("Error GEEEEEET: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-        }
+        handleError(err, res, "PUT");
       });
 
     }
@@ -299,16 +276,7 @@ router
           .json({})
       })
       .catch((err) => {
-        if (err.error && err.error.status_code && err.error.status_code == 403) {
-          res
-            .status(err.error.status_code)
-            .json({error: true, message: err.error.error_description})
-        } else {
-          console.log("Error GEEEEEET: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-        }
+        handleError(err, res, "DELETE");
       });
 
     }
