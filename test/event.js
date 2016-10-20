@@ -2,16 +2,8 @@
 let request = require('supertest-as-promised');
 const api = require('../app');
 const host = api;
-const mysql = require('promise-mysql');
 
 request = request(host);
-
-var pool  = mysql.createPool({ // No vull repetir codi però quan estigui més complet ja faré un refactor.
-  host     : 'localhost',
-  user     : 'root',
-  password : '12345678',
-  database : 'takemelegends'
-});
 
 var event = {
   'name': 'name proves 01',
@@ -39,34 +31,32 @@ describe('route of events', function() {
 
   describe('POST /events', function() {
     it('should create an event', function(done) {
-      pool.getConnection().then(function(mysqlConnection) {
-        request
-          .post('/events')
-          .set('Accept', 'application/json')
-          .send(event)
-          .expect(201)
-          .expect('Content-Type', /application\/json/)
-        .end((err, res) => {
-          expect(res.body).to.have.property('event')
-          const eventResponse = res.body.event
+      request
+        .post('/events')
+        .set('Accept', 'application/json')
+        .send(event)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+      .end((err, res) => {
+        expect(res.body).to.have.property('event')
+        const eventResponse = res.body.event
 
-          expect(eventResponse).to.have.property('id').and.to.be.a('number')
-          expect(eventResponse).to.have.property('name', event.name)
-          expect(eventResponse).to.have.property('description', event.description)
-          expect(eventResponse).to.have.property('url')
-          expect(eventResponse).to.have.property('resource_uri')
-          expect(eventResponse).to.have.property('start')
-          expect(eventResponse).to.have.property('end')
-          expect(eventResponse).to.have.property('capacity')
-          expect(eventResponse).to.have.property('category_id')
-          expect(eventResponse).to.have.property('logo')
-          expect(eventResponse).to.have.property('price', event.price)
-          expect(eventResponse).to.have.property('address', event.address)
-          expect(eventResponse).to.have.property('latitude', event.coords.latitude)
-          expect(eventResponse).to.have.property('longitude', event.coords.longitude)
+        expect(eventResponse).to.have.property('id').and.to.be.a('number')
+        expect(eventResponse).to.have.property('name', event.name)
+        expect(eventResponse).to.have.property('description', event.description)
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('resource_uri')
+        expect(eventResponse).to.have.property('start')
+        expect(eventResponse).to.have.property('end')
+        expect(eventResponse).to.have.property('capacity')
+        expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('logo')
+        expect(eventResponse).to.have.property('price', event.price)
+        expect(eventResponse).to.have.property('address', event.address)
+        expect(eventResponse).to.have.property('latitude', event.coords.latitude)
+        expect(eventResponse).to.have.property('longitude', event.coords.longitude)
 
-          done(err)
-        })
+        done(err)
       });
     })
   })
