@@ -31,12 +31,26 @@ function fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse) {
   eventResponse.logo = eventResEventBrite.logo;
 }
 
-function fillExtraInfo(varFrom, varTo) {
+function fillExtraInfoFromRequest(varFrom, varTo) {
   if (varFrom.price != undefined && varFrom.price != null) { varTo.price = varFrom.price; }
   if (varFrom.address) { varTo.address = varFrom.address; }
   if (varFrom.coords && varFrom.coords.latitude && varFrom.coords.longitude) {
     varTo.latitude = varFrom.coords.latitude;
     varTo.longitude = varFrom.coords.longitude;
+  }
+}
+
+function fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse) {
+  eventResponse.price = null;
+  eventResponse.address = null;
+  eventResponse.latitude = null;
+  eventResponse.longitude = null;
+
+  if (eventResEventBrite.price) { eventResponse.price = eventResEventBrite.price; }
+  if (eventResEventBrite.location) {
+    if (eventResEventBrite.address) { eventResponse.address = eventResEventBrite.location.address; }
+    if (eventResEventBrite.latitude) { eventResponse.latitude = eventResEventBrite.location.latitude; }
+    if (eventResEventBrite.longitude) { eventResponse.longitude = eventResEventBrite.location.longitude; }
   }
 }
 
@@ -108,12 +122,12 @@ router
         .then((result) => { // Inserta a la nostra BD
           eventResEventBrite = result;
           insertEventDB = {id: eventResEventBrite.id};
-          fillExtraInfo(eventRequest, insertEventDB);
+          fillExtraInfoFromRequest(eventRequest, insertEventDB);
           return mysqlConnection.query("INSERT INTO events SET ?", insertEventDB);
         })
         .then((result) => { // Fa el Response bo :)
           fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
-          fillExtraInfo(eventRequest, eventResponse);
+          fillExtraInfoFromRequest(eventRequest, eventResponse);
           res
             .status(201)
             .json({ event: eventResponse });
@@ -143,19 +157,7 @@ router
         })
         .then((eventResEventBrite) => {
           fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
-          if ( !eventResponse.appEvent ) {
-            eventResponse.price = null;
-            eventResponse.address = null;
-            eventResponse.latitude = null;
-            eventResponse.longitude = null;
-
-            if (eventResEventBrite.price) { eventResponse.price = eventResEventBrite.price; }
-            if (eventResEventBrite.location) {
-              if (eventResEventBrite.address) { eventResponse.address = eventResEventBrite.location.address; }
-              if (eventResEventBrite.latitude) { eventResponse.latitude = eventResEventBrite.location.latitude; }
-              if (eventResEventBrite.longitude) { eventResponse.longitude = eventResEventBrite.location.longitude; }
-            }
-          }
+          if ( !eventResponse.appEvent ) { fillExtraInfoFromEventbrite(eventResEventBrite, eventResponse); }
           res
             .status(200)
             .json({event: eventResponse})
@@ -193,17 +195,17 @@ router
       if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity; };
       doRequest(urlEventbriteApi+"events/"+req.params.id+"/", "POST", eventReqEventBrite)
       .then((result) => {
-         eventResEventBrite = result;
+        eventResEventBrite = result;
         return pool.getConnection();
       })
       .then((mysqlConnection) => {
         let eventEditDB = {};
-        fillExtraInfo(eventRequest, eventEditDB);
+        fillExtraInfoFromRequest(eventRequest, eventEditDB);
         return mysqlConnection.query("UPDATE events SET ? WHERE id = ?;", [eventEditDB, req.params.id]);
       })
       .then((result) => {
         fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
-        fillExtraInfo(eventRequest, eventResponse);
+        fillExtraInfoFromRequest(eventRequest, eventResponse);
         res
           .status(200)
           .json({ event: eventResponse });
