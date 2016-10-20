@@ -40,7 +40,7 @@ function fillExtraInfoFromRequest(varFrom, varTo) {
   }
 }
 
-function fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse) {
+function fillExtraInfoFromEventbriteResponse(eventResEventBrite, eventResponse) {
   eventResponse.price = null;
   eventResponse.address = null;
   eventResponse.latitude = null;
@@ -157,7 +157,7 @@ router
         })
         .then((eventResEventBrite) => {
           fillInfoFromEventbriteResponse(eventResEventBrite, eventResponse);
-          if ( !eventResponse.appEvent ) { fillExtraInfoFromEventbrite(eventResEventBrite, eventResponse); }
+          if ( !eventResponse.appEvent ) { fillExtraInfoFromEventbriteResponse(eventResEventBrite, eventResponse); }
           res
             .status(200)
             .json({event: eventResponse})
