@@ -18,7 +18,7 @@ var pool  = mysql.createPool({
 });
 
 function fillExtraInfo(varFrom, varTo) {
-  if (varFrom.price) { varTo.price = varFrom.price; }
+  if (varFrom.price != undefined && varFrom.price != null) { varTo.price = varFrom.price; }
   if (varFrom.address) { varTo.address = varFrom.address; }
   if (varFrom.coords && varFrom.coords.latitude && varFrom.coords.longitude) {
     varTo.latitude = varFrom.coords.latitude;
@@ -138,7 +138,7 @@ router
           if (result.length > 0) { eventResponse = result[0]; eventResponse.appEvent = true; }
           else { eventResponse = {}; eventResponse.appEvent = false; }
           const optionsRequest = {
-            url: urlEventbriteApi + "events/" + id,
+            url: urlEventbriteApi + "events/" + id + "/",
             method: "GET",
             'auth': {
               'bearer': oauthTokenEventbrite
@@ -191,8 +191,10 @@ router
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
+      let eventResponse;
       const eventRequest = req.body;
       let eventReqEventBrite = { event: {} };
+      let eventResEventBrite = {};
       if (eventRequest.name)  { eventReqEventBrite.event.name = {html: eventRequest.name} };
       if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
       if (eventRequest.startTime) {
@@ -210,9 +212,8 @@ router
       if (eventRequest.currency) { eventReqEventBrite.event.currency = eventRequest.currency; };
       //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id; };
       if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity; };
-      console.log("req.params.id: " + req.params.id);
       const optionsRequest = {
-        url: urlEventbriteApi+"events/"+req.params.id,
+        url: urlEventbriteApi+"events/"+req.params.id+"/",
         method: "POST",
         'auth': {
           'bearer': oauthTokenEventbrite
@@ -222,17 +223,31 @@ router
       };
       rp(optionsRequest)
       .then((result) => {
-        console.log("it worked! :)");
+         eventResEventBrite = result;
         return pool.getConnection();
       })
       .then((mysqlConnection) => {
-        //return mysqlConnection.query("UPDATE events SET name='"+event.name+"', description='"+event.description+"' WHERE id = ?;", req.params.id)
-        return 1;
+        let eventEditDB = {};
+        fillExtraInfo(eventRequest, eventEditDB);
+        return mysqlConnection.query("UPDATE events SET ? WHERE id = ?;", [eventEditDB, req.params.id]);
       })
       .then((result) => {
+        let eventResponse = {
+          id: parseInt(eventResEventBrite.id),
+          name: eventResEventBrite.name.text,
+          description: eventResEventBrite.description.text,
+          url: eventResEventBrite.url,
+          resource_uri: eventResEventBrite.resource_uri,
+          start: eventResEventBrite.start.local,
+          end: eventResEventBrite.end.local,
+          capacity: eventResEventBrite.capacity,
+          category_id: eventResEventBrite.category_id,
+          logo: eventResEventBrite.logo
+        };
+        fillExtraInfo(eventRequest, eventResponse);
         res
           .status(200)
-          .json({})
+          .json({ event: eventResponse });
       })
       .catch((err) => {
         console.log("Error message: " + JSON.stringify(err));
@@ -253,7 +268,7 @@ router
 
       const optionsRequest = {
         method: "DELETE",
-        uri: urlEventbriteApi+"events/"+req.params.id,
+        uri: urlEventbriteApi+"events/"+req.params.id+"/",
         headers: {
         'Authorization' : 'Bearer VOYBQID3OWOAMLM6FFLQ'
         }
@@ -261,7 +276,6 @@ router
 
       rp(optionsRequest)
       .then((result) => {
-        console.log("it worked! :)");
         return pool.getConnection();
       })
       .then((mysqlConnection) => {

@@ -254,15 +254,21 @@ describe('route of events', function() {
 
 
   describe('PUT: /events/:id', function() {
-    it.skip('should update an event when that event was created from our app', function(done) {
-      this.timeout(5000); // Per fer proves
+    it('should update an event when that event was created from our app', function(done) {
+      this.timeout(60000); // Per fer proves
+
+      let event_aux = event;
 
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("DROP TABLE IF EXISTS events")
         .then((res) => {
-          let event_aux = event;
           event_aux.name = "Esdeveniment per ser modificaaaaat!";
           event_aux.description = "Descripció de l'esdeveniment que serà actualitzat";
+          event_aux.coords = {
+            'latitude' : 40.7829,
+            'longitude' : -73.9654
+          };
+          event_aux.price = 0;
           return request
             .post('/events')
             .set('Accept', 'application/json')
@@ -291,9 +297,20 @@ describe('route of events', function() {
             expect(body).to.have.property('event')
             let event_res = body.event;
 
-            expect(event_res).to.have.property('id', 2)
-            expect(event_res).to.have.property('name', 'Nou Títol de lesdeveniment editat')
-            expect(event_res).to.have.property('description', 'Nova descripció de lesdeveniment editat')
+            expect(event_res).to.have.property('id', parseInt(aux_id))
+            expect(event_res).to.have.property('name', event_aux.name)
+            expect(event_res).to.have.property('description', event_aux.description)
+            expect(event_res).to.have.property('url')
+            expect(event_res).to.have.property('resource_uri')
+            expect(event_res).to.have.property('start')
+            expect(event_res).to.have.property('end')
+            expect(event_res).to.have.property('capacity')
+            expect(event_res).to.have.property('category_id')
+            expect(event_res).to.have.property('logo')
+            expect(event_res).to.have.property('price', event_aux.price)
+            expect(event_res).to.have.property('address', event.address)
+            expect(event_res).to.have.property('latitude', event_aux.coords.latitude)
+            expect(event_res).to.have.property('longitude', event_aux.coords.longitude)
 
             done();
           }, done)
@@ -308,7 +325,6 @@ describe('route of events', function() {
 
 
   describe('DELETE:  /events/:id', function() {
-    /*
     it('should delete an event when that event was created from our app', function(done) {
       this.timeout(5000); // Per fer proves
 
@@ -344,7 +360,6 @@ describe('route of events', function() {
         });
       });
     });
-    */
     it.skip('should not delete an event when that event was not created from our app', function(done) {
       //
       done();
