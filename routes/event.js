@@ -176,10 +176,16 @@ router
             .json({event: eventResponse})
         })
         .catch((err) => {
-          console.log("Error GEEEEEET: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({error: true, message: 'Eerror: ' +  JSON.stringify(err)})
+          if (err.error && err.error.status_code && err.error.status_code == 403) {
+            res
+              .status(err.error.status_code)
+              .json({error: true, message: err.error.error_description})
+          } else {
+            console.log("Error GEEEEEET: " + JSON.stringify(err));
+            res
+              .status(500)
+              .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+          }
         });
       });
     }
@@ -250,10 +256,16 @@ router
           .json({ event: eventResponse });
       })
       .catch((err) => {
-        console.log("Error message: " + JSON.stringify(err));
-        res
-          .status(500)
-          .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+        if (err.error && err.error.status_code && err.error.status_code == 403) {
+          res
+            .status(err.error.status_code)
+            .json({error: true, message: err.error.error_description})
+        } else {
+          console.log("Error GEEEEEET: " + JSON.stringify(err));
+          res
+            .status(500)
+            .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+        }
       });
 
     }
@@ -287,10 +299,16 @@ router
           .json({})
       })
       .catch((err) => {
-        console.log("Error message: " + JSON.stringify(err));
-        res
-          .status(500)
-          .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+        if (err.error && err.error.status_code && err.error.status_code == 403) {
+          res
+            .status(err.error.status_code)
+            .json({error: true, message: err.error.error_description})
+        } else {
+          console.log("Error GEEEEEET: " + JSON.stringify(err));
+          res
+            .status(500)
+            .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+        }
       });
 
     }

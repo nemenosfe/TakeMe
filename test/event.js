@@ -317,9 +317,17 @@ describe('route of events', function() {
         });
       });
     });
-    it.skip('should not update an event when that event was not created from our app', function(done) {
-      //
-      done();
+    it('should not update an event when that event was not created from our app', function(done) {
+      let aux_id = 27817268198;  // 27817268198 27880689894
+      request
+        .put('/events/' + aux_id)
+        .set('Accept', 'application/json')
+        .send(event)
+        .expect(403)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        done();
+      }, done)
     })
   })
 
@@ -360,9 +368,17 @@ describe('route of events', function() {
         });
       });
     });
-    it.skip('should not delete an event when that event was not created from our app', function(done) {
-      //
-      done();
+    it('should not delete an event when that event was not created from our app', function(done) {
+      let aux_id = 27817268198;  // 27817268198 27880689894
+      request
+        .put('/events/' + aux_id)
+        .set('Accept', 'application/json')
+        .send(event)
+        .expect(403)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        done();
+      }, done)
     })
   })
 
