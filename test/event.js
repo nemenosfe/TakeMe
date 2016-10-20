@@ -280,7 +280,7 @@ describe('route of events', function() {
           event.name = 'Nou Títol de lesdeveniment editat';
           event.description = 'Nova descripció de lesdeveniment editat';
           request
-            .put('/events/' + event.id)
+            .put('/events/' + aux_id)
             .set('Accept', 'application/json')
             .send(event)
             .expect(200)

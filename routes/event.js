@@ -7,6 +7,9 @@ const rp = require('request-promise');
 const oauthTokenEventbrite = "VOYBQID3OWOAMLM6FFLQ";
 const urlEventbriteApi = "https://www.eventbriteapi.com/v3/";
 
+const timeZone = "Europe/Madrid";
+const currency = "EUR";
+
 var pool  = mysql.createPool({
   host     : 'localhost',
   user     : 'root',
@@ -33,8 +36,6 @@ router
         .json({error: true, message: 'Params empty'})
     } else {
       const eventRequest = req.body;
-      const timeZone = "Europe/Madrid";
-      const currency = "EUR";
       let eventResEventBrite;
       let insertEventDB;
       let eventResponse;
@@ -190,26 +191,26 @@ router
         .status(403)
         .json({error: true, message: 'Params empty'})
     } else {
-      console.log("0000000000000000000000000000000");
       const eventRequest = req.body;
       let eventReqEventBrite = { event: {} };
       if (eventRequest.name)  { eventReqEventBrite.event.name = {html: eventRequest.name} };
-      if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description}; }
+      if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
       if (eventRequest.startTime) {
         eventReqEventBrite.event.start = {
           utc: eventRequest.startTime,
           timezone: timeZone
         }
-      }
+      };
       if (eventRequest.endTime) {
         eventReqEventBrite.event.end = {
           utc: eventRequest.endTime,
           timezone: timeZone
         }
-      }
-      if (eventRequest.currency) { eventReqEventBrite.event.currency = eventRequest.currency; }
-      //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
+      };
+      if (eventRequest.currency) { eventReqEventBrite.event.currency = eventRequest.currency; };
+      //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id; };
       if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity; };
+      console.log("req.params.id: " + req.params.id);
       const optionsRequest = {
         url: urlEventbriteApi+"events/"+req.params.id,
         method: "POST",
@@ -219,7 +220,6 @@ router
         json: true,
         body: eventReqEventBrite
       };
-      console.log("111111111111111111111111111111111111111111111111");
       rp(optionsRequest)
       .then((result) => {
         console.log("it worked! :)");
