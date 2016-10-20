@@ -45,6 +45,19 @@ function handleNoParams(res) {
     .json({error: true, message: 'Params empty'})
 }
 
+function doRequest(finalUrl, method, body) {
+  let optionsRequest = {
+    url: finalUrl,
+    method: method,
+    'auth': {
+      'bearer': oauthTokenEventbrite
+    },
+    json: true
+  };
+  if (body) { optionsRequest.body = body }
+  return rp(optionsRequest);
+}
+
 // Falta Refactor d'optionsRequest
 
 router
@@ -76,16 +89,7 @@ router
           if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
           //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
           if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity };
-          const optionsRequest = {
-            url: urlEventbriteApi+"events/",
-            method: "POST",
-            'auth': {
-              'bearer': oauthTokenEventbrite
-            },
-            json: true,   // Important!
-            body: eventReqEventBrite
-          };
-          return rp(optionsRequest);
+          return doRequest(urlEventbriteApi+"events/", "POST", eventReqEventBrite);
         })
         .then((result) => { // Inserta a la nostra BD
           eventResEventBrite = result;
@@ -132,15 +136,7 @@ router
         .then((result) => {
           if (result.length > 0) { eventResponse = result[0]; eventResponse.appEvent = true; }
           else { eventResponse = {}; eventResponse.appEvent = false; }
-          const optionsRequest = {
-            url: urlEventbriteApi + "events/" + id + "/",
-            method: "GET",
-            'auth': {
-              'bearer': oauthTokenEventbrite
-            },
-            json: true
-          };
-          return rp(optionsRequest);
+          return doRequest(urlEventbriteApi + "events/" + id + "/", "GET");
         })
         .then((result) => {
           eventResponse.name = result.name.text;
@@ -201,16 +197,7 @@ router
       if (eventRequest.currency) { eventReqEventBrite.event.currency = eventRequest.currency; };
       //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id; };
       if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity; };
-      const optionsRequest = {
-        url: urlEventbriteApi+"events/"+req.params.id+"/",
-        method: "POST",
-        'auth': {
-          'bearer': oauthTokenEventbrite
-        },
-        json: true,
-        body: eventReqEventBrite
-      };
-      rp(optionsRequest)
+      doRequest(urlEventbriteApi+"events/"+req.params.id+"/", "POST", eventReqEventBrite)
       .then((result) => {
          eventResEventBrite = result;
         return pool.getConnection();
@@ -248,16 +235,7 @@ router
   .delete('/:id', function(req, res, next) {
     if(!req.params.id)  { handleNoParams(res); }
     else {
-
-      const optionsRequest = {
-        method: "DELETE",
-        uri: urlEventbriteApi+"events/"+req.params.id+"/",
-        headers: {
-        'Authorization' : 'Bearer VOYBQID3OWOAMLM6FFLQ'
-        }
-      };
-
-      rp(optionsRequest)
+      doRequest(urlEventbriteApi+"events/"+req.params.id+"/", "DELETE")
       .then((result) => {
         return pool.getConnection();
       })
