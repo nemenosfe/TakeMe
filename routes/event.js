@@ -115,7 +115,7 @@ router
                                 }
                               };
           if (eventRequest.description) { eventReqEventBrite.event.description = {html: eventRequest.description} };
-          //if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
+          if (eventRequest.category_id) { eventReqEventBrite.event.category_id = eventRequest.category_id };
           if (eventRequest.capacity) { eventReqEventBrite.event.capacity = eventRequest.capacity };
           return doRequest(urlEventbriteApi+"events/", "POST", eventReqEventBrite);
         })

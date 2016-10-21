@@ -10,7 +10,7 @@ var event = {
   'description': 'description testing 01',
   'startTime' : "2017-01-12T15:30:00Z",
   'endTime' : "2017-02-12T09:00:00Z",
-  'category_id' : '1',
+  'category_id' : '103',
   'capacity' : '15000',
   'price' : 257.13,
   'address' : 'carrer fals, Barcelona',
@@ -31,9 +31,8 @@ function removeCreatedEventDuringTest(id) {
 
 describe('route of events', function() {
 
-  this.timeout(6000); // Per fer proves
+  this.timeout(5000); // Per fer proves
 
-  // QUEDA PENDENT EL CATEGORY!!
   // Em sembla que la API d'Eventbrite suma 1h al temps que li envio LOL
 
   describe('POST /events', function() {
@@ -56,7 +55,7 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('start')
         expect(eventResponse).to.have.property('end')
         expect(eventResponse).to.have.property('capacity')
-        expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('category_id', event.category_id)
         expect(eventResponse).to.have.property('logo')
         expect(eventResponse).to.have.property('price', event.price)
         expect(eventResponse).to.have.property('address', event.address)
@@ -71,11 +70,12 @@ describe('route of events', function() {
     })
   })
 
-/*
+
   describe('GET /events', function() {
-    // TO DO
+    it.skip('should', function(done) {
+    });
   });
-*/
+
 
   describe('GET /events/:id', function() {
     it('should obtain an event with all its info when that event was created from our app', function(done) {
@@ -112,7 +112,7 @@ describe('route of events', function() {
           expect(eventResponse).to.have.property('start')
           expect(eventResponse).to.have.property('end')
           expect(eventResponse).to.have.property('capacity')
-          expect(eventResponse).to.have.property('category_id')
+          expect(eventResponse).to.have.property('category_id', event.category_id)
           expect(eventResponse).to.have.property('logo')
           expect(eventResponse).to.have.property('price', event.price)
           expect(eventResponse).to.have.property('address', event.address)
@@ -203,7 +203,7 @@ describe('route of events', function() {
           expect(event_res).to.have.property('start')
           expect(event_res).to.have.property('end')
           expect(event_res).to.have.property('capacity')
-          //expect(event_res).to.have.property('category_id')
+          expect(event_res).to.have.property('category_id', event.category_id)
           expect(event_res).to.have.property('logo')
           expect(event_res).to.have.property('price', event_aux.price)
           expect(event_res).to.have.property('address', event.address)
