@@ -22,10 +22,10 @@ router
         let user = req.body
 
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("CREATE TABLE IF NOT EXISTS users(id int NOT NULL, provider varchar(255) NOT NULL, name varchar(30) NOT NULL, surname varchar(30), PRIMARY KEY (ID));")
+          mysqlConnection.query("CREATE TABLE IF NOT EXISTS users(uid int NOT NULL, provider varchar(30) NOT NULL, name varchar(30) NOT NULL, surname varchar(30), email varchar(50), takes int, experience int, level int PRIMARY KEY (uid, provider))")
           .then((result) => {
             //console.log("Table users created: " + JSON.stringify(result));
-            return mysqlConnection.query("INSERT INTO users SET ?", {id: user.uid, provider: user.provider, name: user.name, surname: user.surname});
+            return mysqlConnection.query("INSERT INTO users SET ?", {id: user.uid, provider: user.provider, name: user.name, surname: user.surname, email: user.email, takes: 0, experience: 0, level: 1});
           })
           .then((result) => {
             //console.log("User inserted: " + JSON.stringify(result));
@@ -46,7 +46,7 @@ router
     .get('/', function(req, res, next) {
       //console.log("GET all users");
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query("SELECT * FROM users;")
+        mysqlConnection.query("SELECT * FROM users")
         .then((result) => {
           //console.log("Get users done: " + JSON.stringify(result));
           res
@@ -70,7 +70,7 @@ router
           .json({error: true, message: 'Empty parameters'})
       } else {
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("SELECT * FROM users WHERE id = ?;", req.params.id)
+          mysqlConnection.query("SELECT * FROM users WHERE uid = ($1) AND provider = ($2)", [req.params.id, req.params.provider])
           .then((result) => {
             //console.log("Get user done: " + JSON.stringify(result));
             res
@@ -97,7 +97,8 @@ router
         //console.log("REQ.BODY: " + JSON.stringify(req.body));
         const user = req.body;
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("UPDATE users SET name='"+user.name+"', surname='"+user.surname+"' WHERE id = ?;", req.params.id)
+            experience int, level int
+          mysqlConnection.query("UPDATE users SET name='"+user.name+"', surname='"+user.surname+"', email='"+user.email+"' WHERE uid = ($1) AND provider = ($2)", [req.params.id, req.params.provider])
           .then((result) => {
             //console.log("PUT events done: " + JSON.stringify(result));
             res
@@ -122,7 +123,7 @@ router
           .json({error: true, message: 'Empty params'})
       } else {
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("DELETE FROM users WHERE id = ?;", req.params.id)
+          mysqlConnection.query("DELETE FROM users WHERE id = ($1) AND provider = ($2);", [req.params.id, req.params.provider])
           .then((result) => {
             res
               .status(200)
