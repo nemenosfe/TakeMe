@@ -5,129 +5,229 @@ const host = api;
 
 request = request(host);
 
-var event = {
-  'name': 'name proves 01',
-  'description': 'description testing 01',
-  'startTime' : "2017-01-12T15:30:00Z",
-  'endTime' : "2017-02-12T09:00:00Z",
-  'category_id' : '103',
-  'capacity' : '15000',
-  'price' : 257.13,
-  'address' : 'carrer fals, Barcelona',
-  'coords' : {
-    'latitude' : 41.38879,
-    'longitude' : 2.15899
-  }
-}
-var aux_id;
-
-function removeCreatedEventDuringTest(id) {
-  request
-    .delete('/events/' + id)
-    .set('Accept', 'application/json')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-}
+var aux_id = "E0-001-095173443-9";
 
 describe('route of events', function() {
 
-  this.timeout(5000); // Per fer proves
-
-  // Em sembla que la API d'Eventbrite suma 1h al temps que li envio LOL
-
-  describe('POST /events', function() {
-    it('should create an event', function(done) {
-      request
-        .post('/events')
-        .set('Accept', 'application/json')
-        .send(event)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-      .end((err, res) => {
-        expect(res.body).to.have.property('event')
-        const eventResponse = res.body.event
-
-        expect(eventResponse).to.have.property('id').and.to.be.a('number')
-        expect(eventResponse).to.have.property('name', event.name)
-        expect(eventResponse).to.have.property('description', event.description)
-        expect(eventResponse).to.have.property('url')
-        expect(eventResponse).to.have.property('resource_uri')
-        expect(eventResponse).to.have.property('start')
-        expect(eventResponse).to.have.property('end')
-        expect(eventResponse).to.have.property('capacity')
-        expect(eventResponse).to.have.property('category_id', event.category_id)
-        expect(eventResponse).to.have.property('logo')
-        expect(eventResponse).to.have.property('price', event.price)
-        expect(eventResponse).to.have.property('address', event.address)
-        expect(eventResponse).to.have.property('latitude', event.coords.latitude)
-        expect(eventResponse).to.have.property('longitude', event.coords.longitude)
-
-        // Elimina l'esdeveniment creat a la prova:
-        removeCreatedEventDuringTest(eventResponse.id)
-
-        done(err)
-      });
-    })
-  })
-
+  this.timeout(10000); // Per les proves
 
   describe('GET /events', function() {
-    it.skip('should', function(done) {
+    it('should get a list of events in Barcelona', function(done) {
+      const params = {
+        'location' : 'Barcelona',
+        'within' : '20',
+        'page_size' : '50',
+        'page_number' : '2'
+      };
+      request
+        .get('/events')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('events');
+        const events = res.body.events.event;
+
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        const eventResponse = events[0];
+
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('image')
+        //expect(eventResponse).to.have.property('price')
+
+
+        done();
+      }, done)
+    });
+    it('should get a list of events with some keywords', function(done) {
+      const params = {
+        'keywords' : 'LIGA soccer',
+        'page_size' : '50',
+        'page_number' : '2'
+      };
+      request
+        .get('/events')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('events');
+        const events = res.body.events.event;
+
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        const eventResponse = events[0];
+
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('image')
+        //expect(eventResponse).to.have.property('price')
+
+
+        done();
+      }, done)
+    });
+    it('should get a list of events of a category', function(done) {
+      const params = {
+        'category' : 'art',
+        'page_size' : '50',
+        'page_number' : '2'
+      };
+      request
+        .get('/events')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('events');
+        const events = res.body.events.event;
+
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        const eventResponse = events[0];
+
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('image')
+        //expect(eventResponse).to.have.property('price')
+
+
+        done();
+      }, done)
+    });
+    it('should get a list of events of a date', function(done) {
+      const params = {
+        'date' : 'Next week',
+        'page_size' : '50',
+        'page_number' : '2'
+      };
+      request
+        .get('/events')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('events');
+        const events = res.body.events.event;
+
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        const eventResponse = events[0];
+
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('image')
+        //expect(eventResponse).to.have.property('price')
+
+
+        done();
+      }, done)
+    });
+    it('should get a list of events of a category in a date in a place', function(done) {
+      const params = {
+        'category' : 'music',
+        'date' : '2016091200-2017042200',
+        'location' : 'Barcelona',
+        'page_size' : '25',
+      };
+      request
+        .get('/events')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('events');
+        const events = res.body.events.event;
+        //console.log(JSON.stringify(res.body));
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        const eventResponse = events[0];
+        //console.log("eventResponse: --> " + JSON.stringify(eventResponse));
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('image')
+        //expect(eventResponse).to.have.property('price')
+
+
+        done();
+      }, done)
     });
   });
 
-
   describe('GET /events/:id', function() {
-    it('should obtain an event with all its info when that event was created from our app', function(done) {
-      let event_aux = event;
-      event_aux.name = "Títol 01";
-      event_aux.description = "Descripció random 01";
-      request
-        .post('/events')
-        .set('Accept', 'application/json')
-        .send(event_aux)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-      .then((res) => {
-        aux_id = res.body.event.id;
-      })
-      .catch((err) => {
-        console.log("Error: " + JSON.stringify(err));
-      })
-      .finally(() => {
-        request
-          .get('/events/' + aux_id)
-          .set('Accept', 'application/json')
-          .expect(200)
-          .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          expect(JSON.parse(res.text)).to.have.property('event')
-          const eventResponse = JSON.parse(res.text).event;
-
-          expect(eventResponse).to.have.property('id', parseInt(aux_id))
-          expect(eventResponse).to.have.property('name', event_aux.name)
-          expect(eventResponse).to.have.property('description', event_aux.description)
-          expect(eventResponse).to.have.property('url')
-          expect(eventResponse).to.have.property('resource_uri')
-          expect(eventResponse).to.have.property('start')
-          expect(eventResponse).to.have.property('end')
-          expect(eventResponse).to.have.property('capacity')
-          expect(eventResponse).to.have.property('category_id', event.category_id)
-          expect(eventResponse).to.have.property('logo')
-          expect(eventResponse).to.have.property('price', event.price)
-          expect(eventResponse).to.have.property('address', event.address)
-          expect(eventResponse).to.have.property('latitude', event.coords.latitude)
-          expect(eventResponse).to.have.property('longitude', event.coords.longitude)
-
-          // Elimina l'esdeveniment creat a la prova:
-          removeCreatedEventDuringTest(aux_id)
-
-          done();
-        }, done)
-      });
-    });
     it('should obtain an event with all its info when that event was not created from our app', function(done) {
-      aux_id = 27817268198;  // 27817268198 27880689894
       request
         .get('/events/' + aux_id)
         .set('Accept', 'application/json')
@@ -136,144 +236,31 @@ describe('route of events', function() {
       .then((res) => {
         expect(JSON.parse(res.text)).to.have.property('event')
         const eventResponse = JSON.parse(res.text).event;
-
-        expect(eventResponse).to.have.property('id', parseInt(aux_id))
-        expect(eventResponse).to.have.property('name')
+        //console.log("eventResponse: --> " + JSON.stringify(eventResponse));
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
         expect(eventResponse).to.have.property('description')
         expect(eventResponse).to.have.property('url')
-        expect(eventResponse).to.have.property('resource_uri')
-        expect(eventResponse).to.have.property('start')
-        expect(eventResponse).to.have.property('end')
-        expect(eventResponse).to.have.property('capacity')
-        expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('logo')
-        expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
         expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('country')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        expect(eventResponse).to.have.property('categories')
+        expect(eventResponse.categories).to.have.property('category')
+        expect(eventResponse).to.have.property('images')
+        expect(eventResponse).to.have.property('free')
+        expect(eventResponse).to.have.property('price')
 
         done();
       }, done)
     });
   });
-
-
-  describe('PUT: /events/:id', function() {
-    it('should update an event when that event was created from our app', function(done) {
-      let event_aux = event;
-      event_aux.name = "Esdeveniment per ser modificaaaaat!";
-      event_aux.description = "Descripció de l'esdeveniment que serà actualitzat";
-      event_aux.coords = {
-        'latitude' : 40.7829,
-        'longitude' : -73.9654
-      };
-      event_aux.price = 0;
-      request
-        .post('/events')
-        .set('Accept', 'application/json')
-        .send(event_aux)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-      .then((res) => {
-        aux_id = res.body.event.id;
-      })
-      .catch((err) => {
-        console.log("Error: " + JSON.stringify(err));
-      })
-      .finally(() => {
-        event.name = 'Nou Títol de lesdeveniment editat';
-        event.description = 'Nova descripció de lesdeveniment editat';
-        request
-          .put('/events/' + aux_id)
-          .set('Accept', 'application/json')
-          .send(event)
-          .expect(200)
-          .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          let body = res.body
-
-          expect(body).to.have.property('event')
-          let event_res = body.event;
-
-          expect(event_res).to.have.property('id', parseInt(aux_id))
-          expect(event_res).to.have.property('name', event_aux.name)
-          expect(event_res).to.have.property('description', event_aux.description)
-          expect(event_res).to.have.property('url')
-          expect(event_res).to.have.property('resource_uri')
-          expect(event_res).to.have.property('start')
-          expect(event_res).to.have.property('end')
-          expect(event_res).to.have.property('capacity')
-          expect(event_res).to.have.property('category_id', event.category_id)
-          expect(event_res).to.have.property('logo')
-          expect(event_res).to.have.property('price', event_aux.price)
-          expect(event_res).to.have.property('address', event.address)
-          expect(event_res).to.have.property('latitude', event_aux.coords.latitude)
-          expect(event_res).to.have.property('longitude', event_aux.coords.longitude)
-
-          // Elimina l'esdeveniment creat a la prova:
-          removeCreatedEventDuringTest(aux_id)
-
-          done();
-        }, done)
-      });
-    });
-    it('should not update an event when that event was not created from our app', function(done) {
-      aux_id = 27817268198;  // 27817268198 27880689894
-      request
-        .put('/events/' + aux_id)
-        .set('Accept', 'application/json')
-        .send(event)
-        .expect(403)
-        .expect('Content-Type', /application\/json/)
-      .then((res) => {
-        done();
-      }, done)
-    })
-  })
-
-
-  describe('DELETE:  /events/:id', function() {
-    it('should delete an event when that event was created from our app', function(done) {
-        let event_aux = event;
-        event_aux.name = "Esdeveniment per ser esborrat - més proves";
-        event_aux.description = "Descripció de l'esdeveniment que serà esborrat";
-        request
-          .post('/events')
-          .set('Accept', 'application/json')
-          .send(event_aux)
-          .expect(201)
-          .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          aux_id = res.body.event.id;
-        })
-        .catch((err) => {
-          console.log("Error: " + JSON.stringify(err));
-        })
-        .finally(() => {
-          request
-            .delete('/events/' + aux_id)
-            .set('Accept', 'application/json')
-            .expect(200)
-            .expect('Content-Type', /application\/json/)
-          .then((res) => {
-            expect(res.body).to.be.empty
-            done();
-          }, done)
-        });
-    });
-    it('should not delete an event when that event was not created from our app', function(done) {
-      aux_id = 27817268198;  // 27817268198 27880689894
-      request
-        .delete('/events/' + aux_id)
-        .set('Accept', 'application/json')
-        .send(event)
-        .expect(403)
-        .expect('Content-Type', /application\/json/)
-      .then((res) => {
-        done();
-      }, done)
-    })
-  })
 
 
 });
