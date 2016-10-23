@@ -99,9 +99,7 @@ describe('route of events', function() {
     });
     it('should get a list of events of a category', function(done) {
       const params = {
-        'category' : 'art',
-        'page_size' : '50',
-        'page_number' : '2'
+        'category' : 'art'
       };
       request
         .get('/events')
@@ -115,7 +113,7 @@ describe('route of events', function() {
         const events = res.body.events.event;
 
         expect(events).to.be.an('array')
-          .and.to.have.length.of(params.page_size)
+          .and.to.have.length.of(10)
 
         const eventResponse = events[0];
 
@@ -186,7 +184,7 @@ describe('route of events', function() {
         'category' : 'music',
         'date' : '2016091200-2017042200',
         'location' : 'Barcelona',
-        'page_size' : '25',
+        'page_size' : '25'
       };
       request
         .get('/events')

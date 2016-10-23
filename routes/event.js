@@ -1,18 +1,10 @@
 "use strict"
 const express = require('express')
 const router = express.Router()
-const mysql = require('promise-mysql');
 const rp = require('request-promise');
 
 const urlEventfulApi = "http://api.eventful.com/json/events/";
 const keyEventfulApi = "KxZvhSVN3f38ct54";
-
-var pool  = mysql.createPool({
-  host     : 'localhost',
-  user     : 'root',
-  password : '12345678',
-  database : 'takemelegends'
-});
 
 function handleError(err, res, requestVerb) {
   if (err.error && err.error.status_code && err.error.status_code == 403) {
@@ -56,9 +48,11 @@ router
       let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
       if (req.body.location) {
         params = params + "&location=" + req.body.location;
+        let within = 350;
         if (req.body.within) {
-          params = params + "&units=km&within=" + req.body.within;
+          within = req.body.within;
         }
+        params = params + "&units=km&within=" + within;
       }
       if (req.body.keywords) { params = params + "&keywords=" + req.body.keywords; }
       if (req.body.category) { params = params + "&category=" + req.body.category; }
