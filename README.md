@@ -368,3 +368,35 @@ Un exemple de paràmetres de sortida seria el següent:
   ]
 }
 ```  
+
+## Achievements API (Peticions de 'logros')
+
+### GET /rewards/
+GET d'una llista de 'logros'.  
+
+#### Paràmetres d'entrada
+No cal cap paràmetre d'entrada, però els següents són opcionals:
+  - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.  
+  - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1.
+Els logros estan ordenats per alfabèticament pel nom.  
+
+#### Paràmetres de sortida
+Un exemple de paràmetres de sortida seria el següent:
+```javascript
+{  
+  "achievements":[  
+    {  
+      "name":"logro 01",
+      "description":"random description 01"
+    },
+    {  
+      "name":"logro 02",
+      "description":"random description 02"
+    },
+    {  
+      "name":"logro 03",
+      "description":"random description 03"
+    }
+  ]
+}
+```  
