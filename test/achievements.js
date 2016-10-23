@@ -19,12 +19,12 @@ describe('route of achievements', function() {
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-        
+
         expect(res.body).to.have.property('achievements');
         const achievements = res.body.achievements;
 
         expect(achievements).to.be.an('array')
-          .and.to.have.length.of.above(1)
+          .and.to.have.length.of.at.least(3);
 
         const achievementResponse = achievements[0];
 

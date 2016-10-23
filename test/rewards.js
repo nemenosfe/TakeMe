@@ -22,9 +22,9 @@ describe('route of rewards', function() {
 
         expect(res.body).to.have.property('rewards');
         const rewards = res.body.rewards;
-        
+
         expect(rewards).to.be.an('array')
-          .and.to.have.length.of.above(1)
+          .and.to.have.length.of.at.least(3);
 
         const rewardResponse = rewards[0];
 
