@@ -239,7 +239,7 @@ GET d'una llista d'esdeveniments.
 GET d'un esdeveniment en particular pel seu ID.  
 
 #### Paràmetres d'entrada
-Cap paràmetre d'entrada, però un exemple d'aquest GET seria (sent l'ID de lesdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
+Cap paràmetre d'entrada, però un exemple d'aquest GET seria (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
 
 #### Paràmetres de sortida
 Un exemple resumit al següent JSON (explico els canvis respecte a la informació de **GET /events/** després del JSON):  
