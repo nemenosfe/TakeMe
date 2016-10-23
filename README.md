@@ -336,3 +336,35 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 Les diferències respecte a **GET /events/** són les següents:  
   - Abans hi ha havia un atribut *image* i ara es diu *images*.  
   - S'han afegit els atributs: **categories**, **tags**, **links**, **free** i **price**.
+
+## Rewards API (Peticions de recompenses)
+
+### GET /rewards/
+GET d'una llista de recompenses.  
+
+#### Paràmetres d'entrada
+No cal cap paràmetre d'entrada, però els següents són opcionals:
+  - **page_size**: Quantes recompenses com a màxim vols rebre. Per defecte és 20.  
+  - **page_number**: Número de pàgina de recompenses anant de *page_size* en *page_size*. Per defecte és 1.
+Les recompenses estan ordenades per nivell, després per takes i finalment alfabèticament pel nom.  
+
+#### Paràmetres de sortida
+Un exemple de paràmetres de sortida seria el següent:
+```javascript
+"rewards" : {
+  [  
+    {  
+      "name":"recompensa 01",
+      "description":"Descripció de la primera recompensa",
+      "takes":100,
+      "level":1
+    },
+    {  
+      "name":"recompensa 02",
+      "description":"Descripció de la segona recompensa",
+      "takes":200,
+      "level":1
+    }
+  ]
+}
+```  

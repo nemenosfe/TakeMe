@@ -27,18 +27,14 @@ function handleNoParams(res) {
 router
 
   .get('/', function(req, res, next) {
-    console.log("Arriba fins aquí");
     let page_size = "20";
     let page_number = "1";
-    console.log("Abans de l'IF");
     if (req.body && req.body.page_size) { page_size = req.body.page_size; }
     if (req.body && req.body.page_number) { page_number = req.body.page_number; }
-    console.log("Després de l'IF");
     const limit = page_size;
     const offset = page_size*(page_number-1);
-    console.log("Fins i tot abans de BD");
     pool.getConnection().then(function(mysqlConnection) {
-      mysqlConnection.query("SELECT * FROM rewards LIMIT " + limit + " OFFSET " + offset)
+      mysqlConnection.query("SELECT * FROM rewards ORDER BY level ASC, takes ASC, name ASC LIMIT " + limit + " OFFSET " + offset + " ;")
       .then((result) => {
         res
           .status(200)

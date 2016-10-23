@@ -12,7 +12,7 @@ describe('route of rewards', function() {
   this.timeout(4000); // Per les proves
 
   describe('GET /rewards', function() {
-    it.only('should get the whole list of rewards', function(done) {
+    it('should get the whole list of rewards', function(done) {
       request
         .get('/rewards')
         .set('Accept', 'application/json')
@@ -22,7 +22,7 @@ describe('route of rewards', function() {
 
         expect(res.body).to.have.property('rewards');
         const rewards = res.body.rewards;
-
+        
         expect(rewards).to.be.an('array')
           .and.to.have.length.of.above(1)
 
