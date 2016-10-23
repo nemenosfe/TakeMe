@@ -22,7 +22,7 @@ function handleError(err, res, requestVerb) {
 function handleNoParams(res) {
   res
     .status(403)
-    .json({error: true, message: 'Params empty'})
+    .json({error: true, message: 'Missing params'})
 }
 
 function doRequest(params, type) {

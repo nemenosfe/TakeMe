@@ -4,12 +4,14 @@ const app = express();
 const cors = require('cors');
 const event = require('./routes/event');
 const user = require('./routes/users');
+const reward = require('./routes/rewards');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/events', event);
 app.use('/users', user);
+app.use('/rewards', reward);
 
 app.use(cors());
 

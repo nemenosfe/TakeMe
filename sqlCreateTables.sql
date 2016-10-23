@@ -5,32 +5,32 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema takemelegends
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema takemelegends
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `takemelegends` DEFAULT CHARACTER SET utf8 ;
+USE `takemelegends` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`events`
+-- Table `takemelegends`.`events`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`events` ;
+DROP TABLE IF EXISTS `takemelegends`.`events` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`events` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `id` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`users`
+-- Table `takemelegends`.`users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`users` ;
+DROP TABLE IF EXISTS `takemelegends`.`users` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`users` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`users` (
   `uid` INT NOT NULL,
   `provider` VARCHAR(30) NOT NULL,
   `name` VARCHAR(30) NULL,
@@ -45,11 +45,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`attendances`
+-- Table `takemelegends`.`attendances`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`attendances` ;
+DROP TABLE IF EXISTS `takemelegends`.`attendances` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`attendances` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`attendances` (
   `events_id` VARCHAR(255) NOT NULL,
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
@@ -59,23 +59,23 @@ CREATE TABLE IF NOT EXISTS `mydb`.`attendances` (
   INDEX `fk_events_has_users_events_idx` (`events_id` ASC),
   CONSTRAINT `fk_events_has_users_events`
     FOREIGN KEY (`events_id`)
-    REFERENCES `mydb`.`events` (`id`)
+    REFERENCES `takemelegends`.`events` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_events_has_users_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
-    REFERENCES `mydb`.`users` (`uid` , `provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`rewards`
+-- Table `takemelegends`.`rewards`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`rewards` ;
+DROP TABLE IF EXISTS `takemelegends`.`rewards` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`rewards` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`rewards` (
   `name` VARCHAR(100) NOT NULL,
   `description` VARCHAR(500) NULL,
   `takes` INT NULL,
@@ -85,11 +85,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`purchases`
+-- Table `takemelegends`.`purchases`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`purchases` ;
+DROP TABLE IF EXISTS `takemelegends`.`purchases` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`purchases` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`purchases` (
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `rewards_name` VARCHAR(100) NOT NULL,
@@ -99,23 +99,23 @@ CREATE TABLE IF NOT EXISTS `mydb`.`purchases` (
   INDEX `fk_users_has_rewards_users1_idx` (`users_uid` ASC, `users_provider` ASC),
   CONSTRAINT `fk_users_has_rewards_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
-    REFERENCES `mydb`.`users` (`uid` , `provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_has_rewards_rewards1`
     FOREIGN KEY (`rewards_name`)
-    REFERENCES `mydb`.`rewards` (`name`)
+    REFERENCES `takemelegends`.`rewards` (`name`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`achievements`
+-- Table `takemelegends`.`achievements`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`achievements` ;
+DROP TABLE IF EXISTS `takemelegends`.`achievements` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`achievements` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`achievements` (
   `name` VARCHAR(100) NOT NULL,
   `description` VARCHAR(500) NULL,
   PRIMARY KEY (`name`))
@@ -123,11 +123,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`acquisitions`
+-- Table `takemelegends`.`acquisitions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`acquisitions` ;
+DROP TABLE IF EXISTS `takemelegends`.`acquisitions` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`acquisitions` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `achievements_name` VARCHAR(100) NOT NULL,
@@ -136,34 +136,34 @@ CREATE TABLE IF NOT EXISTS `mydb`.`acquisitions` (
   INDEX `fk_users_has_achievements_users1_idx` (`users_uid` ASC, `users_provider` ASC),
   CONSTRAINT `fk_users_has_achievements_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
-    REFERENCES `mydb`.`users` (`uid` , `provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_has_achievements_achievements1`
     FOREIGN KEY (`achievements_name`)
-    REFERENCES `mydb`.`achievements` (`name`)
+    REFERENCES `takemelegends`.`achievements` (`name`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`app`
+-- Table `takemelegends`.`app`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`app` ;
+DROP TABLE IF EXISTS `takemelegends`.`app` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`app` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`app` (
   `appkey` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`appkey`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`tokens`
+-- Table `takemelegends`.`tokens`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`tokens` ;
+DROP TABLE IF EXISTS `takemelegends`.`tokens` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`tokens` (
+CREATE TABLE IF NOT EXISTS `takemelegends`.`tokens` (
   `token` VARCHAR(255) NOT NULL,
   `expiration_date` VARCHAR(45) NULL,
   `users_uid` INT NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tokens` (
   INDEX `fk_tokens_users1_idx` (`users_uid` ASC, `users_provider` ASC),
   CONSTRAINT `fk_tokens_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
-    REFERENCES `mydb`.`users` (`uid` , `provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
