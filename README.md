@@ -148,8 +148,7 @@ Pàrametres d'entrada per totes les peticions:
   - Tots aquests paràmetres d'entrada són opcionals, però com a mínim ha de rebre un d'ells (qualsevol), i també funciona si s'envia més d'un d'aquells paràmetres d'entrada, amb qualsevol combinació.  
   - Si s'envia el paràmetre *location*, també es pot enviar el paràmetre **within** amb un *int* que s'ignifica la quantitat de quilòmetres de radi des d'aquest location (per defecte, si no s'envia res, són 350 ara per ara).  
   - També es possible enviar un **page_size** que vol dir quants esdeveniments màxim volem rebre de tots els que hi ha amb aquestes condicions. Per defecte, si no s'envia res, és *10*.
-  - I per últim també es pot enviar un **page_number** amb quina pàgina volem rebre amb *page_size* esdeveniments de la llista total d'esdeveniments estem, tenint en compte que cada pàgina té *page_size* esdeveniments. Per exemple, si *page_size* val 10 i *page_number* val 2, tindrem la llista d'esdeveniments de l'11 al 20. *page_number* és opcional i per defecte val 1.
-  - Els esdeveniments estan ordenats per data.    
+  - I per últim també es pot enviar un **page_number** amb quina pàgina volem rebre amb *page_size* esdeveniments de la llista total d'esdeveniments estem, tenint en compte que cada pàgina té *page_size* esdeveniments. Per exemple, si *page_size* val 10 i *page_number* val 2, tindrem la llista d'esdeveniments de l'11 al 20. *page_number* és opcional i per defecte val 1.    
   - Un exemple de paràmetres d'entrada:  
 ```javascript
 {
@@ -164,30 +163,74 @@ Pàrametres d'entrada per totes les peticions:
 ```
 
 #### Paràmetres de sortida
-  - Conté moltíssima informació però la idea resumida és el següent JSON:  
+  - Conté moltíssima informació però la idea resumida és el següent JSON (els esdeveniments estan ordenats per data):  
 ```javascript
 {  
-   "total_items":"1647",
+   "total_items":"1647", // Total d'esdeveniments que compleixen les condicions del paràmetres d'entrada.
    "page_number":"1",
-   "page_size":"10",
+   "page_size":"10", // Quants esdeveniments de total_items realment venen en el següent array
    "events":{  
       "event":[ // Array amb la llista dels 10 esdeveniments
         {
           // Informació de l'esdeveniment1
-
+          "id":"E0-001-095182625-3", // ID de l'esdeveniment
+          "title":"Títol de l'esdeveniment 1",
+          "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>", // Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+          "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
+          "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
+          "start_time":"2016-09-12 23:00:00",
+          "stop_time":"null", // Tot i que "all_day" valgui 0, aquest paràmetre pot tenir valor "null"
+          "venue_display":"1", // Si val 1, podem mostrar la informació del local sense cap problema, si val 0 vol dir que la informació del local no del tot fiable perquè a vegades en lloc del local només sabem amb total seguretat en quina ciutat serà.
+          "venue_id":"V0-001-009623999-6", // ID del local
+          "venue_name":"Jazzman Jazzclub", // Nom del local
+          "venue_address":"Roger de Flor, 238", // Adreça del local
+          "city_name":"Barcelona",
+          "country_name":"Spain",
+          "country_abbr":"ESP",
+          "region_name":null, // A vegades ve com a null i a vegades com "Cataluna", però si volem cercar per regió hem de cercar per "Catalonia" i ens trobarà els que no tenen valor null aquí.
+          "postal_code":null,
+          "latitude":"41.3833",
+          "longitude":"2.18333",
+          "image":{ // image a vegades val null però quan té contingut, sempre l'he vist així amb aquests 2 tamanys (però a l'especificació no diu que sigui així sempre, només m'ho he trobat així en tots els exemples que he vist)
+            "medium":{  
+              "width":"128",
+              "height":"128",
+              "url":"http://s1.evcdn.com/store/skin/no_image/categories/128x128/other.jpg"
+            },
+            "thumb":{  
+              "width":"48",
+              "height":"48",
+              "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
+            }
+          },
+          "performers":{   // Moltíssimes vegades val null
+            "performer":{  
+              "creator":"evdb",
+              "linker":"evdb",
+              "name":"MAD MAX",
+              "url":"http://concerts.eventful.com/MAD-MAX?utm_source=apis&utm_medium=apim&utm_campaign=apic",
+              "id":"P0-001-000271832-4",
+              "short_bio":"Heavy Metal / Inspirational / Rock"
+            }
+          }
         },
         {
           // Informació de l'esdeveniment2
+          // ...
         },
-        // ...
+        /*
+        Esdeveniments del 3 al 9 ...
+        */
         {
           // Informació de l'esdeveniment10
+          // ...
         }
       ]
    }
 }
-```
-  - **Explicació en procés** :smile:  
+```  
+
+  - En les dades d'un esdeveniment no ve ni la **categoria** ni el **preu**, però totes dues dades sí venen en el **GET /events/:id** pel GET d'un esdeveniment concret pel seu ID.  
 
 ### GET /events/:id
   - Falta redactar-ho però ja està funcionant, ara ho escriuré :smile:
