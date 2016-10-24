@@ -261,7 +261,7 @@ describe('route of events', function() {
   });
 
   describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it('should obtain all events from a user', function(done) {
+    it.only('should obtain all events from a user', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
@@ -276,15 +276,23 @@ describe('route of events', function() {
       .then((res) => {
 
         expect(res.body).to.have.property('total_items');
-        expect(res.body).to.have.property('events');
-        const events = res.body.events;
+        expect(res.body).to.have.property('past');
+        const eventsPast = res.body.past.events;
+        const eventsFuture = res.body.future.events;
+
         //console.log(JSON.stringify(res.body));
-        expect(events).to.be.an('array')
+
+        expect(eventsPast).to.be.an('array')
           .and.to.have.length.of.at.least(1);
-        expect(events).to.be.an('array')
+        expect(eventsPast).to.be.an('array')
           .and.to.have.length.of.at.most(params.page_size);
 
-        const eventResponse = events[0].event;
+          expect(eventsFuture).to.be.an('array')
+            .and.to.have.length.of.at.least(1);
+          expect(eventsFuture).to.be.an('array')
+            .and.to.have.length.of.at.most(params.page_size);
+
+        const eventResponse = eventsPast[0].event;
         //console.log("eventResponse: --> " + JSON.stringify(eventResponse));
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')

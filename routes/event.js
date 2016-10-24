@@ -44,15 +44,29 @@ function doRequest(params, type) {
   return rp(optionsRequest);
 }
 
+function addZero(str) {
+  return str < 10 ? ('0' + str) : str;
+}
+
+function getFormattedDateTimeNow() {
+  const currentdate = new Date();
+  return  addZero(currentdate.getFullYear()) + "-" +
+          addZero(currentdate.getMonth()+1)  + "-"+
+          addZero(currentdate.getDate()) + " "  +
+          addZero(currentdate.getHours()) + ":"   +
+          addZero(currentdate.getMinutes()) + ":" +
+          addZero(currentdate.getSeconds());
+}
+
 function getMoment(datetime_start, all_day, datetime_stop) { // Dono per suposat que stop_time és més tard que start_time si cap dels 2 val null
-  const now = new Date(0).getTime();
-  if (datetime_start == null || all_day == 2) { return 1; } // Si encara no sabem la data en que comença és que l'esdeveniment és futur.
+  const now = getFormattedDateTimeNow();
+  if (datetime_start == null || all_day == 2) { return "future"; } // Si encara no sabem la data en que comença és que l'esdeveniment és futur.
   if (datetime_start < now) {
-    if (datetime_stop == null || datetime_stop > now) { return 0; }
-    else { return -1; }
+    if (datetime_stop > now) { return "present"; }
+    else { return "past"; }
   }
-  return 1; // Si no es compleix cap dels anteriors vol dir que start_time és futur
-} // -1 = past, 0 = present, 1 = future
+  return "future"; // Si no es compleix cap dels anteriors vol dir que start_time és futur
+}
 
 
 router
@@ -105,7 +119,15 @@ router
       const offset = page_size*(page_number-1);
       let eventsResponse = {
         "total_items" : 0,
-        "events" : []
+        "past" : {
+          "events" : []
+        },
+        "present" : {
+          "events" : []
+        },
+        "future" : {
+          "events" : []
+        }
       };
       const requiredData = [
           'title', 'description', 'url', 'all_day', 'start_time', 'stop_time',
@@ -116,7 +138,7 @@ router
       let database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {
-      const sql = "SELECT at.events_id, at.checkin_done, ev.start_time, ev.stop_time, ev.all_day FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.body.uid + " and at.users_provider='" + req.body.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
+      const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.body.uid + " and at.users_provider='" + req.body.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
       mysqlConnection.query(sql)
         .then((DBresult) => {
           database_result = DBresult;
@@ -129,8 +151,10 @@ router
           return Promise.all(responses);
         })
         .then((eventResEventful) => {
+          let moment = "past";
           for (let index = 0; index < eventResEventful.length; index++) {
-            const moment = getMoment(database_result[index].start_time, database_result[index].all_day, database_result[index].stop_time);
+            if (moment != "future") { moment = getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
+            console.log("moment: " + moment);
             let elementArray = {
               'id' : database_result[index].events_id,
               'checkin_done' : database_result[index].checkin_done
@@ -139,7 +163,7 @@ router
               let value = eventResEventful[index][data];
               elementArray[data] = value;
             });
-            eventsResponse["events"][index] = {
+            eventsResponse[moment]["events"][index] = {
               'event' : elementArray
             };
           }

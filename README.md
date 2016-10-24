@@ -348,7 +348,7 @@ Les diferències respecte a **GET /events/** són les següents:
 GET de tots els esdeveniments d'un usuari.  
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile:).  
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile: :octocat:).  
 Exemple de paràmetre d'entrada (del que hi ha per ara):
 ```javascript
 {
@@ -364,8 +364,316 @@ Exemple de paràmetre d'entrada (del que hi ha per ara):
 
 #### Paràmetres de sortida
   - Esdeveniments ordenats per data. Categoritzats per **past**, **present** i **future**.  
+Un exemple seria el següent:
 ```javascript
-// PER OMPLIR
+{
+  "total_items": 2,
+  "past": {
+    "events": [
+      {
+        "event": {
+          "id": "E0-001-000278174-6",
+          "checkin_done": 1,
+          "title": "Martini Tasting",
+          "description": "Sample drinks made with featured vodkas.",
+          "url": "http://cincinnati.eventful.com/events/martini-tasting-/E0-001-000278174-6?utm_source=apis&utm_medium=apim&utm_campaign=apic",
+          "all_day": "0",
+          "start_time": "2005-08-24 12:00:00",
+          "stop_time": null,
+          "venue_display": "1",
+          "venue_id": "V0-001-000108360-1",
+          "venue_name": "Encore Cafe - West Chester",
+          "address": null,
+          "city": "West Chester",
+          "country": "United States",
+          "region": "Ohio",
+          "postal_code": "45069",
+          "latitude": "39.3360595703125",
+          "longitude": "-84.4053573608398",
+          "images": null,
+          "performers": {
+            "performer": [
+              {
+                "creator": "wilwheaton",
+                "linker": "dipalisikand",
+                "name": "Wil Wheaton",
+                "url": "http://concerts.eventful.com/Wil-Wheaton?utm_source=apis&utm_medium=apim&utm_campaign=apic",
+                "id": "P0-001-000000567-9",
+                "short_bio": "Author, Blogger, Actor"
+              },
+              {
+                "creator": "misscat",
+                "linker": "prabhukal",
+                "name": "MICH!GAN",
+                "url": "http://concerts.eventful.com/MICH-GAN?utm_source=apis&utm_medium=apim&utm_campaign=apic",
+                "id": "P0-001-000007820-4",
+                "short_bio": " Hardcore / Punk / Metal"
+              }
+            ]
+          },
+          "categories": {
+            "category": [
+              {
+                "name": "Concerts &amp; Tour Dates",
+                "id": "music"
+              }
+            ]
+          },
+          "tags": {
+            "tag": [
+              {
+                "owner": "evdb",
+                "id": "actor",
+                "title": "actor"
+              },
+              {
+                "owner": "evdb",
+                "id": "author",
+                "title": "author"
+              },
+              {
+                "owner": "evdb",
+                "id": "blogger",
+                "title": "blogger"
+              },
+              {
+                "owner": "evdb",
+                "id": "city",
+                "title": "CITY"
+              },
+              {
+                "owner": "evdb",
+                "id": "concert",
+                "title": "concert"
+              },
+              {
+                "owner": "evdb",
+                "id": "concerts",
+                "title": "concerts"
+              },
+              {
+                "owner": null,
+                "id": "dining",
+                "title": "Dining"
+              },
+              {
+                "owner": "evdb",
+                "id": "gamer",
+                "title": "gamer"
+              },
+              {
+                "owner": "evdb",
+                "id": "geek",
+                "title": "geek"
+              },
+              {
+                "owner": "evdb",
+                "id": "hardcore",
+                "title": "hardcore"
+              },
+              {
+                "owner": "evdb",
+                "id": "hawesome",
+                "title": "hawesome"
+              },
+              {
+                "owner": "evdb",
+                "id": "interesting",
+                "title": "Interesting"
+              },
+              {
+                "owner": "evdb",
+                "id": "lake",
+                "title": "LAKE"
+              },
+              {
+                "owner": "evdb",
+                "id": "literary",
+                "title": "literary"
+              },
+              {
+                "owner": "evdb",
+                "id": "metal",
+                "title": "metal"
+              },
+              {
+                "owner": "evdb",
+                "id": "music",
+                "title": "music"
+              },
+              {
+                "owner": "evdb",
+                "id": "pokerstars",
+                "title": "Poker Stars"
+              },
+              {
+                "owner": "evdb",
+                "id": "pop",
+                "title": "pop"
+              },
+              {
+                "owner": "evdb",
+                "id": "punk",
+                "title": "punk"
+              },
+              {
+                "owner": "evdb",
+                "id": "salt",
+                "title": "SALT"
+              },
+              {
+                "owner": "evdb",
+                "id": "startrek",
+                "title": "Star Trek"
+              },
+              {
+                "owner": "evdb",
+                "id": "teentitan",
+                "title": "Teen Titan"
+              },
+              {
+                "owner": "evdb",
+                "id": "wil",
+                "title": "wil"
+              },
+              {
+                "owner": "evdb",
+                "id": "wilwheaton",
+                "title": "wilwheaton"
+              },
+              {
+                "owner": "evdb",
+                "id": "writer",
+                "title": "writer"
+              },
+              {
+                "owner": "evdb",
+                "id": "wwdn",
+                "title": "wwdn"
+              }
+            ]
+          },
+          "links": {
+            "link": [
+              {
+                "time": "2015-01-13 14:08:55",
+                "url": "http://foo.com",
+                "id": "33399387",
+                "type": "Info",
+                "description": "More Info<img alt=\"some\" src=\"http://img385.imageshack.us/img385/8363/fillerbu1.jpg\">",
+                "username": "edepotinc"
+              },
+              {
+                "time": "2015-01-13 14:54:35",
+                "url": "http://www.weblo.com",
+                "id": "8271086",
+                "type": "Blog",
+                "description": null,
+                "username": "Irfan"
+              },
+              {
+                "time": "2015-01-13 15:14:38",
+                "url": "http://frontier.cincinnati.com/calendar/proddisplay.asp?prodid=28356",
+                "id": "312146",
+                "type": "Official Site",
+                "description": "Details",
+                "username": "evdb"
+              }
+            ]
+          },
+          "free": null,
+          "price": null
+        }
+      }
+    ]
+  },
+  "present": {
+    "events": []
+  },
+  "future": {
+    "events": [
+      null,
+      {
+        "event": {
+          "id": "E0-001-093720767-4",
+          "checkin_done": 0,
+          "title": "GSMA Mobile World Congress",
+          "description": null,
+          "url": "http://barcelona.eventful.com/events/gsma-mobile-world-congress-/E0-001-093720767-4?utm_source=apis&utm_medium=apim&utm_campaign=apic",
+          "all_day": "2",
+          "start_time": "2017-02-27 00:00:00",
+          "stop_time": "2017-03-02 00:00:00",
+          "venue_display": "1",
+          "venue_id": "V0-001-008763883-0",
+          "venue_name": "Barcelona, Spain",
+          "address": "Barcelona",
+          "city": "Barcelona",
+          "country": "Spain",
+          "region": null,
+          "postal_code": "90292",
+          "latitude": "41.3833",
+          "longitude": "2.18333",
+          "images": null,
+          "performers": null,
+          "categories": {
+            "category": [
+              {
+                "name": "Conferences &amp; Tradeshows",
+                "id": "conference"
+              }
+            ]
+          },
+          "tags": {
+            "tag": [
+              {
+                "owner": "evdb",
+                "id": "conference",
+                "title": "conference"
+              },
+              {
+                "owner": "evdb",
+                "id": "proexhibitscom",
+                "title": "proexhibits.com"
+              },
+              {
+                "owner": "evdb",
+                "id": "thetradeshowcalendarcom",
+                "title": "thetradeshowcalendar.com"
+              },
+              {
+                "owner": "evdb",
+                "id": "tradeshow",
+                "title": "tradeshow"
+              }
+            ]
+          },
+          "links": {
+            "link": [
+              {
+                "time": "2016-05-28 17:32:11",
+                "url": "http://www.mobileworldcongress.com/",
+                "id": "284436695",
+                "type": "Official Site",
+                "description": "Official Website",
+                "username": "evdb"
+              },
+              {
+                "time": "2016-05-28 17:32:11",
+                "url": "http://www.proexhibits.com/resources/worldwide-trade-show-calendar/",
+                "id": "284436694",
+                "type": "Info",
+                "description": "Event details at proexhibits.com!",
+                "username": "evdb"
+              }
+            ]
+          },
+          "free": null,
+          "price": null
+        }
+      }
+    ]
+  }
+}
 ```  
   - Exactament les mateixes dades per cada esdeveniment que a **GET /events/:id/** però amb un atribut més per a aquest usuari: **checkin_done**, que pot ser *1* si l'ha fet i *0* si no.  
 
