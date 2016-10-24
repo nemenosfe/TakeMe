@@ -21,6 +21,9 @@ DROP TABLE IF EXISTS `takemelegends`.`events` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `id` VARCHAR(255) NOT NULL,
+  `all_day` INT NOT NULL,
+  `start_time` DATETIME NULL,
+  `stop_time` DATETIME NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 

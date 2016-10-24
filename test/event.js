@@ -9,7 +9,7 @@ var aux_id = "E0-001-095173443-9";
 
 describe('route of events', function() {
 
-  this.timeout(10000); // Per les proves
+  this.timeout(120000); // Per les proves
 
   describe('GET /events', function() {
     it('should get a list of events in Barcelona', function(done) {
@@ -254,6 +254,58 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('images')
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
+
+        done();
+      }, done)
+    });
+  });
+
+  describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should obtain all events from a user', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'page_size' : 20
+      };
+      request
+        .get('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('total_items');
+        expect(res.body).to.have.property('events');
+        const events = res.body.events;
+        //console.log(JSON.stringify(res.body));
+        expect(events).to.be.an('array')
+          .and.to.have.length.of.at.least(1);
+        expect(events).to.be.an('array')
+          .and.to.have.length.of.at.most(params.page_size);
+
+        const eventResponse = events[0].event;
+        //console.log("eventResponse: --> " + JSON.stringify(eventResponse));
+        expect(eventResponse).to.have.property('id')
+        expect(eventResponse).to.have.property('title')
+        expect(eventResponse).to.have.property('description')
+        expect(eventResponse).to.have.property('url')
+        expect(eventResponse).to.have.property('start_time')
+        expect(eventResponse).to.have.property('stop_time')
+        expect(eventResponse).to.have.property('venue_id')
+        expect(eventResponse).to.have.property('venue_name')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('latitude')
+        expect(eventResponse).to.have.property('longitude')
+        expect(eventResponse).to.have.property('all_day')
+        expect(eventResponse).to.have.property('categories')
+        expect(eventResponse.categories).to.have.property('category')
+        expect(eventResponse).to.have.property('images')
+        expect(eventResponse).to.have.property('free')
+        expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('checkin_done', 1)
 
         done();
       }, done)
