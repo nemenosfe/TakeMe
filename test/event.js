@@ -261,7 +261,7 @@ describe('route of events', function() {
   });
 
   describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it.only('should obtain all events from a user', function(done) {
+    it('should obtain all events from a user', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
@@ -315,6 +315,30 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('checkin_done', 1)
 
+        done();
+      }, done)
+    });
+  });
+
+  describe('POST /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should obtain all events from a user', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'events_id' : 'E0-001-093875660-9'
+      };
+      request
+        .post('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body).to.have.property('attendance');
+        const attendanceResponse = res.body.attendance;
+        expect(attendanceResponse).to.have.property('events_id', params.events_id);
+        expect(attendanceResponse).to.have.property('uid', params.uid);
+        expect(attendanceResponse).to.have.property('provider', params.provider);
         done();
       }, done)
     });

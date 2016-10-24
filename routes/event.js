@@ -154,7 +154,6 @@ router
           let moment = "past";
           for (let index = 0; index < eventResEventful.length; index++) {
             if (moment != "future") { moment = getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
-            console.log("moment: " + moment);
             let elementArray = {
               'id' : database_result[index].events_id,
               'checkin_done' : database_result[index].checkin_done
@@ -175,6 +174,65 @@ router
         .catch((err) => {
           console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET/user");
+        });
+      });
+    }
+  })
+
+  .post('/user', function(req, res, next) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.events_id) {
+      handleNoParams();
+    } else {
+      const attendanceRequest = req.body;
+
+      pool.getConnection().then(function(mysqlConnection) {
+        const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.events_id+"';";
+        mysqlConnection.query(sqlEventInDB)
+        .then((result) => {
+          // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
+          if (result[0].event_exists == '1') {
+            return new Promise(function (fulfill, reject){
+              fulfill(1);
+            });
+          }
+          else {
+            const params = "id=" + req.body.events_id;
+            return doRequest(params, "get");
+          }
+        })
+        .then((result) => {
+          // Si no tenim l'esdeveniment a la nostra BD, el guardem
+          if ( result == 1) {
+            return new Promise(function (fulfill, reject){
+              fulfill(1);
+            });
+          }
+          else {
+            let start = null;
+            let stop = null;
+            if (result.start_time != null) { start = "'"+result.start_time+"'"; }
+            if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
+            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.events_id+"', "+result.all_day+", "+start+", "+stop+");";
+            return mysqlConnection.query(sqlInsertEventInDB);
+          }
+        })
+        .then((result) => { // Inserta l'assitencia
+        const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+req.body.events_id+"', '"+req.body.uid+"', '"+req.body.provider+"', false);";
+        return mysqlConnection.query(sqlInsertAttendanceInDB);
+        })
+        .then((result) => { // Fa el Response bo :)
+          const attendanceResponse = {
+            'events_id' : req.body.events_id,
+            'uid' : req.body.uid,
+            'provider' : req.body.provider
+          };
+          res
+            .status(201)
+            .json({ attendance: attendanceResponse });
+        })
+        .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET/:id");
         });
       });
     }
