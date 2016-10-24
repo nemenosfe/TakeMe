@@ -325,7 +325,7 @@ describe('route of events', function() {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
-        'events_id' : 'E0-001-093875660-9'
+        'event_id' : 'E0-001-093875660-9'
       };
       request
         .post('/events/user')
@@ -336,7 +336,7 @@ describe('route of events', function() {
       .then((res) => {
         expect(res.body).to.have.property('attendance');
         const attendanceResponse = res.body.attendance;
-        expect(attendanceResponse).to.have.property('events_id', params.events_id);
+        expect(attendanceResponse).to.have.property('event_id', params.event_id);
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
         done();

@@ -349,7 +349,7 @@ GET de tots els esdeveniments d'un usuari.
 
 #### Paràmetres d'entrada
 Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara):
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 ```javascript
 {
   'uid' : 1234, // paràmetre obligatori
@@ -677,7 +677,31 @@ Un exemple seria el següent:
 ```  
   - Exactament les mateixes dades per cada esdeveniment que a **GET /events/:id/** però amb un atribut més per a aquest usuari: **checkin_done**, que pot ser *1* si l'ha fet i *0* si no.  
 
+### POST /events/user/
 
+POST per un "assistiré" d'un usuari a un esdeveniment.
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+```javascript
+{
+  'event_id' : 'E0-001-093875660-9' // paràmetre obligatori
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook', // paràmetre obligatori
+}
+```
+
+#### Paràmetres de sortida
+Si tot ha anat bé, retorna el mateix que els paràmetres d'entrada però en aquest format:
+```javascript
+'attendance' : {
+  'event_id' : 'E0-001-093875660-9' // paràmetre obligatori
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook', // paràmetre obligatori
+}
+```
+  
 ## Rewards API (Peticions de recompenses)
 
 ### GET /rewards/

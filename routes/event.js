@@ -180,13 +180,13 @@ router
   })
 
   .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.events_id) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) {
       handleNoParams();
     } else {
       const attendanceRequest = req.body;
 
       pool.getConnection().then(function(mysqlConnection) {
-        const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.events_id+"';";
+        const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.event_id+"';";
         mysqlConnection.query(sqlEventInDB)
         .then((result) => {
           // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
@@ -196,7 +196,7 @@ router
             });
           }
           else {
-            const params = "id=" + req.body.events_id;
+            const params = "id=" + req.body.event_id;
             return doRequest(params, "get");
           }
         })
@@ -212,17 +212,17 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.events_id+"', "+result.all_day+", "+start+", "+stop+");";
+            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+");";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
         .then((result) => { // Inserta l'assitencia
-        const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+req.body.events_id+"', '"+req.body.uid+"', '"+req.body.provider+"', false);";
+        const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+req.body.event_id+"', '"+req.body.uid+"', '"+req.body.provider+"', false);";
         return mysqlConnection.query(sqlInsertAttendanceInDB);
         })
         .then((result) => { // Fa el Response bo :)
           const attendanceResponse = {
-            'events_id' : req.body.events_id,
+            'event_id' : req.body.event_id,
             'uid' : req.body.uid,
             'provider' : req.body.provider
           };
