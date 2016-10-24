@@ -224,10 +224,39 @@ router
           const attendanceResponse = {
             'event_id' : req.body.event_id,
             'uid' : req.body.uid,
-            'provider' : req.body.provider
+            'provider' : req.body.provider,
+            'checkin_done' : '0'
           };
           res
             .status(201)
+            .json({ attendance: attendanceResponse });
+        })
+        .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET/:id");
+        });
+      });
+    }
+  })
+
+  .put('/user', function(req, res, next) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id || !req.body.checkin_done) {
+      handleNoParams();
+    } else {
+      const attendanceRequest = req.body;
+
+      pool.getConnection().then(function(mysqlConnection) {
+        const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.body.event_id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
+        mysqlConnection.query(sql)
+        .then((result) => { // Fa el Response bo :)
+          const attendanceResponse = {
+            'event_id' : req.body.event_id,
+            'uid' : req.body.uid,
+            'provider' : req.body.provider,
+            'checkin_done' : '1'
+          };
+          res
+            .status(200)
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {

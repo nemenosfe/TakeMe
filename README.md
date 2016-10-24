@@ -578,12 +578,40 @@ Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 ```
 
 #### Paràmetres de sortida
-Si tot ha anat bé, retorna el mateix que els paràmetres d'entrada però en aquest format:
+Si tot ha anat bé, retorna el següent:
 ```javascript
 'attendance' : {
   'event_id' : 'E0-001-093875660-9',
   'uid' : 1234,
-  'provider' : 'facebook'
+  'provider' : 'facebook',
+  'checkin_done' : '0'
+}
+```
+
+### PUT /events/user/
+
+PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot fer un check-in d'ell mateix a la nostra API (**encara no implementat** :smile: :octocat:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+```javascript
+{
+  'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook', // paràmetre obligatori
+  'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
+}
+```
+
+#### Paràmetres de sortida
+Si tot ha anat bé, retorna el següent:
+```javascript
+'attendance' : {
+  'event_id' : 'E0-001-093875660-9',
+  'uid' : 1234,
+  'provider' : 'facebook',
+  'checkin_done' : '1'
 }
 ```
 

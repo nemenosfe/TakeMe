@@ -339,6 +339,33 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('event_id', params.event_id);
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
+        expect(attendanceResponse).to.have.property('checkin_done', '0');
+        done();
+      }, done)
+    });
+  });
+
+  describe('PUT /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should mark the check-in of an event from an user', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'event_id' : 'E0-001-093875660-9',
+        'checkin_done' : '1'
+      };
+      request
+        .put('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body).to.have.property('attendance');
+        const attendanceResponse = res.body.attendance;
+        expect(attendanceResponse).to.have.property('event_id', params.event_id);
+        expect(attendanceResponse).to.have.property('uid', params.uid);
+        expect(attendanceResponse).to.have.property('provider', params.provider);
+        expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
         done();
       }, done)
     });
