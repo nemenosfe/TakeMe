@@ -36,7 +36,7 @@ describe('route of achievements', function() {
     });
   });
 
-  describe('GET /achievements/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('GET /achievements/user/', function() { // No cal token, qualsevol usuari pot veure els logros de qualsevol usuari
     it('should obtain all achievements from a user', function(done) {
       const params = {
         'uid' : 1,
