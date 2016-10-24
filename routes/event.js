@@ -108,10 +108,11 @@ router
         "events" : []
       };
       const requiredData = [
-          'title', 'description', 'url', 'all_day', 'start_time', 'stop_time', 'venue_display', 'venue_id', 'venue_name', 'address',
-          'city', 'country', 'country_abbr', 'region_name', 'postal_code', 'latitude', 'longitude',
+          'title', 'description', 'url', 'all_day', 'start_time', 'stop_time',
+          'venue_display', 'venue_id', 'venue_name', 'address',
+          'city', 'country', 'region', 'postal_code', 'latitude', 'longitude',
           'images', 'performers', 'categories', 'tags', 'links', 'free', 'price'
-      ]; // address, city, country
+      ];
       let database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {

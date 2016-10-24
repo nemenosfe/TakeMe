@@ -255,11 +255,11 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
   "venue_display":"1", // Si val 1, podem mostrar la informació del local sense cap problema, si val 0 vol dir que la informació del local no del tot fiable perquè a vegades en lloc del local només sabem amb total seguretat en quina ciutat serà.
   "venue_id":"V0-001-009623999-6", // ID del local
   "venue_name":"Jazzman Jazzclub", // Nom del local
-  "venue_address":"Roger de Flor, 238", // Adreça del local
-  "city_name":"Barcelona",
-  "country_name":"Spain",
+  "address":"Roger de Flor, 238", // Adreça del local
+  "city":"Barcelona",
+  "country":"Spain",
   "country_abbr":"ESP",
-  "region_name":null, // A vegades ve com a null i a vegades com "Cataluna", però si volem cercar per regió hem de cercar per "Catalonia" i ens trobarà els que no tenen valor null aquí.
+  "region":null, // A vegades ve com a null i a vegades com "Cataluna", però si volem cercar per regió hem de cercar per "Catalonia" i ens trobarà els que no tenen valor null aquí.
   "postal_code":null,
   "latitude":"41.3833", // És un float amb signe
   "longitude":"2.18333", // És un float amb signe
@@ -336,6 +336,39 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 Les diferències respecte a **GET /events/** són les següents:  
   - Abans hi ha havia un atribut *image* i ara es diu *images*.  
   - S'han afegit els atributs: **categories**, **tags**, **links**, **free** i **price**.
+  - Ja no està el *country_abbr*.
+  - Han canviat els noms dels següents atributs:
+    - *venue_address* -> *address*  
+    - *country_name* -> *country*  
+    - *region_name* -> *region*
+    - *city_name* -> *city*
+
+### GET /events/user/
+
+GET de tots els esdeveniments d'un usuari.  
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara):
+```javascript
+{
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook', // paràmetre obligatori
+  'page_size' : 20, // paràmetre opcional
+  'page_number' : 1 // paràmetre opcional
+};
+```
+  - **page_size**: vol dir quants esdeveniments màxim volem rebre de tots els que hi ha per aquest usuari. Per defecte, si no s'envia res, és *20*.
+  - **page_number**: vol dir quina pàgina volem rebre amb *page_size* esdeveniments de la llista total d'esdeveniments d'aquest usuari, tenint en compte que cada pàgina té *page_size* esdeveniments. Per exemple, si *page_size* val 10 i *page_number* val 2, tindrem la llista d'esdeveniments de l'11 al 20. *page_number* és opcional i per defecte val 1.    
+
+
+#### Paràmetres de sortida
+  - Esdeveniments ordenats per data. Categoritzats per **past**, **present** i **future**.  
+```javascript
+// PER OMPLIR
+```  
+  - Exactament les mateixes dades per cada esdeveniment que a **GET /events/:id/** però amb un atribut més per a aquest usuari: **checkin_done**, que pot ser *1* si l'ha fet i *0* si no.  
+
 
 ## Rewards API (Peticions de recompenses)
 
