@@ -15,3 +15,5 @@ INSERT INTO events VALUES ("E0-001-000278174-6", 0, "2005-08-24 12:00:00", null)
 
 INSERT INTO attendances VALUES("E0-001-093720767-4", 1, "provider", false);
 INSERT INTO attendances VALUES("E0-001-000278174-6", 1, "provider", true);
+
+INSERT INTO acquisitions VALUES(1, "provider", "logro 01");

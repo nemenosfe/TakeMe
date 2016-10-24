@@ -129,7 +129,7 @@ JSON amb les possibles categories:
 ## Events API (Peticions d'esdeveniments)
 
 Pàrametres d'entrada per totes les peticions:
-	- API key (encara que ara per ara funciona sense API key)
+	- API key (encara que ara per ara funciona sense API key :stuck_out_tongue:)
 
 ### GET /events/
 
@@ -657,6 +657,46 @@ No cal cap paràmetre d'entrada, però els següents són opcionals:
   - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.  
   - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1.
 Els logros estan ordenats per alfabèticament pel nom.  
+
+#### Paràmetres de sortida
+Un exemple de paràmetres de sortida seria el següent:
+```javascript
+{  
+  "achievements":[  
+    {  
+      "name":"logro 01",
+      "description":"random description 01"
+    },
+    {  
+      "name":"logro 02",
+      "description":"random description 02"
+    },
+    {  
+      "name":"logro 03",
+      "description":"random description 03"
+    }
+  ]
+}
+```  
+
+### GET /rewards/user
+GET de la llista de 'logros' d'un usuari.  
+
+#### Paràmetres d'entrada
+Els següents són opcionals:
+  - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.  
+  - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1.
+Els logros estan ordenats per alfabèticament pel nom.  
+Els paràmetres obligatoris són els que identifiquen l'usuari: **uid** i **provider**.  
+
+Un exemple de paràmetres d'entrada:  
+```javascript
+{
+  'uid' : 1,
+  'provider' : 'provider',
+  'page_size' : 20
+}
+```
 
 #### Paràmetres de sortida
 Un exemple de paràmetres de sortida seria el següent:
