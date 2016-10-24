@@ -72,5 +72,28 @@ describe('route of achievements', function() {
     });
   });
 
+  describe('POST /achievements/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should create an acquisition from a user of an achievement', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'achievement_name' : 'logro 02'
+      };
+      request
+        .post('/achievements/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body).to.have.property('acquisition');
+        const acquisitionResponse = res.body.acquisition;
+        expect(acquisitionResponse).to.have.property('achievement_name', params.achievement_name);
+        expect(acquisitionResponse).to.have.property('uid', params.uid);
+        expect(acquisitionResponse).to.have.property('provider', params.provider);
+        done();
+      }, done)
+    });
+  });
 
 });

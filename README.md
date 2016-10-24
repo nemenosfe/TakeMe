@@ -718,3 +718,28 @@ Un exemple de paràmetres de sortida seria el següent:
   ]
 }
 ```  
+
+### POST /achievements/user/
+
+POST per quan usuari guanya un 'logro'.
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+```javascript
+{
+  'achievement_name' : 'nom del logro', // paràmetre obligatori
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook' // paràmetre obligatori
+}
+```
+
+#### Paràmetres de sortida
+Si tot ha anat bé, retorna el següent:
+```javascript
+'acquisition' : {
+  'achievement_name' : 'nom del logro',
+  'uid' : 1234,
+  'provider' : 'facebook'
+}
+```

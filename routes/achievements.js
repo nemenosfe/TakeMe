@@ -88,4 +88,31 @@ router
     }
   })
 
+  .post('/user', function(req, res, next) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.achievement_name) {
+      handleNoParams();
+    } else {
+      const acquisitionRequest = req.body;
+
+      pool.getConnection().then(function(mysqlConnection) {
+        const sqlInsertacquisitionInDB = "INSERT IGNORE INTO acquisitions values ('"+req.body.uid+"', '"+req.body.provider+"', '"+req.body.achievement_name+"');";
+        mysqlConnection.query(sqlInsertacquisitionInDB)
+        .then((result) => {
+          const acquisitionResponse = {
+            'uid' : req.body.uid,
+            'provider' : req.body.provider,
+            'achievement_name' : req.body.achievement_name
+          };
+          res
+            .status(201)
+            .json({ acquisition: acquisitionResponse });
+        })
+        .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET/:id");
+        });
+      });
+    }
+  })
+
 module.exports = router

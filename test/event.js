@@ -321,7 +321,7 @@ describe('route of events', function() {
   });
 
   describe('POST /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it('should obtain all events from a user', function(done) {
+    it('should create an attendance from a user to an event', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
