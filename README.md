@@ -686,9 +686,9 @@ Faltaria també el token de sessió de l'usuari per assegurar-nos que només el 
 Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 ```javascript
 {
-  'event_id' : 'E0-001-093875660-9' // paràmetre obligatori
+  'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
-  'provider' : 'facebook', // paràmetre obligatori
+  'provider' : 'facebook' // paràmetre obligatori
 }
 ```
 
@@ -696,12 +696,12 @@ Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 Si tot ha anat bé, retorna el mateix que els paràmetres d'entrada però en aquest format:
 ```javascript
 'attendance' : {
-  'event_id' : 'E0-001-093875660-9' // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
-  'provider' : 'facebook', // paràmetre obligatori
+  'event_id' : 'E0-001-093875660-9',
+  'uid' : 1234,
+  'provider' : 'facebook'
 }
 ```
-  
+
 ## Rewards API (Peticions de recompenses)
 
 ### GET /rewards/
