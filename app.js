@@ -38,5 +38,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
 });
 
+app.listen(8000, function() {
+  console.log("Node server running on http://localhost:8000");
+});
 
 module.exports = app;
