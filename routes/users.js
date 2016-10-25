@@ -22,13 +22,15 @@ router
         let user = req.body
 
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("CREATE TABLE IF NOT EXISTS users(uid int NOT NULL, provider varchar(30) NOT NULL, name varchar(30) NOT NULL, surname varchar(30), email varchar(50), takes int, experience int, level int PRIMARY KEY (uid, provider))")
-          .then((result) => {
             //console.log("Table users created: " + JSON.stringify(result));
-            return mysqlConnection.query("INSERT INTO users SET ?", {id: user.uid, provider: user.provider, name: user.name, surname: user.surname, email: user.email, takes: 0, experience: 0, level: 1});
-          })
+            const sqlInsertUserInDB = "INSERT INTO users values ("+user.uid+", '"+user.provider+"', '"+user.name+"', '"+user.surname+"', '"+user.email+"', 0, 0, 1);";
+            console.log(sqlInsertUserInDB);
+            mysqlConnection.query(sqlInsertUserInDB)
           .then((result) => {
-            //console.log("User inserted: " + JSON.stringify(result));
+            console.log("User inserted: " + JSON.stringify(result));
+            user.takes = 0;
+            user.experience = 0;
+            user.level = 1;
             res
               .status(201)
               .json({user: user})
@@ -70,7 +72,7 @@ router
           .json({error: true, message: 'Empty parameters'})
       } else {
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("SELECT * FROM users WHERE uid = ($1) AND provider = ($2)", [req.params.id, req.params.provider])
+          mysqlConnection.query("SELECT * FROM users WHERE uid = "+req.params.id+" AND provider = '"+req.params.provider+"'")
           .then((result) => {
             //console.log("Get user done: " + JSON.stringify(result));
             res
