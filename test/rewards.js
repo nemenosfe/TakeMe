@@ -9,7 +9,7 @@ var aux_id = "1";
 
 describe('route of rewards', function() {
 
-  this.timeout(4000); // Per les proves
+  this.timeout(30000); // Per les proves
 
   describe('GET /rewards', function() {
     it('should get the whole list of rewards', function(done) {
@@ -52,9 +52,9 @@ describe('route of rewards', function() {
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-
-        expect(res.body).to.have.property('total_items', 2);
-        expect(res.body).to.have.property('total_rewards', 8);
+        //console.log("res.body: " + JSON.stringify(res.body));
+        expect(res.body).to.have.property('total_items').and.to.be.at.least(2);
+        expect(res.body).to.have.property('total_rewards').and.to.be.at.least(8);
         expect(res.body).to.have.property('rewards');
         const rewards = res.body.rewards;
 
@@ -79,11 +79,11 @@ describe('route of rewards', function() {
   });
 
   describe('POST /rewards/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it.skip('should create an purchase from a user of a reward', function(done) {
+    it('should create an purchase from a user of a reward', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
-        'reward_name' : 'logro 03'
+        'reward_name' : 'recompensa 04'
       };
       request
         .post('/rewards/user')
@@ -93,10 +93,14 @@ describe('route of rewards', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
         expect(res.body).to.have.property('purchase');
+        //console.log("res.body: " + JSON.stringify(res.body));
         const purchaseResponse = res.body.purchase;
         expect(purchaseResponse).to.have.property('reward_name', params.reward_name);
         expect(purchaseResponse).to.have.property('uid', params.uid);
         expect(purchaseResponse).to.have.property('provider', params.provider);
+        expect(purchaseResponse).to.have.property('total_amount');
+        expect(purchaseResponse).to.have.property('takes_left');
+
         done();
       }, done)
     });

@@ -100,12 +100,73 @@ router
       handleNoParams();
     } else {
       const purchaseRequest = req.body;
+      let infoReward = {};
+      let infoUser = {};
+      let purchase_exists = -1;
 
       pool.getConnection().then(function(mysqlConnection) {
         const sqlGetRewardData = "SELECT takes, level FROM rewards WHERE name ='"+req.body.reward_name+"';";
         mysqlConnection.query(sqlGetRewardData)
         .then((result) => {
-          // Per fer
+          infoReward.takes = result[0].takes;
+          infoReward.level = result[0].level;
+          const sqlGetUserData = "SELECT takes, level FROM users WHERE uid = '" + req.body.uid + "' AND provider = '" + req.body.provider + "' ;";
+          return mysqlConnection.query(sqlGetUserData);
+        })
+        .then((result) => {
+          infoUser.takes = result[0].takes;
+          infoUser.level = result[0].level;
+          return new Promise(function(resolve, reject) {
+            if ( infoUser.level < infoReward.level ) {
+              reject("This user's level is not enough to get this reward");
+            } else if ( infoUser.takes < infoReward.takes ) {
+              reject("This user doesn't have enough takes to get this reward");
+            } else {
+              const sql = "SELECT COUNT(1) AS purchase_exists FROM purchases WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+              const result = mysqlConnection.query(sql);
+              resolve(result);
+            }
+          });
+        })
+        .then((result) => {
+          purchase_exists = result[0].purchase_exists;
+          return mysqlConnection.query('START TRANSACTION');
+        })
+        .then((result) => {
+          if (purchase_exists) {
+            var sqlRegisterPurchase = "UPDATE purchases SET amount = amount + 1 WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+          } else {
+            var sqlRegisterPurchase = "INSERT INTO purchases VALUES ("+req.body.uid+", '"+req.body.provider+"', '"+req.body.reward_name+"', 1);";
+          }
+          return mysqlConnection.query(sqlRegisterPurchase);
+        })
+        .then((result) => {
+          const sqlDecreaseTakes = "UPDATE users SET takes = takes - "+infoReward.takes+" WHERE uid = '"+req.body.uid+"' AND provider = '"+req.body.provider+"' ;";
+          return mysqlConnection.query(sqlDecreaseTakes);
+        })
+        .then((result) => {
+          mysqlConnection.query('COMMIT');
+          const sql = "SELECT u.takes, p.amount FROM purchases p, users u WHERE u.uid = p.users_uid AND u.provider = p.users_provider AND p.rewards_name='"+req.body.reward_name+"' AND p.users_uid = '"+req.body.uid+"' AND p.users_provider = '"+req.body.provider+"' ;";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => {
+          const purchaseResponse = {
+            'purchase' : {
+              'reward_name' : req.body.reward_name,
+              'uid' : req.body.uid,
+              'provider' : req.body.provider,
+              'total_amount' : result[0].amount,
+              'takes_left' : result[0].takes
+            }
+          };
+          res
+            .status(201)
+            .json(purchaseResponse)
+        })
+        .catch((err) => {
+          mysqlConnection.query('ROLLBACK');
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET/user");
         });
       });
     }
