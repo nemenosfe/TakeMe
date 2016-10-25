@@ -83,7 +83,8 @@ describe('route of rewards', function() {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
-        'reward_name' : 'recompensa 04'
+        'reward_name' : 'recompensa 04',
+        'amount' : 2
       };
       request
         .post('/rewards/user')
@@ -98,6 +99,7 @@ describe('route of rewards', function() {
         expect(purchaseResponse).to.have.property('reward_name', params.reward_name);
         expect(purchaseResponse).to.have.property('uid', params.uid);
         expect(purchaseResponse).to.have.property('provider', params.provider);
+        expect(purchaseResponse).to.have.property('amount', params.amount);
         expect(purchaseResponse).to.have.property('total_amount');
         expect(purchaseResponse).to.have.property('takes_left');
 

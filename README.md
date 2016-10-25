@@ -647,9 +647,97 @@ Un exemple de paràmetres de sortida seria el següent:
 }
 ```  
 
+### GET /rewards/user
+GET de la llista de recompenses d'un usuari.  
+
+#### Paràmetres d'entrada
+Els següents són opcionals:
+  - **page_size**: Quantes recompenses com a màxim vols rebre. Per defecte és 20.
+  - **page_number**: Número de pàgina de recompenses anant de *page_size* en *page_size*. Per defecte és 1.
+Els **paràmetres obligatoris** són els que identifiquen l'usuari: **uid** i **provider**.  
+
+Un exemple de paràmetres d'entrada:  
+```javascript
+{
+  'uid' : 1,
+  'provider' : 'provider',
+  'page_size' : 20
+}
+```  
+
+#### Paràmetres de sortida
+Retorna la llista de recompenses comprades per l'usuari en un array *rewards*, amb l'atribut *total_items* que indica quantes recompenses diferents ha comprat, amb l'atribut *total_rewards* que es el total de recompenses en total que ha comprat, tenint en compte que ha pogut comprar més d'una recompensa del mateix tipus.  
+
+Un exemple de paràmetres de sortida seria el següent:  
+```javascript
+{
+  "total_items": 3,
+  "total_rewards": 12,
+  "rewards": [
+    {
+      "reward": {
+        "name": "recompensa 01",
+        "description": "Descripció de la primera recompensa",
+        "takes": 100,
+        "level": 1,
+        "amount": 3 // Quantes recompenses d'aquest tipus ha comprat
+      }
+    },
+    {
+      "reward": {
+        "name": "recompensa 02",
+        "description": "Descripció de la segona recompensa",
+        "takes": 200,
+        "level": 1,
+        "amount": 5 // Quantes recompenses d'aquest tipus ha comprat
+      }
+    },
+    {
+      "reward": {
+        "name": "recompensa 04",
+        "description": "Descripció de la 4a recompensa",
+        "takes": 10,
+        "level": 1,
+        "amount": 4 // Quantes recompenses d'aquest tipus ha comprat
+      }
+    }
+  ]
+}
+```
+
+### POST /rewards/user  
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):  
+```javascript
+{
+  'uid' : 1, // Paràmetre obligatori
+  'provider' : 'provider', // Paràmetre obligatori
+  'reward_name' : 'recompensa 04', // Paràmetre obligatori
+  'amount' : 3 // Paràmetre opcional, si no s'envia val 1
+}
+```  
+
+#### Paràmetres de sortida
+L'API comprova si té el nivell suficient per comprar aquesta recompensa i si li queden bastant takes, i si es així, es fa la compra s'encarrega tant de crear la comprar, com d'actualitzar l'*amount* si ha l'havia comprat abans i també li resta els takes.  
+Si tot ha anat bé, retorna el següent:  
+```javascript
+{
+  "purchase": {
+    "reward_name": "recompensa 04",
+    "uid": 1,
+    "provider": "provider",
+    "amount" : 3, // La quantitat de recompenses d'aquest tipus que ha comprar aquest usuari aquesta vegada
+    "total_amount": 5, // El total de recompenses d'aquest tipus que ha comprat aquest usuari (entre totes les peticions a l'API)
+    "takes_left": 2450 // La quantitat de takes que li queden a l'usuari
+  }
+}
+```
+
 ## Achievements API (Peticions de 'logros')
 
-### GET /rewards/
+### GET /achievements/
 GET d'una llista de 'logros'.  
 
 #### Paràmetres d'entrada
@@ -679,66 +767,45 @@ Un exemple de paràmetres de sortida seria el següent:
 }
 ```  
 
-## D'aquí fins el final em falta redactar-ho bé.
-
-### GET /rewards/user
-GET de la llista de 'logros' d'un usuari.  
+### GET /achievements/user
+GET de la llista de 'logros' d'un usuari.
 
 #### Paràmetres d'entrada
-**Pendent de ser redactat**.
+Els següents són opcionals:
+  - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.
+  - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1. Els logros estan ordenats per alfabèticament pel nom.  
+Els **paràmetres obligatoris** són els que identifiquen l'usuari: **uid** i **provider**.  
 
-#### Paràmetres de sortida
-Un exemple de paràmetres de sortida seria el següent:
-**Falta explicar-ho**.
+Un exemple de paràmetres d'entrada:  
 ```javascript
 {
-  "total_items": 3,
-  "total_rewards": 12,
-  "rewards": [
-    {
-      "reward": {
-        "name": "recompensa 01",
-        "description": "Descripció de la primera recompensa",
-        "takes": 100,
-        "level": 1,
-        "amount": 3
-      }
+  'uid' : 1,
+  'provider' : 'provider',
+  'page_size' : 20
+}
+```  
+
+#### Paràmetres de sortida
+Un exemple de paràmetres de sortida seria el següent:  
+
+```javascript
+{  
+  "achievements":[  
+    {  
+      "name":"logro 01",
+      "description":"random description 01"
     },
-    {
-      "reward": {
-        "name": "recompensa 02",
-        "description": "Descripció de la segona recompensa",
-        "takes": 200,
-        "level": 1,
-        "amount": 5
-      }
+    {  
+      "name":"logro 02",
+      "description":"random description 02"
     },
-    {
-      "reward": {
-        "name": "recompensa 04",
-        "description": "Descripció de la 4a recompensa",
-        "takes": 10,
-        "level": 1,
-        "amount": 4
-      }
+    {  
+      "name":"logro 03",
+      "description":"random description 03"
     }
   ]
 }
-```
-
-### POST /rewards/user  
-**Pendent de ser redactat!**
-```javascript
-{
-  "purchase": {
-    "reward_name": "recompensa 04",
-    "uid": 1,
-    "provider": "provider",
-    "total_amount": 5,
-    "takes_left": 2450
-  }
-}
-```
+```  
 
 ### POST /achievements/user/
 
