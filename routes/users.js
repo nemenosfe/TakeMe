@@ -97,7 +97,6 @@ router
         //console.log("REQ.BODY: " + JSON.stringify(req.body));
         const user = req.body;
         pool.getConnection().then(function(mysqlConnection) {
-            experience int, level int
           mysqlConnection.query("UPDATE users SET name='"+user.name+"', surname='"+user.surname+"', email='"+user.email+"' WHERE uid = ($1) AND provider = ($2)", [req.params.id, req.params.provider])
           .then((result) => {
             //console.log("PUT events done: " + JSON.stringify(result));
