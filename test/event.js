@@ -16,7 +16,7 @@ describe('route of events', function() {
       const params = {
         'location' : 'Barcelona',
         'within' : '20',
-        'page_size' : '50',
+        'page_size' : '15',
         'page_number' : '2'
       };
       request
@@ -50,6 +50,7 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('category_id')
         expect(eventResponse).to.have.property('image')
         //expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances')
 
 
         done();
@@ -92,6 +93,7 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('category_id')
         expect(eventResponse).to.have.property('image')
         //expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances')
 
 
         done();
@@ -132,6 +134,7 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('category_id')
         expect(eventResponse).to.have.property('image')
         //expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances')
 
 
         done();
@@ -174,6 +177,7 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('category_id')
         expect(eventResponse).to.have.property('image')
         //expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances')
 
 
         done();
@@ -217,6 +221,7 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('category_id')
         expect(eventResponse).to.have.property('image')
         //expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances')
 
 
         done();
@@ -254,6 +259,7 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('images')
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
+        expect(eventResponse).to.have.property('number_attendances', 0)
 
         done();
       }, done)
@@ -314,6 +320,7 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('checkin_done', 1)
+        expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
 
         done();
       }, done)

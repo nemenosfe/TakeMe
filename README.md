@@ -177,7 +177,10 @@ GET d'una llista d'esdeveniments.
           // Informació de l'esdeveniment1
           "id":"E0-001-095182625-3", // ID de l'esdeveniment
           "title":"Títol de l'esdeveniment 1",
-          "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>", // Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+          "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>",
+          /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+          però amb Android es pot mostrar sense que sigui un problema :) */
+          "number_attendances" : 0,
           "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
           "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
           "start_time":"2016-09-12 23:00:00",
@@ -247,7 +250,10 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 "event" : {
   "id":"E0-001-095182625-3", // ID de l'esdeveniment
   "title":"Títol de l'esdeveniment 1",
-  "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>", // Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+  "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>",
+  /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+  però amb Android es pot mostrar sense que sigui un problema :) */
+  "number_attendances" : 0, //nombre d'usuaris de la nostra aplicació que volen van fer click a "assistiré" d'aquest esdeveniment
   "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
   "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
   "start_time":"2016-09-12 23:00:00",
@@ -376,6 +382,7 @@ Un exemple seria el següent:
           "checkin_done": 1,
           "title": "Martini Tasting",
           "description": "Sample drinks made with featured vodkas.",
+          "number_attendances": 2,
           "url": "http://cincinnati.eventful.com/events/martini-tasting-/E0-001-000278174-6?utm_source=apis&utm_medium=apim&utm_campaign=apic",
           "all_day": "0",
           "start_time": "2005-08-24 12:00:00",
@@ -484,6 +491,7 @@ Un exemple seria el següent:
           "checkin_done": 0,
           "title": "GSMA Mobile World Congress",
           "description": null,
+          "number_attendances": 1,
           "url": "http://barcelona.eventful.com/events/gsma-mobile-world-congress-/E0-001-093720767-4?utm_source=apis&utm_medium=apim&utm_campaign=apic",
           "all_day": "2",
           "start_time": "2017-02-27 00:00:00",

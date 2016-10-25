@@ -68,43 +68,76 @@ function getMoment(datetime_start, all_day, datetime_stop) { // Dono per suposat
   return "future"; // Si no es compleix cap dels anteriors vol dir que start_time és futur
 }
 
+function findEventInEventfulResponseByID(eventsEventful, id) { // No puc fer cerca binaria perquè estan ordenats "per data" (més o menys) i estic buscant per id
+  for (let j = eventsEventful.events.event.length - 1; j >=0; j--) {
+    if (eventsEventful.events.event[j].id == id) return j;
+  }
+}
+
+function addNumberAttendancesToAllEventsJSON(eventsEventful, resultDB) {
+  for (let pos = resultDB.length - 1; pos >=0; pos--) {
+    const position = findEventInEventfulResponseByID(eventsEventful, resultDB[pos].id);
+    eventsEventful.events.event[position]["number_attendances"] = resultDB[pos].number_attendances;
+  }
+}
+
 
 router
 
   .get('/', function(req, res, next) {
     if( !req.body || (!req.body.location && !req.body.keywords && !req.body.category && !req.body.date) ) { handleNoParams(res); }
     else {
-      let page_size = "10";
-      let page_number = "1";
-      if (req.body.page_size) { page_size = req.body.page_size; }
-      if (req.body.page_number) { page_number = req.body.page_number; }
-      let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
-      if (req.body.location) {
-        params = params + "&location=" + req.body.location;
-        let within = 350;
-        if (req.body.within) {
-          within = req.body.within;
+      pool.getConnection().then(function(mysqlConnection) {
+        let eventsResponse = null;
+        let page_size = "10";
+        let page_number = "1";
+        if (req.body.page_size) { page_size = req.body.page_size; }
+        if (req.body.page_number) { page_number = req.body.page_number; }
+        let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
+        if (req.body.location) {
+          params = params + "&location=" + req.body.location;
+          let within = 350;
+          if (req.body.within) {
+            within = req.body.within;
+          }
+          params = params + "&units=km&within=" + within;
         }
-        params = params + "&units=km&within=" + within;
-      }
-      if (req.body.keywords) { params = params + "&keywords=" + req.body.keywords; }
-      if (req.body.category) { params = params + "&category=" + req.body.category; }
-      if (req.body.date) { params = params + "&date=" + req.body.date; }
-      doRequest(params, "search")
-      .then((eventsResEventful) => {
-        if (eventsResEventful.error) {
-          console.log("ERROR: " + JSON.stringify(err));
-          handleError(eventsResEventful.error, res, "GET");
-        } else {
+        if (req.body.keywords) { params = params + "&keywords=" + req.body.keywords; }
+        if (req.body.category) { params = params + "&category=" + req.body.category; }
+        if (req.body.date) { params = params + "&date=" + req.body.date; }
+        doRequest(params, "search")
+        .then((eventsResEventful) => {
+          return new Promise(function(resolve, reject) {
+            let ids = [];
+            if (eventsResEventful.error) {
+              reject(eventsResEventful.error);
+            } else {
+              eventsResponse = eventsResEventful;
+              for (let index = eventsResEventful.events.event.length - 1; index >=0; index--) {
+                eventsResEventful.events.event[index]["number_attendances"] = 0;
+                ids.push("'" + eventsResEventful.events.event[index].id + "'");
+              }
+              const sql = "SELECT id, number_attendances FROM events WHERE id IN ("+ids+") ;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
+              const resultDB = mysqlConnection.query(sql);
+              resolve(resultDB);
+            }
+          });
+        })
+        .then((resultDB) => {
+          return new Promise(function(resolve, reject) {
+            resolve(addNumberAttendancesToAllEventsJSON(eventsResponse, resultDB));
+          });
+        })
+        .then((result) => {
           res
             .status(200)
-            .json(eventsResEventful)
-        }
-      })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        handleError(err, res, "GET");
-      })
+            .json(eventsResponse)
+        })
+        .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET");
+        })
+      });
     }
   })
 
@@ -138,7 +171,7 @@ router
       let database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {
-      const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.body.uid + " AND at.users_provider='" + req.body.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
+      const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.body.uid + " AND at.users_provider='" + req.body.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
       mysqlConnection.query(sql)
         .then((DBresult) => {
           database_result = DBresult;
@@ -156,7 +189,8 @@ router
             if (moment != "future") { moment = getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
             let elementArray = {
               'id' : database_result[index].events_id,
-              'checkin_done' : database_result[index].checkin_done
+              'checkin_done' : database_result[index].checkin_done,
+              'number_attendances' : database_result[index].number_attendances
             };
             requiredData.forEach(function(data) {
               let value = eventResEventful[index][data];
@@ -212,7 +246,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+");";
+            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0);";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
@@ -270,22 +304,35 @@ router
   .get('/:id', function(req, res, next) {
     if(!req.params.id) { handleNoParams(res); }
     else {
-      const params = "id=" + req.params.id;
-      doRequest(params, "get")
-      .then((eventsResEventful) => {
-        if (eventsResEventful.error) {
-          console.log("ERROR: " + JSON.stringify(err));
-          handleError(eventsResEventful.error, res, "GET");
-        } else {
+
+      pool.getConnection().then(function(mysqlConnection) {
+        let eventEventful = null;
+        const params = "id=" + req.params.id;
+        doRequest(params, "get")
+        .then((eventResEventful) => {
+          return new Promise(function(resolve, reject) {
+            if (eventResEventful.error) {
+              reject(eventResEventful.error);
+            } else {
+              eventEventful = eventResEventful;
+              const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
+              resolve(mysqlConnection.query(sql));
+            }
+          });
+        })
+        .then((result) => {
+          if (result.length == 0) { eventEventful["number_attendances"] = 0; }
+          else { eventEventful["number_attendances"] = result[0].number_attendances; }
           res
             .status(200)
-            .json({event: eventsResEventful})
-        }
-      })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        handleError(err, res, "GET/:id");
-      })
+            .json({event: eventEventful})
+        })
+        .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
+          handleError(err, res, "GET/:id");
+        });
+      });
+
     }
   })
 
