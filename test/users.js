@@ -38,7 +38,7 @@ describe('Users route', function() {
     });
 
     describe('GET /users/:id', function() {
-        it.only('should return a certain user', function(done) {
+        it('should return a certain user', function(done) {
             request
                 .get('/users/31-providerTest')
                 .set('Accept', 'application/json')
@@ -86,6 +86,33 @@ describe('Users route', function() {
                 expect(userResponse).to.have.property('takes', 0);
                 expect(userResponse).to.have.property('experience', 0);
                 expect(userResponse).to.have.property('level', 1);
+                done();
+            }, done)
+        });
+    });
+
+    describe('PUT /users/:id', function(done) {
+        it.only('should update a user information', function() {
+            var updatedMail = "updated" + 31 + "@test.com";
+            const params = {
+                'name' : 'updatedName',
+                'surname' : 'updatedSurname',
+                'email' : updatedMail
+            };
+            request
+                .put('/users/31-providerTest')
+                .set('Accept', 'application/json')
+                .send(params)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            .then((res) => {
+                expect(res.body).to.have.property('user');
+                const user = res.body.user;
+                expect(user).to.have.property('uid', 31);
+                expect(user).to.have.property('provider', 'providerTest');
+                expect(user).to.have.property('name', params.name);
+                expect(user).to.have.property('surname', params.surname);
+                expect(user).to.have.property('email', params.email);
                 done();
             }, done)
         });

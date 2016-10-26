@@ -93,7 +93,7 @@ router
     })
 
     .put('/:id', function(req, res, next) {
-      //console.log("PUT:id", req.params.id)
+      console.log("PUT:id", req.params.id)
       if(!req.params.id || !req.body) {
         res
           .status(403)
@@ -101,8 +101,13 @@ router
       } else {
         //console.log("REQ.BODY: " + JSON.stringify(req.body));
         const user = req.body;
+        user.uid = int(req.params.id.split('-')[0]);
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("UPDATE users SET name='"+user.name+"', surname='"+user.surname+"', email='"+user.email+"' WHERE uid = ($1) AND provider = ($2)", [req.params.id, req.params.provider])
+            var uid = req.params.id.split('-')[0];
+            var provider = req.params.id.split('-')[1];
+            const updateQuery = "UPDATE users SET name='"+user.name+"', surname='"+user.surname+"', email='"+user.email+"' WHERE uid="+uid+" AND provider = '"+provider+"'";
+            console.log("Query: " + updateQuery);
+          mysqlConnection.query(updateQuery)
           .then((result) => {
             //console.log("PUT events done: " + JSON.stringify(result));
             res
