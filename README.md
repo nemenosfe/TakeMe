@@ -641,7 +641,7 @@ Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 Si tot ha anat bé, no retorna res (un JSON buit).
 Si ha hagut l'ERROR de "no es pot esborrar aquesta assitència perquè ja ha fet check-in", retorna el següent:
 ```javascript
-'error' : { 'No es pot desmarcar l'assitència si ja s'ha fet el check-in' }
+'error' : { "No es pot desmarcar l'assitència si ja s'ha fet el check-in" }
 ```
 
 ## Rewards API (Peticions de recompenses)
