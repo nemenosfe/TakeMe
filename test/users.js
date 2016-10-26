@@ -40,7 +40,7 @@ describe('Users route', function() {
     describe('GET /users/:id', function() {
         it.only('should return a certain user', function(done) {
             request
-                .get('/users/31')
+                .get('/users/31-providerTest')
                 .set('Accept', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /application\/json/)

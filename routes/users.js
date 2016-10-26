@@ -72,8 +72,11 @@ router
           .json({error: true, message: 'Empty parameters'})
       } else {
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("SELECT * FROM users WHERE uid = "+req.params.id+" AND provider = '"+req.params.provider+"'")
-          .then((result) => {
+            var uid = req.params.id.split('-')[0];
+            var provider = req.params.id.split('-')[1];
+            const singleUserQuery = "SELECT * FROM users WHERE uid = "+uid+" AND provider = '"+provider+"'";
+            mysqlConnection.query(singleUserQuery)
+            .then((result) => {
             //console.log("Get user done: " + JSON.stringify(result));
             res
               .status(200)
