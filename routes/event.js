@@ -214,9 +214,8 @@ router
   })
 
   .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) {
-      handleNoParams();
-    } else {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { handleNoParams(res); }
+    else {
       const attendanceRequest = req.body;
 
       pool.getConnection().then(function(mysqlConnection) {
@@ -267,24 +266,22 @@ router
         })
         .catch((err) => {
           console.log("ERROR: " + JSON.stringify(err));
-          handleError(err, res, "GET/:id");
+          handleError(err, res, "POST/user");
         });
       });
     }
   })
 
-  .put('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id || !req.body.checkin_done) {
-      handleNoParams();
-    } else {
+  .put('/:id/user', function(req, res, next) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { handleNoParams(res); }
+    else {
       const attendanceRequest = req.body;
-
       pool.getConnection().then(function(mysqlConnection) {
-        const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.body.event_id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
+        const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
         mysqlConnection.query(sql)
         .then((result) => { // Fa el Response bo :)
           const attendanceResponse = {
-            'event_id' : req.body.event_id,
+            'event_id' : req.params.id,
             'uid' : req.body.uid,
             'provider' : req.body.provider,
             'checkin_done' : '1'
@@ -295,7 +292,45 @@ router
         })
         .catch((err) => {
           console.log("ERROR: " + JSON.stringify(err));
-          handleError(err, res, "GET/:id");
+          handleError(err, res, "PUT/:id/user");
+        });
+      });
+    }
+  })
+
+  .delete('/:id/user', function(req, res, next) {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id) {  handleNoParams(res); }
+    else {
+      pool.getConnection().then(function(mysqlConnection) {
+        const sql = "SELECT checkin_done FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+        mysqlConnection.query(sql)
+        .then((result) => {
+          return new Promise(function(resolve, reject) {
+            if (result.length == 0) {
+              resolve("No cal eliminar res perquè no existeix");
+            }
+            else if (result[0].checkin_done) {
+              reject("No es pot desmarcar l'assitència si ja s'ha fet el check-in");
+            } else {
+              const sql = "DELETE FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+              resolve(mysqlConnection.query(sql));
+            }
+          });
+        })
+        .then((result) => { // Fa el Response bo :)
+          res
+            .status(200)
+            .json({})
+        })
+        .catch((err) => {
+          if (err == "No es pot desmarcar l'assitència si ja s'ha fet el check-in") {
+            res
+              .status(403)
+              .json({'error' : "No es pot desmarcar l'assitència si ja s'ha fet el check-in"})
+          } else {
+            console.log("ERROR: " + JSON.stringify(err));
+            handleError(err, res, "DELETE/:id/user/");
+          }
         });
       });
     }

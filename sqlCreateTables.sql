@@ -187,10 +187,19 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- begin attached script 'script'
-CREATE TRIGGER update_number_of_attendances_on_events_table
+DROP TRIGGER IF EXISTS `increase_number_of_attendances_on_events_table`;
+CREATE TRIGGER increase_number_of_attendances_on_events_table
 AFTER INSERT ON attendances
 FOR EACH ROW
   UPDATE events
      SET number_attendances = number_attendances + 1
    WHERE id = NEW.events_id;
+
+DROP TRIGGER IF EXISTS `decrease_number_of_attendances_on_events_table`;
+CREATE TRIGGER decrease_number_of_attendances_on_events_table
+AFTER DELETE ON attendances
+FOR EACH ROW
+ UPDATE events
+    SET number_attendances = number_attendances - 1
+  WHERE id = OLD.events_id;
 -- end attached script 'script'

@@ -352,16 +352,16 @@ describe('route of events', function() {
     });
   });
 
-  describe('PUT /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it('should mark the check-in of an event from an user', function(done) {
+  describe('PUT /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should mark the check-in of an event from a user', function(done) {
+      aux_id = 'E0-001-093875660-9';
       const params = {
         'uid' : 1,
         'provider' : 'provider',
-        'event_id' : 'E0-001-093875660-9',
         'checkin_done' : '1'
       };
       request
-        .put('/events/user')
+        .put('/events/'+aux_id+'/user')
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)
@@ -369,10 +369,63 @@ describe('route of events', function() {
       .then((res) => {
         expect(res.body).to.have.property('attendance');
         const attendanceResponse = res.body.attendance;
-        expect(attendanceResponse).to.have.property('event_id', params.event_id);
+        expect(attendanceResponse).to.have.property('event_id', aux_id);
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
         expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        done();
+      }, done)
+    });
+  });
+
+  describe('DELETE /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    after(function() {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'event_id' : 'E0-001-096844204-0@2016102500'
+      };
+      request
+        .post('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+    });
+    it('should delete an event from a user with the check-in not done', function(done) {
+      aux_id = 'E0-001-096844204-0@2016102500';
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider'
+      };
+      request
+        .delete('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.be.empty
+
+        done();
+      }, done)
+    });
+    it('should not delete an event from a user with the check-in done', function(done) {
+      aux_id = 'E0-001-093875660-9' // no ha de deixar, perquè té check-in
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider'
+      };
+      request
+        .delete('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(403)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.have.property('error')
+          .and.to.be.eql("No es pot desmarcar l'assitència si ja s'ha fet el check-in");
+
         done();
       }, done)
     });

@@ -571,7 +571,6 @@ Un exemple seria el següent:
   - Exactament les mateixes dades per cada esdeveniment que a **GET /events/:id/** però amb un atribut més per a aquest usuari: **checkin_done**, que pot ser *1* si l'ha fet i *0* si no.  
 
 ### POST /events/user/
-
 POST per un "assistiré" d'un usuari a un esdeveniment.
 
 #### Paràmetres d'entrada
@@ -596,16 +595,16 @@ Si tot ha anat bé, retorna el següent:
 }
 ```
 
-### PUT /events/user/
-
+### PUT /events/:id/user/
 PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
+Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
+**FALTA que el check-in li doni els takes que li ha de donar, però després ho faig** :ok_hand: :smile: :sunglasses:  
 
 #### Paràmetres d'entrada
 Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot fer un check-in d'ell mateix a la nostra API (**encara no implementat** :smile: :octocat:).  
 Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
 ```javascript
 {
-  'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
@@ -621,6 +620,28 @@ Si tot ha anat bé, retorna el següent:
   'provider' : 'facebook',
   'checkin_done' : '1'
 }
+```
+
+### DELETE /events/:id/user/
+DELETE d'una assitència a un esdeveniment (si s'ha fet el check-in a aquest esdeveniment, donarà error i no s'esborrarà l'assitència).
+Un exemple d'aquest DELETE seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
+
+#### Paràmetres d'entrada
+Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot desmarcar la seva assitència a un esdeveniment (**encara no implementat** :smile: :octocat:).  
+Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+```javascript
+{
+  'uid' : 1234, // paràmetre obligatori
+  'provider' : 'facebook', // paràmetre obligatori
+  'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
+}
+```
+
+#### Paràmetres de sortida
+Si tot ha anat bé, no retorna res (un JSON buit).
+Si ha hagut l'ERROR de "no es pot esborrar aquesta assitència perquè ja ha fet check-in", retorna el següent:
+```javascript
+'error' : { 'No es pot desmarcar l'assitència si ja s'ha fet el check-in' }
 ```
 
 ## Rewards API (Peticions de recompenses)
