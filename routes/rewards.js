@@ -11,7 +11,6 @@ const pool  = mysql.createPool({
 });
 
 function handleError(err, res, requestVerb) {
-  console.log("Error "+requestVerb+" : " + JSON.stringify(err));
   res
     .status(500)
     .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
@@ -41,8 +40,10 @@ router
           .json({rewards: result})
       })
       .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
         handleError(err, res, "GET");
+      })
+      .finally(() => {
+        pool.releaseConnection(mysqlConnection);
       });
     });
   })
@@ -88,8 +89,10 @@ router
             .json(rewardsResponse)
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET/user");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }
@@ -168,8 +171,10 @@ router
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET/user");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }

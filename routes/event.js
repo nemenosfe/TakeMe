@@ -21,7 +21,6 @@ function handleError(err, res, requestVerb) {
       .status(err.error.status_code)
       .json({error: true, message: err.error.error_description})
   } else {
-    console.log("Error "+requestVerb+" : " + JSON.stringify(err));
     res
       .status(500)
       .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
@@ -134,8 +133,10 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         })
       });
     }
@@ -206,8 +207,10 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET/user");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }
@@ -265,8 +268,10 @@ router
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "POST/user");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }
@@ -291,8 +296,10 @@ router
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "PUT/:id/user");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }
@@ -328,9 +335,11 @@ router
               .status(403)
               .json({'error' : "No es pot desmarcar l'assitència si ja s'ha fet el check-in"})
           } else {
-            console.log("ERROR: " + JSON.stringify(err));
             handleError(err, res, "DELETE/:id/user/");
           }
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
     }
@@ -363,8 +372,10 @@ router
             .json({event: eventEventful})
         })
         .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res, "GET/:id");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
         });
       });
 
