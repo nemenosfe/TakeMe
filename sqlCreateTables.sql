@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `start_time` DATETIME NULL,
   `stop_time` DATETIME NULL,
   `number_attendances` INT NOT NULL DEFAULT 0,
+  `takes` INT NOT NULL DEFAULT 5,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -185,7 +186,6 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
 -- begin attached script 'script'
 DROP TRIGGER IF EXISTS `increase_number_of_attendances_on_events_table`;
 CREATE TRIGGER increase_number_of_attendances_on_events_table
