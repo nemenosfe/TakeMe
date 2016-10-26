@@ -598,7 +598,7 @@ Si tot ha anat bé, retorna el següent:
 ### PUT /events/:id/user/
 PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
 Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
-**FALTA que el check-in li doni els takes que li ha de donar, però després ho faig** :ok_hand: :smile: :sunglasses:  
+**Falta que el check-in li doni els takes que li ha de donar, però no ho podem implementar en aquesta iteració encara perquè haurem de definir bé el tema dels takes, els nivels, les recompenses i els 'logros' abans de programar-ho.** :ok_hand: :smile: :sunglasses:  
 
 #### Paràmetres d'entrada
 Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot fer un check-in d'ell mateix a la nostra API (**encara no implementat** :smile: :octocat:).  
