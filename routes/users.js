@@ -53,7 +53,7 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("SELECT * FROM users")
         .then((result) => {
-          //console.log("Get users done: " + JSON.stringify(result));
+          console.log("Get users done: " + JSON.stringify(result));
           res
             .status(200)
             .json({users: result})
@@ -83,7 +83,7 @@ router
             const singleUserQuery = "SELECT * FROM users WHERE uid = "+uid+" AND provider = '"+provider+"'";
             mysqlConnection.query(singleUserQuery)
             .then((result) => {
-            //console.log("Get user done: " + JSON.stringify(result));
+            console.log("Get user done: " + JSON.stringify(result));
             res
               .status(200)
               .json({user: result[0]})
@@ -121,7 +121,7 @@ router
             //console.log("Query: " + updateQuery);
             mysqlConnection.query(updateQuery)
           .then((result) => {
-            //console.log("PUT events done: " + JSON.stringify(result));
+            console.log("PUT events done: " + JSON.stringify(result));
             res
               .status(200)
               .json({user: user})

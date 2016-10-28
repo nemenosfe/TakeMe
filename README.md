@@ -772,6 +772,29 @@ No cal cap paràmetre d'entrada.
 #### Paràmetres de sortida
 Un exemple de sortida seria el següent:
 ```javascript
+[
+    {
+        "uid":1,
+        "provider":"provider",
+        "name":"Nom1",
+        "surname":"Cognom1",
+        "email":"emailfals1@gmail.com",
+        "takes":2320,
+        "experience":3800,
+        "level":2
+    },
+    (...)
+    {
+        "uid":31,
+        "provider":"providerTest",
+        "name":"nameTest",
+        "surname":"surnameTest",
+        "email":"email31@test.com",
+        "takes":0,
+        "experience":0,
+        "level":1
+    }
+]
 ```
 
 ### GET /users/:uid
@@ -784,6 +807,16 @@ Els paràmetres d'entrada necessaris són els següents:
 #### Paràmetres de sortida
 Un exemple de sortida seria el següent:
 ```javascript
+{
+    "uid":31,
+    "provider":"providerTest",
+    "name":"nameTest",
+    "surname":"surnameTest",
+    "email":"email31@test.com",
+    "takes":0,
+    "experience":0,
+    "level":1
+}
 ```
 
 ### POST /users/
@@ -808,9 +841,7 @@ Un exemple seria:
 ```
 
 #### Paràmetres de sortida
-Un exemple de sortida seria el següent:
-```javascript
-```
+No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
 
 ### PUT /users/:uid
 PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid.
@@ -832,9 +863,7 @@ Un exemple seria:
 ```
 
 #### Paràmetres de sortida
-Un exemple de sortida seria el següent:
-```javascript
-```
+No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
 
 ### DELETE /users/:uid
 DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid.
