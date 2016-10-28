@@ -20,9 +20,8 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get('/events')
+        .get("/events/?location="+params.location+"&within="+params.within+"&page_size="+params.page_size+"&page_number="+params.page_number)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
@@ -63,9 +62,8 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get('/events')
+        .get('/events/?keywords='+params.keywords+"&page_size="+params.page_size+"&page_number="+params.page_number)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
@@ -104,9 +102,8 @@ describe('route of events', function() {
         'category' : 'art'
       };
       request
-        .get('/events')
+        .get('/events/?category='+params.category)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
@@ -147,9 +144,8 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get('/events')
+        .get('/events/?date='+params.date+"&page_size="+params.page_size+"&page_number="+params.page_number)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
@@ -191,9 +187,8 @@ describe('route of events', function() {
         'page_size' : '25'
       };
       request
-        .get('/events')
+        .get('/events/?category='+params.category+"&date="+params.date+"&location="+params.location+"&page_size="+params.page_size)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
@@ -274,9 +269,8 @@ describe('route of events', function() {
         'page_size' : 20
       };
       request
-        .get('/events/user')
+        .get('/events/user/?uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
         .set('Accept', 'application/json')
-        .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {

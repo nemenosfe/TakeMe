@@ -46,7 +46,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get('/rewards/user')
+        .get('/rewards/user/?uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)
