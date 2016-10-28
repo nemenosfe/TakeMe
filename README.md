@@ -132,7 +132,6 @@ Pàrametres d'entrada per totes les peticions:
 	- API key (encara que ara per ara funciona sense API key :stuck_out_tongue:)
 
 ### GET /events/
-
 GET d'una llista d'esdeveniments.  
 
 #### Paràmetres d'entrada
@@ -151,7 +150,7 @@ GET d'una llista d'esdeveniments.
   - Si s'envia el paràmetre *location*, també es pot enviar el paràmetre **within** amb un *int* que s'ignifica la quantitat de quilòmetres de radi des d'aquest location (per defecte, si no s'envia res, són 350 ara per ara).  
   - També es possible enviar un **page_size** que vol dir quants esdeveniments màxim volem rebre de tots els que hi ha amb aquestes condicions. Per defecte, si no s'envia res, és *10*.
   - I per últim també es pot enviar un **page_number** amb quina pàgina volem rebre amb *page_size* esdeveniments de la llista total d'esdeveniments estem, tenint en compte que cada pàgina té *page_size* esdeveniments. Per exemple, si *page_size* val 10 i *page_number* val 2, tindrem la llista d'esdeveniments de l'11 al 20. *page_number* és opcional i per defecte val 1.    
-  - Un exemple de paràmetres d'entrada:  
+  - Un exemple de paràmetres d'entrada (en forma de JSON, però s'envien a la URL):  
 ```javascript
 {
   'category' : 'comedy',
@@ -238,7 +237,6 @@ GET d'una llista d'esdeveniments.
   - En les dades d'un esdeveniment no ve ni la **categoria** ni el **preu**, però totes dues dades sí venen en el **GET /events/:id** pel GET d'un esdeveniment concret pel seu ID.  
 
 ### GET /events/:id
-
 GET d'un esdeveniment en particular pel seu ID.  
 
 #### Paràmetres d'entrada
@@ -350,12 +348,11 @@ Les diferències respecte a **GET /events/** són les següents:
     - *city_name* -> *city*
 
 ### GET /events/user/
-
 GET de tots els esdeveniments d'un usuari.  
 
 #### Paràmetres d'entrada
 Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+Exemple de paràmetre d'entrada, del que hi ha per ara a falta del token, (en forma de JSON, però s'envien a la URL):
 ```javascript
 {
   'uid' : 1234, // paràmetre obligatori
@@ -837,7 +834,6 @@ Un exemple de paràmetres de sortida seria el següent:
 ```  
 
 ### POST /achievements/user/
-
 POST per quan usuari guanya un 'logro'.
 
 #### Paràmetres d'entrada
