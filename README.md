@@ -761,6 +761,91 @@ Si tot ha anat bé, retorna el següent:
 }
 ```
 
+## Users API (Peticions d'usuaris)
+
+### GET /users/
+GET de tots els usuaris de la base de dades.
+
+#### Paràmetres d'entrada
+No cal cap paràmetre d'entrada.
+
+#### Paràmetres de sortida
+Un exemple de sortida seria el següent:
+```javascript
+```
+
+### GET /users/:uid
+GET de l'usuari identificat per uid.
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents:
+ - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris.
+
+#### Paràmetres de sortida
+Un exemple de sortida seria el següent:
+```javascript
+```
+
+### POST /users/
+POST utilitzat per tal d'afegir un nou usuari a la base de dades.
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents:
+ - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
+ - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
+ - **name**: Paràmetre que correspon al nom de l'usuari.
+ - **surname**: Paràmetre que correspon al cognom de l'usuari.
+ - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
+Un exemple seria:
+```javascript
+{
+    'uid' : 31,
+    'provider' : 'providerTest',
+    'name' : 'nameTest',
+    'surname' : 'surnameTest',
+    'email' : 'email31@test.com'
+}
+```
+
+#### Paràmetres de sortida
+Un exemple de sortida seria el següent:
+```javascript
+```
+
+### PUT /users/:uid
+PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid.
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents:
+ - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
+ - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
+ - **name**: Paràmetre que correspon al nom de l'usuari.
+ - **surname**: Paràmetre que correspon al cognom de l'usuari.
+ - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
+Un exemple seria:
+```javascript
+{
+    'name' : 'updatedName',
+    'surname' : 'updatedSurname',
+    'email' : updatedMail
+};
+```
+
+#### Paràmetres de sortida
+Un exemple de sortida seria el següent:
+```javascript
+```
+
+### DELETE /users/:uid
+DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid.
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents:
+ - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
+
+#### Paràmetres de sortida
+No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
+
 ## Achievements API (Peticions de 'logros')
 
 ### GET /achievements/
