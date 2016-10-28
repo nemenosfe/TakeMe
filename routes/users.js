@@ -125,14 +125,18 @@ router
     })
 
     .delete('/:id', function(req, res, next) {
-      console.log("DELETE:id", req.params.id)
+      //console.log("DELETE:id", req.params.id)
+      var uid = req.params.id.split('-')[0];
+      var provider = req.params.id.split('-')[1];
       if(!req.params.id) {
         res
           .status(403)
           .json({error: true, message: 'Empty params'})
       } else {
         pool.getConnection().then(function(mysqlConnection) {
-          mysqlConnection.query("DELETE FROM users WHERE id = ($1) AND provider = ($2);", [req.params.id, req.params.provider])
+            const deleteQuery = "DELETE FROM users WHERE uid = "+uid+" AND provider = '"+provider+"'";
+            //console.log(deleteQuery);
+            mysqlConnection.query(deleteQuery)
           .then((result) => {
             res
               .status(200)

@@ -9,8 +9,36 @@ describe('Users route', function() {
 
     this.timeout(120000);
 
-    var random = Math.floor((Math.random() * 1000) + 1);
-    var randomemail = 'email' + random + '@test.com';
+    describe('POST /users', function() {
+        it('should create a new user', function(done) {
+            const params = {
+                'uid' : 31,
+                'provider' : 'providerTest',
+                'name' : 'nameTest',
+                'surname' : 'surnameTest',
+                'email' : 'email31@test.com'
+            };
+            request
+                .post('/users')
+                .set('Accept', 'application/json')
+                .send(params)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+            .then((res) => {
+                expect(res.body).to.have.property('user');
+                const userResponse = res.body.user;
+                expect(userResponse).to.have.property('uid', params.uid);
+                expect(userResponse).to.have.property('provider', params.provider);
+                expect(userResponse).to.have.property('name', params.name);
+                expect(userResponse).to.have.property('surname', params.surname);
+                expect(userResponse).to.have.property('email', params.email);
+                expect(userResponse).to.have.property('takes', 0);
+                expect(userResponse).to.have.property('experience', 0);
+                expect(userResponse).to.have.property('level', 1);
+                done();
+            }, done)
+        });
+    });
 
     describe('GET /users', function() {
         it('should return all users', function(done) {
@@ -60,39 +88,8 @@ describe('Users route', function() {
         });
     });
 
-    describe('POST /users', function() {
-        it('should create a new user', function(done) {
-            const params = {
-                'uid' : random,
-                'provider' : 'providerTest',
-                'name' : 'nameTest',
-                'surname' : 'surnameTest',
-                'email' : randomemail
-            };
-            request
-                .post('/users')
-                .set('Accept', 'application/json')
-                .send(params)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.have.property('user');
-                const userResponse = res.body.user;
-                expect(userResponse).to.have.property('uid', params.uid);
-                expect(userResponse).to.have.property('provider', params.provider);
-                expect(userResponse).to.have.property('name', params.name);
-                expect(userResponse).to.have.property('surname', params.surname);
-                expect(userResponse).to.have.property('email', params.email);
-                expect(userResponse).to.have.property('takes', 0);
-                expect(userResponse).to.have.property('experience', 0);
-                expect(userResponse).to.have.property('level', 1);
-                done();
-            }, done)
-        });
-    });
-
-    describe('PUT /users/:id', function(done) {
-        it.only('should update a user information', function() {
+    describe('PUT /users/:id', function() {
+        it('should update a user information', function(done) {
             var updatedMail = "updated" + 31 + "@test.com";
             const params = {
                 'name' : 'updatedName',
@@ -113,6 +110,20 @@ describe('Users route', function() {
                 expect(user).to.have.property('name', params.name);
                 expect(user).to.have.property('surname', params.surname);
                 expect(user).to.have.property('email', params.email);
+                done();
+            }, done)
+        });
+    });
+
+    describe('DELETE users/:id', function() {
+        it('should delete a user', function(done) {
+            request
+                .delete('/users/31-providerTest')
+                .set('Accept', 'application/json')
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            .then((res) => {
+                expect(res.body).to.be.empty;
                 done();
             }, done)
         });
