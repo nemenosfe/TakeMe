@@ -40,7 +40,10 @@ router
             res
               .status(500)
               .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-          });
+          })
+          .finally(() => {
+            pool.releaseConnection(mysqlConnection);
+          })
         });
       }
     })
@@ -60,7 +63,10 @@ router
           res
             .status(500)
             .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-        });
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
+        })
       });
     })
 
@@ -87,13 +93,16 @@ router
             res
               .status(500)
               .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-          });
+          })
+          .finally(() => {
+            pool.releaseConnection(mysqlConnection);
+          })
         });
       }
     })
 
     .put('/:id', function(req, res, next) {
-      console.log("PUT:id", req.params.id)
+      //console.log("PUT:id", req.params.id)
       if(!req.params.id || !req.body) {
         res
           .status(403)
@@ -101,13 +110,16 @@ router
       } else {
         //console.log("REQ.BODY: " + JSON.stringify(req.body));
         const user = req.body;
-        user.uid = int(req.params.id.split('-')[0]);
+        user.uid = parseInt(req.params.id.split('-')[0]);
+        user.provider = req.params.id.split('-')[1];
         pool.getConnection().then(function(mysqlConnection) {
             var uid = req.params.id.split('-')[0];
+            //console.log(uid);
             var provider = req.params.id.split('-')[1];
+            //console.log(provider);
             const updateQuery = "UPDATE users SET name='"+user.name+"', surname='"+user.surname+"', email='"+user.email+"' WHERE uid="+uid+" AND provider = '"+provider+"'";
-            console.log("Query: " + updateQuery);
-          mysqlConnection.query(updateQuery)
+            //console.log("Query: " + updateQuery);
+            mysqlConnection.query(updateQuery)
           .then((result) => {
             //console.log("PUT events done: " + JSON.stringify(result));
             res
@@ -119,7 +131,10 @@ router
             res
               .status(500)
               .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-          });
+          })
+          .finally(() => {
+            pool.releaseConnection(mysqlConnection);
+          })
         });
       }
     })
@@ -146,7 +161,10 @@ router
             res
               .status(500)
               .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
-          });
+          })
+          .finally(() => {
+            pool.releaseConnection(mysqlConnection);
+          })
         });
       }
     })
