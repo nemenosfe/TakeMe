@@ -152,37 +152,6 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `takemelegends`.`app`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `takemelegends`.`app` ;
-
-CREATE TABLE IF NOT EXISTS `takemelegends`.`app` (
-  `appkey` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`appkey`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `takemelegends`.`tokens`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `takemelegends`.`tokens` ;
-
-CREATE TABLE IF NOT EXISTS `takemelegends`.`tokens` (
-  `token` VARCHAR(255) NOT NULL,
-  `expiration_date` VARCHAR(45) NULL,
-  `users_uid` INT NOT NULL,
-  `users_provider` VARCHAR(30) NOT NULL,
-  PRIMARY KEY (`token`),
-  INDEX `fk_tokens_users1_idx` (`users_uid` ASC, `users_provider` ASC),
-  CONSTRAINT `fk_tokens_users1`
-    FOREIGN KEY (`users_uid` , `users_provider`)
-    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
