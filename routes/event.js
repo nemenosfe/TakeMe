@@ -84,26 +84,26 @@ function addNumberAttendancesToAllEventsJSON(eventsEventful, resultDB) {
 router
 
   .get('/', function(req, res, next) {
-    if( !req.body || (!req.body.location && !req.body.keywords && !req.body.category && !req.body.date) ) { handleNoParams(res); }
+    if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         let eventsResponse = null;
         let page_size = "10";
         let page_number = "1";
-        if (req.body.page_size) { page_size = req.body.page_size; }
-        if (req.body.page_number) { page_number = req.body.page_number; }
+        if (req.query.page_size) { page_size = req.query.page_size; }
+        if (req.query.page_number) { page_number = req.query.page_number; }
         let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
-        if (req.body.location) {
-          params = params + "&location=" + req.body.location;
+        if (req.query.location) {
+          params = params + "&location=" + req.query.location;
           let within = 350;
-          if (req.body.within) {
-            within = req.body.within;
+          if (req.query.within) {
+            within = req.query.within;
           }
           params = params + "&units=km&within=" + within;
         }
-        if (req.body.keywords) { params = params + "&keywords=" + req.body.keywords; }
-        if (req.body.category) { params = params + "&category=" + req.body.category; }
-        if (req.body.date) { params = params + "&date=" + req.body.date; }
+        if (req.query.keywords) { params = params + "&keywords=" + req.query.keywords; }
+        if (req.query.category) { params = params + "&category=" + req.query.category; }
+        if (req.query.date) { params = params + "&date=" + req.query.date; }
         doRequest(params, "search")
         .then((eventsResEventful) => {
           return new Promise(function(resolve, reject) {
@@ -143,12 +143,12 @@ router
   })
 
   .get('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider) { handleNoParams(res); }
+    if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
     else {
       let page_size = "20";
       let page_number = "1";
-      if (req.body && req.body.page_size) { page_size = req.body.page_size; }
-      if (req.body && req.body.page_number) { page_number = req.body.page_number; }
+      if (req.query && req.query.page_size) { page_size = req.query.page_size; }
+      if (req.query && req.query.page_number) { page_number = req.query.page_number; }
       const limit = page_size;
       const offset = page_size*(page_number-1);
       let eventsResponse = {
@@ -172,7 +172,7 @@ router
       let database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {
-      const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.body.uid + " AND at.users_provider='" + req.body.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
+      const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.query.uid + " AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
       mysqlConnection.query(sql)
         .then((DBresult) => {
           database_result = DBresult;

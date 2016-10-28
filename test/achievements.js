@@ -44,7 +44,7 @@ describe('route of achievements', function() {
         'page_size' : 20
       };
       request
-        .get('/achievements/user')
+        .get('/achievements/user/?uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)

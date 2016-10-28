@@ -28,8 +28,8 @@ router
   .get('/', function(req, res, next) {
     let page_size = "20";
     let page_number = "1";
-    if (req.body && req.body.page_size) { page_size = req.body.page_size; }
-    if (req.body && req.body.page_number) { page_number = req.body.page_number; }
+    if (req.query && req.query.page_size) { page_size = req.query.page_size; }
+    if (req.query && req.query.page_number) { page_number = req.query.page_number; }
     const limit = page_size;
     const offset = page_size*(page_number-1);
     pool.getConnection().then(function(mysqlConnection) {
@@ -49,12 +49,12 @@ router
   })
 
   .get('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider) { handleNoParams(res); }
+    if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
     else {
       let page_size = "20";
       let page_number = "1";
-      if (req.body && req.body.page_size) { page_size = req.body.page_size; }
-      if (req.body && req.body.page_number) { page_number = req.body.page_number; }
+      if (req.query && req.query.page_size) { page_size = req.query.page_size; }
+      if (req.query && req.query.page_number) { page_number = req.query.page_number; }
       const limit = page_size;
       const offset = page_size*(page_number-1);
       let rewardsResponse = {
@@ -64,7 +64,7 @@ router
       };
 
       pool.getConnection().then(function(mysqlConnection) {
-      const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.body.uid+"' AND p.users_provider = '"+req.body.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
+      const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.query.uid+"' AND p.users_provider = '"+req.query.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
       mysqlConnection.query(sql)
         .then((DBresult) => {
           rewardsResponse.total_items = DBresult.length;
