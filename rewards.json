@@ -1,0 +1,16 @@
+{
+    "rewards": [
+        {
+            "name":"Nombre 1",
+            "description":"Descripció de la primera recompensa",
+            "takes":200,
+            "level":1
+        },
+        {
+            "name":"Nombre 1",
+            "description":"Descripció de la segona recompensa",
+            "takes":200,
+            "level":1
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "achievements":[
+        {
+            "name":"Conciertos bronce",
+            "description":"Asiste a 10 conciertos."
+        },
+        {
+            "name":"Eventos deportivos plata",
+            "description":"Asiste a 25 eventos deportivos."
+        },
+        {
+            "name":"Espectáculos oro",
+            "description":"Asiste a 50 espectáculos."
+        }
+    ]
+}
