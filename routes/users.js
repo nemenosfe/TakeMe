@@ -24,10 +24,10 @@ router
         pool.getConnection().then(function(mysqlConnection) {
             //console.log("Table users created: " + JSON.stringify(result));
             const sqlInsertUserInDB = "INSERT INTO users values ("+user.uid+", '"+user.provider+"', '"+user.name+"', '"+user.surname+"', '"+user.email+"', 0, 0, 1);";
-            console.log(sqlInsertUserInDB);
+            //console.log(sqlInsertUserInDB);
             mysqlConnection.query(sqlInsertUserInDB)
           .then((result) => {
-            console.log("User inserted: " + JSON.stringify(result));
+            //console.log("User inserted: " + JSON.stringify(result));
             user.takes = 0;
             user.experience = 0;
             user.level = 1;
@@ -36,7 +36,7 @@ router
               .json({user: user})
           })
           .catch((err) => {
-            console.log("Error: " + JSON.stringify(err));
+            //console.log("Error: " + JSON.stringify(err));
             res
               .status(500)
               .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
@@ -53,7 +53,7 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query("SELECT * FROM users")
         .then((result) => {
-          console.log("Get users done: " + JSON.stringify(result));
+          //console.log("Get users done: " + JSON.stringify(result));
           res
             .status(200)
             .json({users: result})
@@ -83,7 +83,7 @@ router
             const singleUserQuery = "SELECT * FROM users WHERE uid = "+uid+" AND provider = '"+provider+"'";
             mysqlConnection.query(singleUserQuery)
             .then((result) => {
-            console.log("Get user done: " + JSON.stringify(result));
+            //console.log("Get user done: " + JSON.stringify(result));
             res
               .status(200)
               .json({user: result[0]})
@@ -167,6 +167,84 @@ router
           })
         });
       }
+    })
+
+    .post('/:id/preferences', function(req, res, next) {
+        if(!req.body) {
+          res
+            .status(403)
+            .json({error: true, message: 'Empty body'})
+        } else {
+            let preference = req.body
+
+            pool.getConnection().then(function(mysqlConnection) {
+                const insertQuery = "INSERT INTO userPreferences values ("+preference.uid+", '"+preference.provider+"', '"+preference.categories+"', '"+preference.locations+"', "+preference.start_hour+", "+preference.end_hour+", "+preference.week+", "+preference.weekend+");";
+                //console.log(insertQuery);
+                mysqlConnection.query(insertQuery)
+                .then((result) => {
+                    res
+                        .status(201)
+                        .json({preference : preference})
+                })
+                .catch((err) => {
+                    res
+                        .status(500)
+                        .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+                })
+                .finally(() => {
+                    pool.releaseConnection(mysqlConnection);
+                })
+            });
+        }
+    })
+
+    .get('/:id/preferences', function(req, res, next) {
+        pool.getConnection().then(function(mysqlConnection) {
+            var uid = req.params.id.split('-')[0];
+            var provider = req.params.id.split('-')[1];
+            mysqlConnection.query("SELECT * FROM userPreferences WHERE uid = "+uid+" AND provider = '"+provider+"'")
+            .then((result) => {
+                res
+                .status(200)
+                .json({preferences: result})
+            })
+            .catch((err) => {
+                res
+                .status(500)
+                .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+            })
+            .finally(() => {
+                pool.releaseConnection(mysqlConnection);
+            })
+        });
+    })
+
+    .put('/:id/preferences', function(req, res, next) {
+        if(!req.body) {
+          res
+            .status(403)
+            .json({error: true, message: 'Empty body'})
+        } else {
+            let preference = req.body
+            pool.getConnection().then(function(mysqlConnection) {
+                const updateQuery = "UPDATE userPreferences SET categories='"+preference.categories+"', locations='"+preference.locations+"', start_hour='"+preference.start_hour+"', end_hour='"+preference.end_hour+"', week='"+preference.week+"', weekend='"+preference.weekend+"' WHERE uid="+uid+" AND provider = '"+provider+"'";
+                //console.log(updateQuery);
+                mysqlConnection.query(updateQuery)
+                .then((result) => {
+                    res
+                        .status(200)
+                        .json({message : "Preference updated"})
+                })
+                .catch((err) => {
+                    res
+                        .status(500)
+                        .json({error: true, message: 'DB error: ' +  JSON.stringify(err)})
+                })
+                .finally(() => {
+                    pool.releaseConnection(mysqlConnection);
+                })
+            });
+        }
     })
 
 module.exports = router
