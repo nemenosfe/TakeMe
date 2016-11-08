@@ -16,7 +16,7 @@ describe('route of events', function() {
       const params = {
         'location' : 'Barcelona',
         'within' : '20',
-        'page_size' : '15',
+        'page_size' : '5',
         'page_number' : '2'
       };
       request
@@ -26,13 +26,14 @@ describe('route of events', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
+        expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
-        const events = res.body.events.event;
+        const events = res.body.events;
 
         expect(events).to.be.an('array')
           .and.to.have.length.of(params.page_size)
 
-        const eventResponse = events[0];
+        const eventResponse = events[0].event;
 
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')
@@ -42,15 +43,21 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('stop_time')
         expect(eventResponse).to.have.property('venue_id')
         expect(eventResponse).to.have.property('venue_name')
-        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('region')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('postal_code')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('image')
+        expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
-
+          .and.to.be.an.integer;
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
         done();
       }, done)
@@ -68,13 +75,14 @@ describe('route of events', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
+        expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
-        const events = res.body.events.event;
+        const events = res.body.events;
 
         expect(events).to.be.an('array')
           .and.to.have.length.of(params.page_size)
 
-        const eventResponse = events[0];
+        const eventResponse = events[0].event;
 
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')
@@ -84,14 +92,21 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('stop_time')
         expect(eventResponse).to.have.property('venue_id')
         expect(eventResponse).to.have.property('venue_name')
-        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('region')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('postal_code')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('image')
+        expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
+          .and.to.be.an.integer;
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
 
         done();
@@ -108,13 +123,14 @@ describe('route of events', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
+        expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
-        const events = res.body.events.event;
+        const events = res.body.events;
 
         expect(events).to.be.an('array')
           .and.to.have.length.of(10)
 
-        const eventResponse = events[0];
+        const eventResponse = events[0].event;
 
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')
@@ -124,14 +140,21 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('stop_time')
         expect(eventResponse).to.have.property('venue_id')
         expect(eventResponse).to.have.property('venue_name')
-        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('region')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('postal_code')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('image')
+        expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
+          .and.to.be.an.integer;
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
 
         done();
@@ -150,13 +173,14 @@ describe('route of events', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
+        expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
-        const events = res.body.events.event;
+        const events = res.body.events;
 
         expect(events).to.be.an('array')
           .and.to.have.length.of(params.page_size)
 
-        const eventResponse = events[0];
+        const eventResponse = events[0].event;
 
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')
@@ -166,14 +190,21 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('stop_time')
         expect(eventResponse).to.have.property('venue_id')
         expect(eventResponse).to.have.property('venue_name')
-        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('region')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('postal_code')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('image')
+        expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
+          .and.to.be.an.integer;
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
 
         done();
@@ -193,13 +224,15 @@ describe('route of events', function() {
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
+        expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
-        const events = res.body.events.event;
-        //console.log(JSON.stringify(res.body));
+        const events = res.body.events;
+
         expect(events).to.be.an('array')
           .and.to.have.length.of(params.page_size)
 
-        const eventResponse = events[0];
+        const eventResponse = events[0].event;
+
         //console.log("eventResponse: --> " + JSON.stringify(eventResponse));
         expect(eventResponse).to.have.property('id')
         expect(eventResponse).to.have.property('title')
@@ -209,14 +242,21 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('stop_time')
         expect(eventResponse).to.have.property('venue_id')
         expect(eventResponse).to.have.property('venue_name')
-        expect(eventResponse).to.have.property('venue_address')
+        expect(eventResponse).to.have.property('address')
+        expect(eventResponse).to.have.property('city')
+        expect(eventResponse).to.have.property('region')
+        expect(eventResponse).to.have.property('country')
+        expect(eventResponse).to.have.property('postal_code')
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
-        expect(eventResponse).to.have.property('image')
+        expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
+          .and.to.be.an.integer;
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
 
         done();
@@ -225,7 +265,7 @@ describe('route of events', function() {
   });
 
   describe('GET /events/:id', function() {
-    it('should obtain an event with all its info when that event was not created from our app', function(done) {
+    it.skip('should obtain an event with all its info when that event was not created from our app', function(done) {
       request
         .get('/events/' + aux_id)
         .set('Accept', 'application/json')
@@ -255,13 +295,15 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances', 0)
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
         done();
       }, done)
     });
   });
 
-  describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe.skip('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
     it('should obtain all events from a user', function(done) {
       const params = {
         'uid' : 1,
@@ -315,6 +357,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('checkin_done', 1)
         expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
+        expect(eventResponse).not.to.have.property('links')
+        expect(eventResponse).not.to.have.property('performers')
 
         done();
       }, done)

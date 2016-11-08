@@ -73,11 +73,60 @@ function findEventInEventfulResponseByID(eventsEventful, id) { // No puc fer cer
   }
 }
 
-function addNumberAttendancesToAllEventsJSON(eventsEventful, resultDB) {
-  for (let pos = resultDB.length - 1; pos >=0; pos--) {
-    const position = findEventInEventfulResponseByID(eventsEventful, resultDB[pos].id);
-    eventsEventful.events.event[position]["number_attendances"] = resultDB[pos].number_attendances;
+function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
+  const mid = Math.floor(DBresult.length / 2);
+
+  if (DBresult.length === 0) { return -1; } // No trobat
+  else if (DBresult[mid].toString() === id.toString()) { return mid; } // Trobat
+  else if (id.toString() > DBresult[mid].toString()) { return findEventInDatabaseResponseByID(DBresult.slice(mid, DBresult.length), id); }
+  else { return findEventInDatabaseResponseByID(DBresult.slice(0, mid), id); }
+}
+
+function getNumberOfAssitancesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
+  const pos = findEventInDatabaseResponseByID(DBresult, id);
+  if (pos > -1) { return resultDB[position].number_attendances; }
+  else { return 0; }
+}
+
+function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
+  // Prepara les dades generals:
+  let myEventsResponse = {
+    total_items : eventsEventful.total_items,
+    page_number : eventsEventful.page_number,
+    page_size : eventsEventful.page_size,
+    events : []
+  };
+
+  // Prepara les dades d'esdeveniments:
+  for (let position = eventsEventful.page_size - 1; position >=0; position--) {
+    const event_id = eventsEventful.events.event[position]["id"];
+    const number_attendances = getNumberOfAssitancesFromDBResultByID(resultDB, event_id);
+    const newEvent = {
+      event : {
+        id : event_id,
+        title : eventsEventful.events.event[position]["title"],
+        description : eventsEventful.events.event[position]["description"],
+        number_attendances : number_attendances,
+        url : eventsEventful.events.event[position]["url"],
+        all_day :  eventsEventful.events.event[position]["all_day"],
+        start_time :  eventsEventful.events.event[position]["start_time"],
+        stop_time :  eventsEventful.events.event[position]["stop_time"],
+        venue_display : eventsEventful.events.event[position]["venue_display"],
+        venue_id : eventsEventful.events.event[position]["venue_id"],
+        venue_name : eventsEventful.events.event[position]["venue_name"],
+        address : eventsEventful.events.event[position]["venue_address"],
+        city : eventsEventful.events.event[position]["city_name"],
+        country : eventsEventful.events.event[position]["country_name"],
+        region : eventsEventful.events.event[position]["region_name"],
+        postal_code : eventsEventful.events.event[position]["postal_code"],
+        latitude : eventsEventful.events.event[position]["latitude"],
+        longitude : eventsEventful.events.event[position]["longitude"],
+        images : eventsEventful.events.event[position]["image"]
+      } // Per ara no retornem "Performers"
+    };
+    myEventsResponse.events[position] = newEvent;
   }
+  return myEventsResponse;
 }
 
 
@@ -87,7 +136,7 @@ router
     if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        let eventsResponse = null;
+        let eventsEventful;
         let page_size = "10";
         let page_number = "1";
         if (req.query.page_size) { page_size = req.query.page_size; }
@@ -106,17 +155,17 @@ router
         if (req.query.date) { params = params + "&date=" + req.query.date; }
         doRequest(params, "search")
         .then((eventsResEventful) => {
+          eventsEventful = eventsResEventful;
           return new Promise(function(resolve, reject) {
             let ids = [];
             if (eventsResEventful.error) {
               reject(eventsResEventful.error);
             } else {
-              eventsResponse = eventsResEventful;
               for (let index = eventsResEventful.events.event.length - 1; index >=0; index--) {
                 eventsResEventful.events.event[index]["number_attendances"] = 0;
                 ids.push("'" + eventsResEventful.events.event[index].id + "'");
               }
-              const sql = "SELECT id, number_attendances FROM events WHERE id IN ("+ids+") ;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
+              const sql = "SELECT id, number_attendances FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
               const resultDB = mysqlConnection.query(sql);
               resolve(resultDB);
             }
@@ -124,10 +173,11 @@ router
         })
         .then((resultDB) => {
           return new Promise(function(resolve, reject) {
-            resolve(addNumberAttendancesToAllEventsJSON(eventsResponse, resultDB));
+            const eventsResponse = prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB);
+            resolve(eventsResponse);
           });
         })
-        .then((result) => {
+        .then((eventsResponse) => {
           res
             .status(200)
             .json(eventsResponse)
@@ -359,9 +409,14 @@ router
               reject(eventResEventful.error);
             } else {
               eventEventful = eventResEventful;
-              const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
-              resolve(mysqlConnection.query(sql));
+              resolve("hola");
             }
+          });
+        })
+        .then((result) => {
+          return new Promise(function(resolve, reject) {
+            const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
+            resolve(mysqlConnection.query(sql));
           });
         })
         .then((result) => {
