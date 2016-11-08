@@ -335,78 +335,11 @@ Un exemple seria el següent:
           "latitude": "39.3360595703125",
           "longitude": "-84.4053573608398",
           "images": null,
-          "performers": {
-            "performer": [
-              {
-                "creator": "wilwheaton",
-                "linker": "dipalisikand",
-                "name": "Wil Wheaton",
-                "url": "http://concerts.eventful.com/Wil-Wheaton?utm_source=apis&utm_medium=apim&utm_campaign=apic",
-                "id": "P0-001-000000567-9",
-                "short_bio": "Author, Blogger, Actor"
-              },
-              {
-                "creator": "misscat",
-                "linker": "prabhukal",
-                "name": "MICH!GAN",
-                "url": "http://concerts.eventful.com/MICH-GAN?utm_source=apis&utm_medium=apim&utm_campaign=apic",
-                "id": "P0-001-000007820-4",
-                "short_bio": " Hardcore / Punk / Metal"
-              }
-            ]
-          },
           "categories": {
             "category": [
               {
                 "name": "Concerts &amp; Tour Dates",
                 "id": "music"
-              }
-            ]
-          },
-          "tags": {
-            "tag": [
-              {
-                "owner": "evdb",
-                "id": "actor",
-                "title": "actor"
-              },
-              {
-                "owner": "evdb",
-                "id": "author",
-                "title": "author"
-              },
-              {
-                "owner": "evdb",
-                "id": "blogger",
-                "title": "blogger"
-              }
-            ]
-          },
-          "links": {
-            "link": [
-              {
-                "time": "2015-01-13 14:08:55",
-                "url": "http://foo.com",
-                "id": "33399387",
-                "type": "Info",
-                "description": "More Info<img alt=\"some\" src=\"http://img385.imageshack.us/img385/8363/fillerbu1.jpg\">",
-                "username": "edepotinc"
-              },
-              {
-                "time": "2015-01-13 14:54:35",
-                "url": "http://www.weblo.com",
-                "id": "8271086",
-                "type": "Blog",
-                "description": null,
-                "username": "Irfan"
-              },
-              {
-                "time": "2015-01-13 15:14:38",
-                "url": "http://frontier.cincinnati.com/calendar/proddisplay.asp?prodid=28356",
-                "id": "312146",
-                "type": "Official Site",
-                "description": "Details",
-                "username": "evdb"
               }
             ]
           },
@@ -444,56 +377,11 @@ Un exemple seria el següent:
           "latitude": "41.3833",
           "longitude": "2.18333",
           "images": null,
-          "performers": null,
           "categories": {
             "category": [
               {
                 "name": "Conferences &amp; Tradeshows",
                 "id": "conference"
-              }
-            ]
-          },
-          "tags": {
-            "tag": [
-              {
-                "owner": "evdb",
-                "id": "conference",
-                "title": "conference"
-              },
-              {
-                "owner": "evdb",
-                "id": "proexhibitscom",
-                "title": "proexhibits.com"
-              },
-              {
-                "owner": "evdb",
-                "id": "thetradeshowcalendarcom",
-                "title": "thetradeshowcalendar.com"
-              },
-              {
-                "owner": "evdb",
-                "id": "tradeshow",
-                "title": "tradeshow"
-              }
-            ]
-          },
-          "links": {
-            "link": [
-              {
-                "time": "2016-05-28 17:32:11",
-                "url": "http://www.mobileworldcongress.com/",
-                "id": "284436695",
-                "type": "Official Site",
-                "description": "Official Website",
-                "username": "evdb"
-              },
-              {
-                "time": "2016-05-28 17:32:11",
-                "url": "http://www.proexhibits.com/resources/worldwide-trade-show-calendar/",
-                "id": "284436694",
-                "type": "Info",
-                "description": "Event details at proexhibits.com!",
-                "username": "evdb"
               }
             ]
           },

@@ -303,7 +303,7 @@ describe('route of events', function() {
     });
   });
 
-  describe.skip('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
     it('should obtain all events from a user', function(done) {
       const params = {
         'uid' : 1,

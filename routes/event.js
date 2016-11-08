@@ -83,9 +83,12 @@ function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREco
 }
 
 function getNumberOfAssitancesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
-  const pos = findEventInDatabaseResponseByID(DBresult, id);
-  if (pos > -1) { return resultDB[position].number_attendances; }
-  else { return 0; }
+  if (DBresult) {
+    const pos = findEventInDatabaseResponseByID(DBresult, id);
+    if (pos > -1) { return resultDB[position].number_attendances; }
+    else { return 0; }
+  }
+  return 0; // Si DBresult és null, retornem 0
 }
 
 function getFinalJSONOfAnEvent(eventEventful, resultDB) {
@@ -219,12 +222,6 @@ router
           "events" : []
         }
       };
-      const requiredData = [
-          'title', 'description', 'url', 'all_day', 'start_time', 'stop_time',
-          'venue_display', 'venue_id', 'venue_name', 'address',
-          'city', 'country', 'region', 'postal_code', 'latitude', 'longitude',
-          'images', 'performers', 'categories', 'tags', 'links', 'free', 'price'
-      ];
       let database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {
@@ -244,18 +241,10 @@ router
           let moment = "past";
           for (let index = 0; index < eventResEventful.length; index++) {
             if (moment != "future") { moment = getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
-            let elementArray = {
-              'id' : database_result[index].events_id,
-              'checkin_done' : database_result[index].checkin_done,
-              'number_attendances' : database_result[index].number_attendances
-            };
-            requiredData.forEach(function(data) {
-              let value = eventResEventful[index][data];
-              elementArray[data] = value;
-            });
-            eventsResponse[moment]["events"][index] = {
-              'event' : elementArray
-            };
+            let elementArray = getFinalJSONOfAnEvent(eventResEventful[index], null);
+            elementArray.event.checkin_done = database_result[index].checkin_done;
+            elementArray.event.number_attendances = database_result[index].number_attendances;
+            eventsResponse[moment]["events"][index] = elementArray;
           }
 
           res
