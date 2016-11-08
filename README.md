@@ -205,7 +205,11 @@ GET d'una llista d'esdeveniments.
               "height":"48",
               "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
             }
-          }
+          },
+          ,
+          "categories": null, // Des d'aquí, sempre serà null
+           "free": null, // Des d'aquí, sempre serà null
+           "price": null, // Des d'aquí, sempre serà null
         },
         {
           // Informació de l'esdeveniment2
@@ -281,8 +285,7 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 ```  
 
 Les diferències respecte a **GET /events/** són les següents:  
-  - Abans hi ha havia un atribut *image* i ara es diu *images*.  
-  - S'han afegit els atributs: **categories**, **free** i **price**.  // **tags**, **links** performers
+  - Ara els atribus **categories**, **free** i **price** poden no ser *null*.
 
 ### GET /events/user/
 GET de tots els esdeveniments d'un usuari.  

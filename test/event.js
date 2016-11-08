@@ -265,7 +265,7 @@ describe('route of events', function() {
   });
 
   describe('GET /events/:id', function() {
-    it.skip('should obtain an event with all its info when that event was not created from our app', function(done) {
+    it('should obtain an event with all its info when that event was not created from our app', function(done) {
       request
         .get('/events/' + aux_id)
         .set('Accept', 'application/json')

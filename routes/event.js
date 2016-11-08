@@ -104,15 +104,18 @@ function getFinalJSONOfAnEvent(eventEventful, resultDB) {
       venue_display : eventEventful["venue_display"],
       venue_id : eventEventful["venue_id"],
       venue_name : eventEventful["venue_name"],
-      address : eventEventful["venue_address"],
-      city : eventEventful["city_name"],
-      country : eventEventful["country_name"],
-      region : eventEventful["region_name"],
+      address : eventEventful["venue_address"] || eventEventful["address"] || null,
+      city : eventEventful["city_name"] || eventEventful["city"] || null,
+      country : eventEventful["country_name"] || eventEventful["country"] || null,
+      region : eventEventful["region_name"] || eventEventful["region"] || null,
       postal_code : eventEventful["postal_code"],
       latitude : eventEventful["latitude"],
       longitude : eventEventful["longitude"],
-      images : eventEventful["image"]
-    } // Per ara no retornem "Performers"
+      images : eventEventful["image"] || eventEventful["images"] || null,
+      free : eventEventful["free"] || null,
+      price : eventEventful["price"] || null,
+      categories : eventEventful["categories"] || null
+    } // Per ara no retornem "Performers" ni "Tags" ni "Links"
   };
 }
 
@@ -412,22 +415,21 @@ router
               reject(eventResEventful.error);
             } else {
               eventEventful = eventResEventful;
-              resolve("hola");
+              const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
+              resolve(mysqlConnection.query(sql));
             }
           });
         })
-        .then((result) => {
+        .then((resultDB) => {
           return new Promise(function(resolve, reject) {
-            const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
-            resolve(mysqlConnection.query(sql));
+            resolve(getFinalJSONOfAnEvent(eventEventful, resultDB));
           });
         })
-        .then((result) => {
-          if (result.length == 0) { eventEventful["number_attendances"] = 0; }
-          else { eventEventful["number_attendances"] = result[0].number_attendances; }
+        .then((eventEventful) => {
           res
             .status(200)
-            .json({event: eventEventful})
+            .json(eventEventful)
+
         })
         .catch((err) => {
           handleError(err, res, "GET/:id");
