@@ -88,6 +88,34 @@ function getNumberOfAssitancesFromDBResultByID(DBresult, id) { // PREcondició: 
   else { return 0; }
 }
 
+function getFinalJSONOfAnEvent(eventEventful, resultDB) {
+  const event_id = eventEventful["id"];
+  const number_attendances = getNumberOfAssitancesFromDBResultByID(resultDB, event_id);
+  return {
+    event : {
+      id : event_id,
+      title : eventEventful["title"],
+      description : eventEventful["description"],
+      number_attendances : number_attendances,
+      url : eventEventful["url"],
+      all_day :  eventEventful["all_day"],
+      start_time :  eventEventful["start_time"],
+      stop_time :  eventEventful["stop_time"],
+      venue_display : eventEventful["venue_display"],
+      venue_id : eventEventful["venue_id"],
+      venue_name : eventEventful["venue_name"],
+      address : eventEventful["venue_address"],
+      city : eventEventful["city_name"],
+      country : eventEventful["country_name"],
+      region : eventEventful["region_name"],
+      postal_code : eventEventful["postal_code"],
+      latitude : eventEventful["latitude"],
+      longitude : eventEventful["longitude"],
+      images : eventEventful["image"]
+    } // Per ara no retornem "Performers"
+  };
+}
+
 function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
   // Prepara les dades generals:
   let myEventsResponse = {
@@ -99,32 +127,7 @@ function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
 
   // Prepara les dades d'esdeveniments:
   for (let position = eventsEventful.page_size - 1; position >=0; position--) {
-    const event_id = eventsEventful.events.event[position]["id"];
-    const number_attendances = getNumberOfAssitancesFromDBResultByID(resultDB, event_id);
-    const newEvent = {
-      event : {
-        id : event_id,
-        title : eventsEventful.events.event[position]["title"],
-        description : eventsEventful.events.event[position]["description"],
-        number_attendances : number_attendances,
-        url : eventsEventful.events.event[position]["url"],
-        all_day :  eventsEventful.events.event[position]["all_day"],
-        start_time :  eventsEventful.events.event[position]["start_time"],
-        stop_time :  eventsEventful.events.event[position]["stop_time"],
-        venue_display : eventsEventful.events.event[position]["venue_display"],
-        venue_id : eventsEventful.events.event[position]["venue_id"],
-        venue_name : eventsEventful.events.event[position]["venue_name"],
-        address : eventsEventful.events.event[position]["venue_address"],
-        city : eventsEventful.events.event[position]["city_name"],
-        country : eventsEventful.events.event[position]["country_name"],
-        region : eventsEventful.events.event[position]["region_name"],
-        postal_code : eventsEventful.events.event[position]["postal_code"],
-        latitude : eventsEventful.events.event[position]["latitude"],
-        longitude : eventsEventful.events.event[position]["longitude"],
-        images : eventsEventful.events.event[position]["image"]
-      } // Per ara no retornem "Performers"
-    };
-    myEventsResponse.events[position] = newEvent;
+    myEventsResponse.events[position] = getFinalJSONOfAnEvent(eventsEventful.events.event[position], resultDB);
   }
   return myEventsResponse;
 }
