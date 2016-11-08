@@ -1,16 +1,142 @@
 {
-    "rewards": [
-        {
-            "name":"Nombre 1",
-            "description":"Descripció de la primera recompensa",
-            "takes":200,
-            "level":1
-        },
-        {
-            "name":"Nombre 1",
-            "description":"Descripció de la segona recompensa",
-            "takes":200,
-            "level":1
-        }
+"rewards": [
+     {
+       "name": "Llavero RCDE",
+       "description": "Obtén un llavero del mayor rival del Barça.",
+       "takes": 100,
+       "level": 1
+     },
+     {
+       "name": "Llavero Barça",
+       "description": "Obtén el llavero del FCBarcelona",
+       "takes": 100,
+       "level": 1
+     },
+     {
+       "name": "Llavero RazzMataz",
+       "description": "Obtén un llavero de la discoteca RazzMataz",
+       "takes": 100,
+       "level": 1
+     },
+     {
+       "name": "Pegatina RCDE",
+       "description": "Recibe un sticker del RCDE",
+       "takes": 100,
+       "level": 1
+     },
+     {
+       "name": "Pegatina Barça",
+       "description": "Recibe un sticker del FCBarcelona",
+       "takes": 100,
+       "level": 1
+     },
+     {
+       "name": "Taza Fiesta",
+       "description": "Taza para superar las resacas",
+       "takes": 250,
+       "level": 2
+     },
+     {
+       "name": "Gorra VANS",
+       "description": "Gorra Vans of the Wall",
+       "takes": 250,
+       "level": 2
+     },
+     {
+       "name": "Taza Mr.Wonderfull",
+       "description": "Escoger una taza Mr.Wonderfull",
+       "takes": 300,
+       "level": 2
+     },
+     {
+       "name": "Saco Mochila",
+       "description": "Recibe un Saco Mochila para ir a los eventos",
+       "takes": 200,
+       "level": 2
+     },
+     {
+       "name": "Pack Pegatinas RCDE",
+       "description": "Recibe pack 15 stickers diferentes.",
+       "takes": 300,
+       "level": 3
+     },
+     {
+       "name": "Pack Pegatinas Barça",
+       "description": "Recibe pack 15 stickers diferentes.",
+       "takes": 300,
+       "level": 3
+     },
+     {
+       "name": "Pack Pegatinas Random",
+       "description": "Recibe pack 20 stickers aleatorios.",
+       "takes": 350,
+       "level": 3
+     },
+     {
+       "name": "T-Shirt",
+       "description": "Recompensa de una camiseta básica",
+       "takes": 500,
+       "level": 3
+     },
+     {
+       "name": "T-Shirt x2",
+       "description": "Recompensa de dos camisetas básicas",
+       "takes": 900,
+       "level": 3
+     },
+     {
+       "name": "T-Shirt Custom",
+       "description": "Recibe una Camiseta NO BÁSICA del evento que tu quieras",
+       "takes": 750,
+       "level": 4
+     },
+     {
+       "name": "Pack Tazas Parchís",
+       "description": "Obtén un pack de 4 trazas con los colores del parchís.",
+       "takes": 1000,
+       "level": 4
+     },
+     {
+       "name": "Funda para móvil",
+       "description": "Funda para móvil iPhone, Samsung s7 y HTC One",
+       "takes": 600,
+       "level": 4
+     },
+     {
+       "name": "Sudadera",
+       "description": "Sudadera de un evento o equipo preferido.",
+       "takes": 1200,
+       "level": 5
+     },
+     {
+       "name": "Entrada a un evento",
+       "description": "Entrada por el valor de 25€.",
+       "takes": 800,
+       "level": 5
+     },
+     {
+       "name": "Entrada Teatro x2",
+       "description": "Dos entradas para ir al teatro con compañia.",
+       "takes": 1500,
+       "level": 6
+     },
+     {
+       "name": "Altavoz  Bluetooth",
+       "description": "Altavoz Bluetooth para empezar la fiesta donde quieras.",
+       "takes": 2000,
+       "level": 6
+     },
+     {
+       "name": "Pack Merchandising",
+       "description": "Recibe un pack de stickers, tazas, t-shirts, una hoodie y más items sorpresa.",
+       "takes": 4500,
+       "level": 7
+     },
+     {
+       "name": "Entrada evento preferido",
+       "description": "Entrada a tu evento preferido. Escoge evento y tipo de entrada.",
+       "takes": 3000,
+       "level": 8
+     }
     ]
-}
+  }
