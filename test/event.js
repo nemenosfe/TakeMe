@@ -364,6 +364,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('all_day')
         expect(eventResponse).to.have.property('categories')
         expect(eventResponse.categories).to.have.property('category')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
