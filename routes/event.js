@@ -75,21 +75,21 @@ function findEventInEventfulResponseByID(eventsEventful, id) { // No puc fer cer
 
 function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
   const mid = Math.floor(DBresult.length / 2);
+  const id_db = DBresult[mid].id;
 
   if (DBresult.length === 0) { return -1; } // No trobat
-  else if (DBresult[mid].toString() === id.toString()) { return mid; } // Trobat
-  else if (id.toString() > DBresult[mid].toString()) { return findEventInDatabaseResponseByID(DBresult.slice(mid, DBresult.length), id); }
+  else if (id_db.toString() === id.toString()) { return mid; } // Trobat
+  else if (id.toString() > id_db.toString()) { return findEventInDatabaseResponseByID(DBresult.slice(mid, DBresult.length), id); }
   else { return findEventInDatabaseResponseByID(DBresult.slice(0, mid), id); }
 }
 
 function getNumberOfAssitancesAndTakesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
-  let number_attendances_and_takes = { number_attendances : 0, takes : -1 };
   if (DBresult) {
     const pos = findEventInDatabaseResponseByID(DBresult, id);
-    if (pos > -1) { number_attendances_and_takes.number_attendances = resultDB[position].number_attendances; }
+    if (pos > -1) { return { number_attendances : DBresult[pos].number_attendances, takes : DBresult[pos].takes }; }
   }
-  return number_attendances_and_takes; // Si DBresult és null, retornem 0
-} // PER FER LA PART DELS TAKES !!!!!!!!!!!!!!!!!!!!!!
+  return { number_attendances : 0, takes : -1 };
+}
 
 function getFinalJSONOfAnEvent(eventEventful, resultDB) {
   const event_id = eventEventful["id"];
@@ -296,7 +296,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+result.categories.category[0].id+"');";
+            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+result.categories.category[0].id+"');";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
@@ -407,10 +407,18 @@ router
               reject(eventResEventful.error);
             } else {
               eventEventful = eventResEventful;
-              const sql = "SELECT number_attendances, takes FROM events WHERE id = '"+req.params.id+"' ;";
-              resolve(mysqlConnection.query(sql));
+              let start = null;
+              let stop = null;
+              if (eventResEventful.start_time != null) { start = "'"+eventResEventful.start_time+"'"; }
+              if (eventResEventful.stop_time != null) { stop = "'"+eventResEventful.stop_time+"'"; }
+              const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+eventResEventful.categories.category[0].id+"');";
+              resolve(mysqlConnection.query(sqlInsertEventInDB));
             }
           });
+        })
+        .then((result) => {
+          const sql = "SELECT id, number_attendances, takes FROM events WHERE id = '"+req.params.id+"' ;";
+          return mysqlConnection.query(sql);
         })
         .then((resultDB) => {
           return new Promise(function(resolve, reject) {
