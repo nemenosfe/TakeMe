@@ -345,8 +345,22 @@ router
     else {
       const attendanceRequest = req.body;
       pool.getConnection().then(function(mysqlConnection) {
-        const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
-        mysqlConnection.query(sql)
+        mysqlConnection.query('START TRANSACTION')
+        .then((result) => { // Fa el check-in
+          const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Select takes de l'esdeveniment
+          const sql = "SELECT takes FROM events WHERE id = '"+req.params.id+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Guanya els takes de l'esdeveniment
+          const sql = "UPDATE users SET takes=takes+"+result[0].takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => {
+          return mysqlConnection.query('COMMIT');
+        })
         .then((result) => { // Fa el Response bo :)
           const attendanceResponse = {
             'event_id' : req.params.id,
@@ -358,7 +372,31 @@ router
             .status(200)
             .json({ attendance: attendanceResponse });
         })
+        /*
+        .then((result) => {
+          purchase_exists = result[0].purchase_exists;
+          return mysqlConnection.query('START TRANSACTION');
+        })
+        .then((result) => {
+          if (purchase_exists) {
+            var sqlRegisterPurchase = "UPDATE purchases SET amount = amount + "+amount+" WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+          } else {
+            var sqlRegisterPurchase = "INSERT INTO purchases VALUES ("+req.body.uid+", '"+req.body.provider+"', '"+req.body.reward_name+"', 1);";
+          }
+          return mysqlConnection.query(sqlRegisterPurchase);
+        })
+        .then((result) => {
+          const sqlDecreaseTakes = "UPDATE users SET takes = takes - "+(infoReward.takes*amount)+" WHERE uid = '"+req.body.uid+"' AND provider = '"+req.body.provider+"' ;";
+          return mysqlConnection.query(sqlDecreaseTakes);
+        })
+        .then((result) => {
+          mysqlConnection.query('COMMIT');
+          const sql = "SELECT u.takes, p.amount FROM purchases p, users u WHERE u.uid = p.users_uid AND u.provider = p.users_provider AND p.rewards_name='"+req.body.reward_name+"' AND p.users_uid = '"+req.body.uid+"' AND p.users_provider = '"+req.body.provider+"' ;";
+          return mysqlConnection.query(sql);
+        })
+        */
         .catch((err) => {
+          mysqlConnection.query('ROLLBACK');
           handleError(err, res, "PUT/:id/user");
         })
         .finally(() => {
