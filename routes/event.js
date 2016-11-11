@@ -74,11 +74,12 @@ function findEventInEventfulResponseByID(eventsEventful, id) { // No puc fer cer
 }
 
 function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
+  if (DBresult.length === 0) { return -1; } // No trobat
+
   const mid = Math.floor(DBresult.length / 2);
   const id_db = DBresult[mid].id;
 
-  if (DBresult.length === 0) { return -1; } // No trobat
-  else if (id_db.toString() === id.toString()) { return mid; } // Trobat
+  if (id_db.toString() === id.toString()) { return mid; } // Trobat
   else if (id.toString() > id_db.toString()) { return findEventInDatabaseResponseByID(DBresult.slice(mid, DBresult.length), id); }
   else { return findEventInDatabaseResponseByID(DBresult.slice(0, mid), id); }
 }
@@ -177,7 +178,7 @@ router
                 eventsResEventful.events.event[index]["number_attendances"] = 0;
                 ids.push("'" + eventsResEventful.events.event[index].id + "'");
               }
-              const sql = "SELECT id, number_attendances FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
+              const sql = "SELECT id, number_attendances, takes FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
               const resultDB = mysqlConnection.query(sql);
               resolve(resultDB);
             }
@@ -296,7 +297,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+result.categories.category[0].id+"');";
+            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+"');";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
@@ -411,7 +412,7 @@ router
               let stop = null;
               if (eventResEventful.start_time != null) { start = "'"+eventResEventful.start_time+"'"; }
               if (eventResEventful.stop_time != null) { stop = "'"+eventResEventful.stop_time+"'"; }
-              const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+eventResEventful.categories.category[0].id+"');";
+              const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+"');";
               resolve(mysqlConnection.query(sqlInsertEventInDB));
             }
           });

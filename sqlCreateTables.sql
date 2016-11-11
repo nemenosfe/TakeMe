@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `stop_time` DATETIME NULL,
   `number_attendances` INT NOT NULL DEFAULT 0,
   `takes` INT NOT NULL,
-  `category_id` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_event_has_category_idx` (`category_id` ASC),
   CONSTRAINT `fk_event_has_category`

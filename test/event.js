@@ -12,7 +12,7 @@ describe('route of events', function() {
   this.timeout(120000); // Per les proves
 
   describe('GET /events', function() {
-    it('should get a list of events in Barcelona', function(done) {
+    it.only('should get a list of events in Barcelona', function(done) {
       const params = {
         'location' : 'Barcelona',
         'within' : '20',
@@ -52,6 +52,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
@@ -101,6 +103,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
@@ -149,6 +153,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
@@ -199,6 +205,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
@@ -251,6 +259,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
         //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
@@ -265,7 +275,7 @@ describe('route of events', function() {
   });
 
   describe('GET /events/:id', function() {
-    it.only('should obtain an event with all its info when that event was not created from our app', function(done) {
+    it('should obtain an event with all its info when that event was not created from our app', function(done) {
       request
         .get('/events/' + aux_id)
         .set('Accept', 'application/json')

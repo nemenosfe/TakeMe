@@ -1,6 +1,6 @@
-INSERT INTO achievements VALUES (1, "logro 01", "random description 01", 10, "music");
-INSERT INTO achievements VALUES (2, "logro 02", "random description 02", 20, "comedy");
-INSERT INTO achievements VALUES (3, "logro 03", "random description 03", 30, "other");
+INSERT INTO achievements VALUES (1, "logro 01", "random description 01", 10);
+INSERT INTO achievements VALUES (2, "logro 02", "random description 02", 20);
+INSERT INTO achievements VALUES (3, "logro 03", "random description 03", 30);
 
 INSERT INTO rewards VALUES ("recompensa 01", "Descripció de la primera recompensa", 100, 1);
 INSERT INTO rewards VALUES ("recompensa 02", "Descripció de la segona recompensa", 200, 1);
