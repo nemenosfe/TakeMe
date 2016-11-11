@@ -123,6 +123,8 @@ DROP TABLE IF EXISTS `takemelegends`.`achievements` ;
 CREATE TABLE IF NOT EXISTS `takemelegends`.`achievements` (
   `name` VARCHAR(100) NOT NULL,
   `description` VARCHAR(500) NULL,
+  `takes` INTEGER NULL,
+  `category` VARCHAR(50) NULL
   PRIMARY KEY (`name`))
 ENGINE = InnoDB;
 
