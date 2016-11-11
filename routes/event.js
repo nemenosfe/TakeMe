@@ -123,18 +123,7 @@ function getFinalJSONOfAnEvent(eventEventful, resultDB) {
   };
 }
 
-function getTakesToEarnInEvent(categories) {
-  const categories_takes = [
-    {"animals":10}, {"art":48}, {"attractions":17}, {"books":13}, {"business":39}, {"clubs_associations":41},
-    {"comedy":23}, {"community":18}, {"conference":40}, {"family_fun_kids":31}, {"festivals_parades":28},
-    {"food":12}, {"fundraisers":10}, {"holiday":23}, {"learning_education":16}, {"movies_film":15},
-    {"music":44}, {"other":33}, {"outdoors_recreation":36}, {"performing_arts":47}, {"politics_activism":18},
-    {"religion_spirituality":41}, {"sales":29}, {"schools_alumni":11}, {"science":21}, {"singles_social":49},
-    {"sports":48},{"support":25},{"technology":19}
-  ] // Això ho he fet escribint en una consola de Ruby:  ["music", "conference", "comedy", "learning_education", "family_fun_kids", "festivals_parades", "movies_film", "food", "fundraisers", "art", "support", "holiday", "books", "attractions", "community", "business", "singles_social", "schools_alumni", "clubs_associations", "outdoors_recreation", "performing_arts", "animals", "politics_activism", "sales", "science", "religion_spirituality", "sports", "technology", "other"].sort!.map{ |v| {v => Random.new.rand(10...50)}}.to_json
-
-  return categories != null ? categories_takes[categories.category[0].id] : 50;
-}
+function getTakesToEarnInEvent() { return Math.random() * 1000 + 1; } // Retorna un número aleatori del rang [1, 1000)
 
 function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
   // Prepara les dades generals:
