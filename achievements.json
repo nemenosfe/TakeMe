@@ -1,40 +1,613 @@
 {
     "achievements":[
-        {
-            "name":"Conciertos bronce",
-            "description":"Asiste a 5 conciertos."
-        },
-        {
-            "name":"Conciertos plata",
-            "description":"Asiste a 10 conciertos."
-        },
-        {
-            "name":"Conciertos oro",
-            "description":"Asiste a 20 conciertos."
-        },
-        {
-            "name":"Eventos deportivos bronce",
-            "description":"Asiste a 5 eventos deportivos."
-        },
-        {
-            "name":"Eventos deportivos plata",
-            "description":"Asiste a 10 eventos deportivos."
-        },
-        {
-            "name":"Eventos deportivos oro",
-            "description":"Asiste a 20 eventos deportivos."
-        },
-        {
-            "name":"Espectáculos bronce",
-            "description":"Asiste a 5 espectáculos."
-        },
-        {
-            "name":"Espectáculos plata",
-            "description":"Asiste a 10 espectáculos."
-        },
-        {
-            "name":"Espectáculos oro",
-            "description":"Asiste a 20 espectáculos."
-        }
+     {
+       "id": "music_10",
+       "name": "Interesado en Música.",
+       "description": "Has asistido a 10 eventos de Música.",
+       "takes": 100,
+       "category": "music"
+     },
+     {
+       "id": "conference_10",
+       "name": "Interesado en Conferencias.",
+       "description": "Has asistido a 10 Conferencias.",
+       "takes": 100,
+       "category": "conference"
+     },
+     {
+       "id": "comedy_10",
+       "name": "Interesado en Comedia.",
+       "description": "Has asistido a 10 eventos de Comedia.",
+       "takes": 100,
+       "category": "comedy"
+     },
+     {
+       "id": "learning_education_10",
+       "name": "Interesado en Educación.",
+       "description": "Has asistido a 10 eventos de Educación.",
+       "takes": 100,
+       "category": "learning_education"
+     },
+     {
+       "id": "family_fun_kid_10",
+       "name": "Interesado en eventos Familiares.",
+       "description": "Has asistido a 10 eventos Familiares.",
+       "takes": 100,
+       "category": "family_fun_kid"
+     },
+     {
+       "id": "festivals_parades",
+       "name": "Interesado en Festivales.",
+       "description": "Has asistido a 10 Festivales.",
+       "takes": 100,
+       "category": "festivals_parades"
+     },
+     {
+       "id": "movies_film_10",
+       "name": "Interesado en Peliculas",
+       "description": "Has asistido a 10 eventos de Peliculas",
+       "takes": 100,
+       "category": "movies_film"
+     },
+     {
+       "id": "food_10",
+       "name": "Interesado en Comida",
+       "description": "Has asistido a 10 eventos de Comida",
+       "takes": 100,
+       "category": "food"
+     },
+     {
+       "id": "fundraisers_10",
+       "name": "Interesado en Galas beneficas.",
+       "description": "Has asistido a 10 Galas beneficas.",
+       "takes": 100,
+       "category": "fundraisers"
+     },
+     {
+       "id": "art_10",
+       "name": "Interesado en Arte",
+       "description": "Has asistido a 10 eventos de Arte",
+       "takes": 100,
+       "category": "art"
+     },
+     {
+       "id": "support_10",
+       "name": "Interesado en Salut y Bienestar",
+       "description": "Has asistido a 10 eventos de Salut y Bienestar",
+       "takes": 100,
+       "category": "support"
+     },
+     {
+       "id": "holiday_10",
+       "name": "Interesado en eventos Vacacionales.",
+       "description": "Has asistido a 10 eventos Vacacionales.",
+       "takes": 100,
+       "category": "holiday"
+     },
+     {
+       "id": "books_10",
+       "name": "Interesado en Libros",
+       "description": "Has asistido a 10 eventos de Libros",
+       "takes": 100,
+       "category": "books"
+     },
+     {
+       "id": "attractions_10",
+       "name": "Interesado en Museos",
+       "description": "Has asistido a 10 eventos de Museos",
+       "takes": 100,
+       "category": "attractions"
+     },
+     {
+       "id": "community_10",
+       "name": "Interesado en eventos de tu Comunidad.",
+       "description": "Has asistido a 10 eventos de tu Comunidad.",
+       "takes": 100,
+       "category": "community"
+     },
+     {
+       "id": "business_10",
+       "name": "Interesado en Negocios",
+       "description": "Has asistido a 10 eventos de Negocios",
+       "takes": 100,
+       "category": "business"
+     },
+     {
+       "id": "singles_social_10",
+       "name": "Interesado en eventos nocturnos.",
+       "description": "Has asistido a 10 eventos nocturnos.",
+       "takes": 100,
+       "category": "singles_social"
+     },
+     {
+       "id": "schools_alumni_10",
+       "name": "Interesado en eventos de Universidades.",
+       "description": "Has asistido a 10 eventos de Universidades.",
+       "takes": 100,
+       "category": "schools_alumni"
+     },
+     {
+       "id": "clubs_associations_10",
+       "name": "Interesado en Meetups",
+       "description": "Has asistido a 10 Meetups",
+       "takes": 100,
+       "category": "clubs_associations"
+     },
+     {
+       "id": "outdoors_recreation_10",
+       "name": "Interesado en actividades al aire libre",
+       "description": "Has asistido a 10 eventos de actividades al aire libre",
+       "takes": 100,
+       "category": "outdoors_recreation"
+     },
+     {
+       "id": "performing_arts_10",
+       "name": "Interesado en Artes escénicas",
+       "description": "Has asistido a 10 eventos de Artes escénicas",
+       "takes": 100,
+       "category": "performing_arts"
+     },
+     {
+       "id": "animals_10",
+       "name": "Interesado en Animales.",
+       "description": "Has asistido a 10 eventos de Animales.",
+       "takes": 100,
+       "category": "animals"
+     },
+     {
+       "id": "politics_activism_10",
+       "name": "Interesado en Politica",
+       "description": "Has asistido a 10 eventos de Politica",
+       "takes": 100,
+       "category": "politics_activism"
+     },
+     {
+       "id": "sales_10",
+       "name": "Interesado en Compra/Venda",
+       "description": "Has asistido a 10 eventos de Compra/Venda",
+       "takes": 100,
+       "category": "sales"
+     },
+     {
+       "id": "science_10",
+       "name": "Interesado en Ciencia",
+       "description": "Has asistido a 10 eventos de Ciencia",
+       "takes": 100,
+       "category": "science"
+     },
+     {
+       "id": "religion_spirituality_10",
+       "name": "Interesado en Religión",
+       "description": "Has asistido a 10 eventos de Religión",
+       "takes": 100,
+       "category": "religion_spirituality"
+     },
+     {
+       "id": "sports_10",
+       "name": "Interesado en Deporte",
+       "description": "Has asistido a 10 eventos de Deporte",
+       "takes": 100,
+       "category": "sports"
+     },
+     {
+       "id": "technology_10",
+       "name": "Interesado en Tecnologia",
+       "description": "Has asistido a 10 eventos de Tecnologia",
+       "takes": 100,
+       "category": "technology"
+     },
+     {
+       "id": "other_10",
+       "name": "Interesado en ... Hipster!",
+       "description": "Has asistido a 10 eventos de ... Hipster!",
+       "takes": 100,
+       "category": "other"
+     },
+     {
+       "id": "music_50",
+       "name": "Experto en Música.",
+       "description": "Has asistido a 50 eventos de Música.",
+       "takes": 500,
+       "category": "music"
+     },
+     {
+       "id": "conference_50",
+       "name": "Experto en Conferencias.",
+       "description": "Has asistido a 50 Conferencias.",
+       "takes": 500,
+       "category": "conference"
+     },
+     {
+       "id": "comedy_50",
+       "name": "Experto en Comedia.",
+       "description": "Has asistido a 50 eventos de Comedia.",
+       "takes": 500,
+       "category": "comedy"
+     },
+     {
+       "id": "learning_education_50",
+       "name": "Experto en Educación.",
+       "description": "Has asistido a 50 eventos de Educación.",
+       "takes": 500,
+       "category": "learning_education"
+     },
+     {
+       "id": "family_fun_kid_50",
+       "name": "Experto en eventos Familiares.",
+       "description": "Has asistido a 50 eventos Familiares.",
+       "takes": 500,
+       "category": "family_fun_kid"
+     },
+     {
+       "id": "festivals_parades_50",
+       "name": "Experto en Festivales.",
+       "description": "Has asistido a 50 Festivales.",
+       "takes": 500,
+       "category": "festivals_parades"
+     },
+     {
+       "id": "movies_film_50",
+       "name": "Experto en Peliculas",
+       "description": "Has asistido a 50 eventos de Peliculas",
+       "takes": 500,
+       "category": "movies_film"
+     },
+     {
+       "id": "food_50",
+       "name": "Experto en Comida",
+       "description": "Has asistido a 50 eventos de Comida",
+       "takes": 500,
+       "category": "food"
+     },
+     {
+       "id": "fundraisers_50",
+       "name": "Experto en Galas beneficas.",
+       "description": "Has asistido a 50 Galas beneficas.",
+       "takes": 500,
+       "category": "fundraisers"
+     },
+     {
+       "id": "art_50",
+       "name": "Experto en Arte",
+       "description": "Has asistido a 50 eventos de Arte",
+       "takes": 500,
+       "category": "art"
+     },
+     {
+       "id": "support_50",
+       "name": "Experto en Salut y Bienestar",
+       "description": "Has asistido a 50 eventos de Salut y Bienestar",
+       "takes": 500,
+       "category": "support"
+     },
+     {
+       "id": "holiday_50",
+       "name": "Experto en eventos Vacacionales.",
+       "description": "Has asistido a 50 eventos Vacacionales.",
+       "takes": 500,
+       "category": "holiday"
+     },
+     {
+       "id": "books_50",
+       "name": "Experto en Libros",
+       "description": "Has asistido a 50 eventos de Libros",
+       "takes": 500,
+       "category": "books"
+     },
+     {
+       "id": "attractions_50",
+       "name": "Experto en Museos",
+       "description": "Has asistido a 50 eventos de Museos",
+       "takes": 500,
+       "category": "attractions"
+     },
+     {
+       "id": "community_50",
+       "name": "Experto en eventos de tu Comunidad.",
+       "description": "Has asistido a 50 eventos de tu Comunidad.",
+       "takes": 500,
+       "category": "community"
+     },
+     {
+       "id": "business_50",
+       "name": "Experto en Negocios",
+       "description": "Has asistido a 50 eventos de Negocios",
+       "takes": 500,
+       "category": "business"
+     },
+     {
+       "id": "singles_social_50",
+       "name": "Experto en eventos nocturnos.",
+       "description": "Has asistido a 50 eventos nocturnos.",
+       "takes": 500,
+       "category": "singles_social"
+     },
+     {
+       "id": "schools_alumni_50",
+       "name": "Experto en eventos de Universidades.",
+       "description": "Has asistido a 50 eventos de Universidades.",
+       "takes": 500,
+       "category": "schools_alumni"
+     },
+     {
+       "id": "clubs_associations_50",
+       "name": "Experto en Meetups",
+       "description": "Has asistido a 50 Meetups",
+       "takes": 500,
+       "category": "clubs_associations"
+     },
+     {
+       "id": "outdoors_recreation_50",
+       "name": "Experto en actividades al aire libre",
+       "description": "Has asistido a 50 eventos de actividades al aire libre",
+       "takes": 500,
+       "category": "outdoors_recreation"
+     },
+     {
+       "id": "performing_arts_50",
+       "name": "Experto en Artes escénicas",
+       "description": "Has asistido a 50 eventos de Artes escénicas",
+       "takes": 500,
+       "category": "performing_arts"
+     },
+     {
+       "id": "animals_50",
+       "name": "Experto en Animales.",
+       "description": "Has asistido a 50 eventos de Animales.",
+       "takes": 500,
+       "category": "animals"
+     },
+     {
+       "id": "politics_activism_50",
+       "name": "Experto en Politica",
+       "description": "Has asistido a 50 eventos de Politica",
+       "takes": 500,
+       "category": "politics_activism"
+     },
+     {
+       "id": "sales_50",
+       "name": "Experto en Compra/Venda",
+       "description": "Has asistido a 50 eventos de Compra/Venda",
+       "takes": 500,
+       "category": "sales"
+     },
+     {
+       "id": "science_50",
+       "name": "Experto en Ciencia",
+       "description": "Has asistido a 50 eventos de Ciencia",
+       "takes": 500,
+       "category": "science"
+     },
+     {
+       "id": "religion_spirituality_50",
+       "name": "Experto en Religión",
+       "description": "Has asistido a 50 eventos de Religión",
+       "takes": 500,
+       "category": "religion_spirituality"
+     },
+     {
+       "id": "sports_50",
+       "name": "Experto en Deporte",
+       "description": "Has asistido a 50 eventos de Deporte",
+       "takes": 500,
+       "category": "sports"
+     },
+     {
+       "id": "technology_50",
+       "name": "Experto en Tecnologia",
+       "description": "Has asistido a 50 eventos de Tecnologia",
+       "takes": 500,
+       "category": "technology"
+     },
+     {
+       "id": "other_50",
+       "name": "Experto en ... Hipster!",
+       "description": "Has asistido a 50 eventos de ... Hipster!",
+       "takes": 500,
+       "category": "other"
+     },
+     {
+       "id": "music_100",
+       "name": "Dios de Música.",
+       "description": "Has asistido a 100 eventos de Música.",
+       "takes": 1000,
+       "category": "music"
+     },
+     {
+       "id": "conference_100",
+       "name": "Dios de Conferencias.",
+       "description": "Has asistido a 100 Conferencias.",
+       "takes": 1000,
+       "category": "conference"
+     },
+     {
+       "id": "comedy_100",
+       "name": "Dios de Comedia.",
+       "description": "Has asistido a 100 eventos de Comedia.",
+       "takes": 1000,
+       "category": "comedy"
+     },
+     {
+       "id": "learning_education_100",
+       "name": "Dios de Educación.",
+       "description": "Has asistido a 100 eventos de Educación.",
+       "takes": 1000,
+       "category": "learning_education"
+     },
+     {
+       "id": "family_fun_kid_100",
+       "name": "Dios de eventos Familiares.",
+       "description": "Has asistido a 100 eventos Familiares.",
+       "takes": 1000,
+       "category": "family_fun_kid"
+     },
+     {
+       "id": "festivals_parades_100",
+       "name": "Dios de Festivales.",
+       "description": "Has asistido a 100 Festivales.",
+       "takes": 1000,
+       "category": "festivals_parades"
+     },
+     {
+       "id": "movies_film_100",
+       "name": "Dios de Peliculas",
+       "description": "Has asistido a 100 eventos de Peliculas",
+       "takes": 1000,
+       "category": "movies_film"
+     },
+     {
+       "id": "food_100",
+       "name": "Dios de Comida",
+       "description": "Has asistido a 100 eventos de Comida",
+       "takes": 1000,
+       "category": "food"
+     },
+     {
+       "id": "fundraisers_100",
+       "name": "Dios de Galas beneficas.",
+       "description": "Has asistido a 100 Galas beneficas.",
+       "takes": 1000,
+       "category": "fundraisers"
+     },
+     {
+       "id": "art_100",
+       "name": "Dios de Arte",
+       "description": "Has asistido a 100 eventos de Arte",
+       "takes": 1000,
+       "category": "art"
+     },
+     {
+       "id": "support_100",
+       "name": "Dios de Salut y Bienestar",
+       "description": "Has asistido a 100 eventos de Salut y Bienestar",
+       "takes": 1000,
+       "category": "support"
+     },
+     {
+       "id": "holiday_100",
+       "name": "Dios de eventos Vacacionales.",
+       "description": "Has asistido a 100 eventos Vacacionales.",
+       "takes": 1000,
+       "category": "holiday"
+     },
+     {
+       "id": "books_100",
+       "name": "Dios de Libros",
+       "description": "Has asistido a 100 eventos de Libros",
+       "takes": 1000,
+       "category": "books"
+     },
+     {
+       "id": "attractions_100",
+       "name": "Dios de Museos",
+       "description": "Has asistido a 100 eventos de Museos",
+       "takes": 1000,
+       "category": "attractions"
+     },
+     {
+       "id": "community_100",
+       "name": "Dios de eventos de tu Comunidad.",
+       "description": "Has asistido a 100 eventos de tu Comunidad.",
+       "takes": 1000,
+       "category": "community"
+     },
+     {
+       "id": "business_100",
+       "name": "Dios de Negocios",
+       "description": "Has asistido a 100 eventos de Negocios",
+       "takes": 1000,
+       "category": "business"
+     },
+     {
+       "id": "singles_social_100",
+       "name": "Dios de eventos nocturnos.",
+       "description": "Has asistido a 100 eventos nocturnos.",
+       "takes": 1000,
+       "category": "singles_social"
+     },
+     {
+       "id": "schools_alumni_100",
+       "name": "Dios de eventos de Universidades.",
+       "description": "Has asistido a 100 eventos de Universidades.",
+       "takes": 1000,
+       "category": "schools_alumni"
+     },
+     {
+       "id": "clubs_associations_100",
+       "name": "Dios de Meetups",
+       "description": "Has asistido a 100 Meetups",
+       "takes": 1000,
+       "category": "clubs_associations"
+     },
+     {
+       "id": "outdoors_recreation_100",
+       "name": "Dios de actividades al aire libre",
+       "description": "Has asistido a 100 eventos de actividades al aire libre",
+       "takes": 1000,
+       "category": "outdoors_recreation"
+     },
+     {
+       "id": "performing_arts_100",
+       "name": "Dios de Artes escénicas",
+       "description": "Has asistido a 100 eventos de Artes escénicas",
+       "takes": 1000,
+       "category": "performing_arts"
+     },
+     {
+       "id": "animals_100",
+       "name": "Dios de Animales.",
+       "description": "Has asistido a 100 eventos de Animales.",
+       "takes": 1000,
+       "category": "animals"
+     },
+     {
+       "id": "politics_activism_100",
+       "name": "Dios de Politica",
+       "description": "Has asistido a 100 eventos de Politica",
+       "takes": 1000,
+       "category": "politics_activism"
+     },
+     {
+       "id": "sales_100",
+       "name": "Dios de Compra/Venda",
+       "description": "Has asistido a 100 eventos de Compra/Venda",
+       "takes": 1000,
+       "category": "sales"
+     },
+     {
+       "id": "science_100",
+       "name": "Dios de Ciencia",
+       "description": "Has asistido a 100 eventos de Ciencia",
+       "takes": 1000,
+       "category": "science"
+     },
+     {
+       "id": "religion_spirituality_100",
+       "name": "Dios de Religión",
+       "description": "Has asistido a 100 eventos de Religión",
+       "takes": 1000,
+       "category": "religion_spirituality"
+     },
+     {
+       "id": "sports_100",
+       "name": "Dios de Deporte",
+       "description": "Has asistido a 100 eventos de Deporte",
+       "takes": 1000,
+       "category": "sports"
+     },
+     {
+       "id": "technology_100",
+       "name": "Dios de Tecnologia",
+       "description": "Has asistido a 100 eventos de Tecnologia",
+       "takes": 1000,
+       "category": "technology"
+     },
+     {
+       "id": "other_100",
+       "name": "Dios de ... Hipster!",
+       "description": "Has asistido a 100 eventos de ... Hipster!",
+       "takes": 1000,
+       "category": "other"
+     }
     ]
 }
