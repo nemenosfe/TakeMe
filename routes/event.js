@@ -82,24 +82,25 @@ function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREco
   else { return findEventInDatabaseResponseByID(DBresult.slice(0, mid), id); }
 }
 
-function getNumberOfAssitancesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
+function getNumberOfAssitancesAndTakesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
+  let number_attendances_and_takes = { number_attendances : 0, takes : -1 };
   if (DBresult) {
     const pos = findEventInDatabaseResponseByID(DBresult, id);
-    if (pos > -1) { return resultDB[position].number_attendances; }
-    else { return 0; }
+    if (pos > -1) { number_attendances_and_takes.number_attendances = resultDB[position].number_attendances; }
   }
-  return 0; // Si DBresult és null, retornem 0
-}
+  return number_attendances_and_takes; // Si DBresult és null, retornem 0
+} // PER FER LA PART DELS TAKES !!!!!!!!!!!!!!!!!!!!!!
 
 function getFinalJSONOfAnEvent(eventEventful, resultDB) {
   const event_id = eventEventful["id"];
-  const number_attendances = getNumberOfAssitancesFromDBResultByID(resultDB, event_id);
+  const number_attendances_and_takes = getNumberOfAssitancesAndTakesFromDBResultByID(resultDB, event_id);
   return {
     event : {
       id : event_id,
       title : eventEventful["title"],
       description : eventEventful["description"],
-      number_attendances : number_attendances,
+      number_attendances : number_attendances_and_takes.number_attendances,
+      takes : number_attendances_and_takes.takes,
       url : eventEventful["url"],
       all_day :  eventEventful["all_day"],
       start_time :  eventEventful["start_time"],
@@ -120,6 +121,19 @@ function getFinalJSONOfAnEvent(eventEventful, resultDB) {
       categories : eventEventful["categories"] || null
     } // Per ara no retornem "Performers" ni "Tags" ni "Links"
   };
+}
+
+function getTakesToEarnInEvent(categories) {
+  const categories_takes = [
+    {"animals":10}, {"art":48}, {"attractions":17}, {"books":13}, {"business":39}, {"clubs_associations":41},
+    {"comedy":23}, {"community":18}, {"conference":40}, {"family_fun_kids":31}, {"festivals_parades":28},
+    {"food":12}, {"fundraisers":10}, {"holiday":23}, {"learning_education":16}, {"movies_film":15},
+    {"music":44}, {"other":33}, {"outdoors_recreation":36}, {"performing_arts":47}, {"politics_activism":18},
+    {"religion_spirituality":41}, {"sales":29}, {"schools_alumni":11}, {"science":21}, {"singles_social":49},
+    {"sports":48},{"support":25},{"technology":19}
+  ] // Això ho he fet escribint en una consola de Ruby:  ["music", "conference", "comedy", "learning_education", "family_fun_kids", "festivals_parades", "movies_film", "food", "fundraisers", "art", "support", "holiday", "books", "attractions", "community", "business", "singles_social", "schools_alumni", "clubs_associations", "outdoors_recreation", "performing_arts", "animals", "politics_activism", "sales", "science", "religion_spirituality", "sports", "technology", "other"].sort!.map{ |v| {v => Random.new.rand(10...50)}}.to_json
+
+  return categories != null ? categories_takes[categories.category[0].id] : 50;
 }
 
 function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
@@ -293,7 +307,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, 5);";
+            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent(result.categories)+");";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
@@ -404,7 +418,7 @@ router
               reject(eventResEventful.error);
             } else {
               eventEventful = eventResEventful;
-              const sql = "SELECT number_attendances FROM events WHERE id = '"+req.params.id+"' ;";
+              const sql = "SELECT number_attendances, takes FROM events WHERE id = '"+req.params.id+"' ;";
               resolve(mysqlConnection.query(sql));
             }
           });

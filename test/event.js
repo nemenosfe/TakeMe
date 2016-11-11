@@ -266,6 +266,7 @@ describe('route of events', function() {
 
   describe('GET /events/:id', function() {
     it('should obtain an event with all its info when that event was not created from our app', function(done) {
+      // FALTA UN .ONLY PER TESTEJAR ELS TAKES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       request
         .get('/events/' + aux_id)
         .set('Accept', 'application/json')
@@ -291,6 +292,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('all_day')
         expect(eventResponse).to.have.property('categories')
         expect(eventResponse.categories).to.have.property('category')
+        expect(eventResponse).to.have.property('takes')
+          .and.to.be.an.integer;
         expect(eventResponse).to.have.property('images')
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
