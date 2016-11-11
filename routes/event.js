@@ -124,7 +124,7 @@ function getFinalJSONOfAnEvent(eventEventful, resultDB) {
   };
 }
 
-function getTakesToEarnInEvent() { return Math.random() * 1000 + 1; } // Retorna un número aleatori del rang [1, 1000)
+function getTakesToEarnInEvent() { return Math.floor(Math.random() * 1000 + 1); } // Retorna un número aleatori del rang [1, 1000)
 
 function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
   // Prepara les dades generals:
@@ -168,20 +168,33 @@ router
         if (req.query.date) { params = params + "&date=" + req.query.date; }
         doRequest(params, "search")
         .then((eventsResEventful) => {
-          eventsEventful = eventsResEventful;
           return new Promise(function(resolve, reject) {
-            let ids = [];
             if (eventsResEventful.error) {
               reject(eventsResEventful.error);
             } else {
+              eventsEventful = eventsResEventful;
+              let responses = [];
               for (let index = eventsResEventful.events.event.length - 1; index >=0; index--) {
-                eventsResEventful.events.event[index]["number_attendances"] = 0;
-                ids.push("'" + eventsResEventful.events.event[index].id + "'");
+                let start = null;
+                let stop = null;
+                if (eventsResEventful.events.event[index].start_time != null) { start = "'"+eventsResEventful.events.event[index].start_time+"'"; }
+                if (eventsResEventful.events.event[index].stop_time != null) { stop = "'"+eventsResEventful.events.event[index].stop_time+"'"; }
+                const takes = getTakesToEarnInEvent();
+                const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventsResEventful.events.event[index].id+"', "+eventsResEventful.events.event[index].all_day+", "+start+", "+stop+", 0, "+takes+");";
+                responses.push( mysqlConnection.query(sqlInsertEventInDB) );
               }
-              const sql = "SELECT id, number_attendances, takes FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
-              const resultDB = mysqlConnection.query(sql);
-              resolve(resultDB);
+              resolve(Promise.all(responses));
             }
+          });
+        })
+        .then((result) => {
+          return new Promise(function(resolve, reject) {
+            let ids = [];
+            for (let index = eventsEventful.events.event.length - 1; index >=0; index--) {
+              ids.push("'" + eventsEventful.events.event[index].id + "'");
+            }
+            const sql = "SELECT id, number_attendances, takes FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
+            resolve(mysqlConnection.query(sql));
           });
         })
         .then((resultDB) => {
@@ -297,7 +310,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+"');";
+            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+");";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
@@ -412,7 +425,7 @@ router
               let stop = null;
               if (eventResEventful.start_time != null) { start = "'"+eventResEventful.start_time+"'"; }
               if (eventResEventful.stop_time != null) { stop = "'"+eventResEventful.stop_time+"'"; }
-              const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+"');";
+              const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+");";
               resolve(mysqlConnection.query(sqlInsertEventInDB));
             }
           });

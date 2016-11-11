@@ -12,7 +12,7 @@ describe('route of events', function() {
   this.timeout(120000); // Per les proves
 
   describe('GET /events', function() {
-    it.only('should get a list of events in Barcelona', function(done) {
+    it('should get a list of events in Barcelona', function(done) {
       const params = {
         'location' : 'Barcelona',
         'within' : '20',

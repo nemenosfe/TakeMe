@@ -37,13 +37,7 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `stop_time` DATETIME NULL,
   `number_attendances` INT NOT NULL DEFAULT 0,
   `takes` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_event_has_category_idx` (`category_id` ASC),
-  CONSTRAINT `fk_event_has_category`
-    FOREIGN KEY (`category_id`)
-    REFERENCES `takemelegends`.`categories` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
