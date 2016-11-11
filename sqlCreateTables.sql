@@ -15,6 +15,17 @@ CREATE SCHEMA IF NOT EXISTS `takemelegends` DEFAULT CHARACTER SET utf8 ;
 USE `takemelegends` ;
 
 -- -----------------------------------------------------
+-- Table `takemelegends`.`categories`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `takemelegends`.`categories` ;
+
+CREATE TABLE IF NOT EXISTS `takemelegends`.`categories` (
+  `id` VARCHAR(100) NOT NULL,
+  `name` VARCHAR(100) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `takemelegends`.`events`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `takemelegends`.`events` ;
@@ -25,8 +36,15 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   `start_time` DATETIME NULL,
   `stop_time` DATETIME NULL,
   `number_attendances` INT NOT NULL DEFAULT 0,
-  `takes` INT NOT NULL DEFAULT 5,
-  PRIMARY KEY (`id`))
+  `takes` INT NOT NULL,
+  `category_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_event_has_category_idx` (`category_id` ASC),
+  CONSTRAINT `fk_event_has_category`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `takemelegends`.`categories` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -121,11 +139,18 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`achievements` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`achievements` (
-  `name` VARCHAR(100) NOT NULL,
+  `id` VARCHAR(100) NOT NULL,
+  `name` VARCHAR(100) NULL,
   `description` VARCHAR(500) NULL,
   `takes` INTEGER NULL,
-  `category` VARCHAR(50) NULL
-  PRIMARY KEY (`name`))
+  `category_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_achievement_has_category_idx` (`category_id` ASC),
+  CONSTRAINT `fk_achievement_has_category`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `takemelegends`.`categories` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -137,9 +162,9 @@ DROP TABLE IF EXISTS `takemelegends`.`acquisitions` ;
 CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
-  `achievements_name` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`users_uid`, `users_provider`, `achievements_name`),
-  INDEX `fk_users_has_achievements_achievements1_idx` (`achievements_name` ASC),
+  `achievements_id` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`users_uid`, `users_provider`, `achievements_id`),
+  INDEX `fk_users_has_achievements_achievements1_idx` (`achievements_id` ASC),
   INDEX `fk_users_has_achievements_users1_idx` (`users_uid` ASC, `users_provider` ASC),
   CONSTRAINT `fk_users_has_achievements_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
@@ -147,8 +172,8 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_has_achievements_achievements1`
-    FOREIGN KEY (`achievements_name`)
-    REFERENCES `takemelegends`.`achievements` (`name`)
+    FOREIGN KEY (`achievements_id`)
+    REFERENCES `takemelegends`.`achievements` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
