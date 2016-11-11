@@ -405,7 +405,7 @@ describe('route of events', function() {
   });
 
   describe('PUT /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it('should mark the check-in of an event from a user', function(done) {
+    it.only('should mark the check-in of an event from a user', function(done) {
       aux_id = 'E0-001-093875660-9';
       const params = {
         'uid' : 1,
@@ -425,6 +425,10 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
         expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
         done();
       }, done)
     });

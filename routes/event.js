@@ -142,6 +142,11 @@ function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
   return myEventsResponse;
 }
 
+function getNewLevel(level, experience) {
+  const new_level = experience / Math.log10(level);
+  return (new_level > level) ? new_level : level;
+}
+
 
 router
 
@@ -344,6 +349,10 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { handleNoParams(res); }
     else {
       const attendanceRequest = req.body;
+      let level = -1;
+      let experience = -1;
+      let new_takes = -1;
+      let total_takes = -1;
       pool.getConnection().then(function(mysqlConnection) {
         mysqlConnection.query('START TRANSACTION')
         .then((result) => { // Fa el check-in
@@ -355,7 +364,23 @@ router
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Guanya els takes de l'esdeveniment
-          const sql = "UPDATE users SET takes=takes+"+result[0].takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          new_takes = result[0].takes;
+          const sql = "UPDATE users SET takes=takes+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Guanya experiencia
+          const sql = "UPDATE users SET experience=experience+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Select del nivell que té
+          const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Guanya els takes de l'esdeveniment
+          total_takes = result[0].takes;
+          experience = result[0].experience;
+          level = getNewLevel(result[0].level, result[0].experience);
+          const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
         .then((result) => {
@@ -366,35 +391,16 @@ router
             'event_id' : req.params.id,
             'uid' : req.body.uid,
             'provider' : req.body.provider,
-            'checkin_done' : '1'
+            'checkin_done' : '1',
+            'new_takes' : new_takes,
+            'total_takes' : total_takes,
+            'experience' : experience,
+            'level' : level
           };
           res
             .status(200)
             .json({ attendance: attendanceResponse });
         })
-        /*
-        .then((result) => {
-          purchase_exists = result[0].purchase_exists;
-          return mysqlConnection.query('START TRANSACTION');
-        })
-        .then((result) => {
-          if (purchase_exists) {
-            var sqlRegisterPurchase = "UPDATE purchases SET amount = amount + "+amount+" WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
-          } else {
-            var sqlRegisterPurchase = "INSERT INTO purchases VALUES ("+req.body.uid+", '"+req.body.provider+"', '"+req.body.reward_name+"', 1);";
-          }
-          return mysqlConnection.query(sqlRegisterPurchase);
-        })
-        .then((result) => {
-          const sqlDecreaseTakes = "UPDATE users SET takes = takes - "+(infoReward.takes*amount)+" WHERE uid = '"+req.body.uid+"' AND provider = '"+req.body.provider+"' ;";
-          return mysqlConnection.query(sqlDecreaseTakes);
-        })
-        .then((result) => {
-          mysqlConnection.query('COMMIT');
-          const sql = "SELECT u.takes, p.amount FROM purchases p, users u WHERE u.uid = p.users_uid AND u.provider = p.users_provider AND p.rewards_name='"+req.body.reward_name+"' AND p.users_uid = '"+req.body.uid+"' AND p.users_provider = '"+req.body.provider+"' ;";
-          return mysqlConnection.query(sql);
-        })
-        */
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
           handleError(err, res, "PUT/:id/user");

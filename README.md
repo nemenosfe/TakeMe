@@ -427,7 +427,7 @@ Si tot ha anat bé, retorna el següent:
 ### PUT /events/:id/user/
 PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
 Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
-**Falta que el check-in li doni els takes que li ha de donar, però no ho podem implementar en aquesta iteració encara perquè haurem de definir bé el tema dels takes, els nivels, les recompenses i els 'logros' abans de programar-ho.** :ok_hand: :smile: :sunglasses:  
+**Falta que el check-in li doni els logros que li ha de donar, però això està fora d'aquesta iteració** :ok_hand: :smile: :sunglasses:  
 
 #### Paràmetres d'entrada
 Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot fer un check-in d'ell mateix a la nostra API (**encara no implementat** :smile: :octocat:).  
@@ -437,6 +437,10 @@ Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
+  'new_takes' : 30, // els takes que acaba de guanyar per aquest esdeveniment
+  'total_takes' : 200, // el total de takes que té
+  'experience' : 245, // l'experiencia que té total
+  'level' : 5 // el seu nivell
 }
 ```
 
