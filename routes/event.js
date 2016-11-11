@@ -296,7 +296,7 @@ router
             let stop = null;
             if (result.start_time != null) { start = "'"+result.start_time+"'"; }
             if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent(result.categories)+");";
+            const sqlInsertEventInDB = "INSERT INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+", '"+result.categories.category[0].id+"');";
             return mysqlConnection.query(sqlInsertEventInDB);
           }
         })
