@@ -13,8 +13,8 @@
        "level": 1
      },
      {
-       "name": "Llavero RazzMataz",
-       "description": "Obtén un llavero de la discoteca RazzMataz",
+       "name": "Llavero Razzmatazz",
+       "description": "Obtén un llavero de la discoteca Razzmatazz",
        "takes": 100,
        "level": 1
      },
@@ -38,7 +38,7 @@
      },
      {
        "name": "Gorra VANS",
-       "description": "Gorra Vans of the Wall",
+       "description": "Gorra Vans off the Wall",
        "takes": 250,
        "level": 2
      },

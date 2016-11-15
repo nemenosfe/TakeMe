@@ -29,11 +29,11 @@
        "category": "learning_education"
      },
      {
-       "id": "family_fun_kid_10",
+       "id": "family_fun_kids_10",
        "name": "Interesado en eventos Familiares.",
        "description": "Has asistido a 10 eventos Familiares.",
        "takes": 100,
-       "category": "family_fun_kid"
+       "category": "family_fun_kids"
      },
      {
        "id": "festivals_parades",
@@ -232,11 +232,11 @@
        "category": "learning_education"
      },
      {
-       "id": "family_fun_kid_50",
+       "id": "family_fun_kids_50",
        "name": "Experto en eventos Familiares.",
        "description": "Has asistido a 50 eventos Familiares.",
        "takes": 500,
-       "category": "family_fun_kid"
+       "category": "family_fun_kids"
      },
      {
        "id": "festivals_parades_50",
@@ -435,11 +435,11 @@
        "category": "learning_education"
      },
      {
-       "id": "family_fun_kid_100",
+       "id": "family_fun_kids_100",
        "name": "Dios de eventos Familiares.",
        "description": "Has asistido a 100 eventos Familiares.",
        "takes": 1000,
-       "category": "family_fun_kid"
+       "category": "family_fun_kids"
      },
      {
        "id": "festivals_parades_100",
