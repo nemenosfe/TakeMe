@@ -405,7 +405,7 @@ describe('route of events', function() {
   });
 
   describe('PUT /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it.only('should mark the check-in of an event from a user', function(done) {
+    it('should mark the check-in of an event from a user', function(done) {
       aux_id = 'E0-001-093875660-9';
       const params = {
         'uid' : 1,
