@@ -2,6 +2,8 @@
 const express = require('express')
 const router = express.Router()
 const mysql = require('promise-mysql');
+const Promise = require("bluebird");
+const crypto = require('crypto');
 
 const pool  = mysql.createPool({
   host     : 'localhost',
@@ -10,42 +12,71 @@ const pool  = mysql.createPool({
   database : 'takemelegends'
 });
 
-function handleError(err, res, requestVerb) {
-  res
-    .status(500)
-    .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+function handleError(err, res) {
+  if (err.error && err.error.status_code) {
+    res
+      .status(err.error.status_code)
+      .json({error: true, message: err.error.error_description})
+  } else {
+    res
+      .status(500)
+      .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
+  }
 }
 
 function handleNoParams(res) {
-  res
-    .status(403)
-    .json({error: true, message: 'Missing params'})
+  const errorJSONresponse = {error: {status_code: 403, error_description: 'Missing params'}}
+  handleError(errorJSONresponse, res);
+}
+
+function authorize_appkey(appkey, mysqlConnection) {
+  return new Promise(function(resolve, reject) {
+    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
+    if (!appkey) { reject(errorJSONresponse); }
+    const sqlGetAppKey = "SELECT appkey FROM appkeys;";
+    mysqlConnection.query(sqlGetAppKey)
+    .then((resultDB) => {
+      const real_hashed_appkey = resultDB[0].appkey;
+      const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
+      if (requested_hashed_appkey == real_hashed_appkey) { resolve(1); }
+      else { reject(errorJSONresponse); }
+    })
+    .catch((err) => {
+      reject(err);
+    })
+  });
 }
 
 
 router
 
   .get('/', function(req, res, next) {
-    let page_size = "20";
-    let page_number = "1";
-    if (req.query && req.query.page_size) { page_size = req.query.page_size; }
-    if (req.query && req.query.page_number) { page_number = req.query.page_number; }
-    const limit = page_size;
-    const offset = page_size*(page_number-1);
-    pool.getConnection().then(function(mysqlConnection) {
-      mysqlConnection.query("SELECT * FROM rewards ORDER BY level ASC, takes ASC, name ASC LIMIT " + limit + " OFFSET " + offset + " ;")
-      .then((result) => {
-        res
-          .status(200)
-          .json({rewards: result})
-      })
-      .catch((err) => {
-        handleError(err, res, "GET");
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
+    if(!req.query) { handleNoParams(res); }
+    else {
+      let page_size = "20";
+      let page_number = "1";
+      if (req.query && req.query.page_size) { page_size = req.query.page_size; }
+      if (req.query && req.query.page_number) { page_number = req.query.page_number; }
+      const limit = page_size;
+      const offset = page_size*(page_number-1);
+      pool.getConnection().then(function(mysqlConnection) {
+        authorize_appkey(req.query.appkey, mysqlConnection)
+        .then((result) => {
+          return mysqlConnection.query("SELECT * FROM rewards ORDER BY level ASC, takes ASC, name ASC LIMIT " + limit + " OFFSET " + offset + " ;");
+        })
+        .then((result) => {
+          res
+            .status(200)
+            .json({rewards: result})
+        })
+        .catch((err) => {
+          handleError(err, res, "GET");
+        })
+        .finally(() => {
+          pool.releaseConnection(mysqlConnection);
+        });
       });
-    });
+    }
   })
 
   .get('/user', function(req, res, next) {
@@ -64,8 +95,11 @@ router
       };
 
       pool.getConnection().then(function(mysqlConnection) {
-      const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.query.uid+"' AND p.users_provider = '"+req.query.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
-      mysqlConnection.query(sql)
+        authorize_appkey(req.query.appkey, mysqlConnection)
+        .then((result) => {
+          const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.query.uid+"' AND p.users_provider = '"+req.query.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
+          return mysqlConnection.query(sql);
+        })
         .then((DBresult) => {
           rewardsResponse.total_items = DBresult.length;
           let total_rewards = 0;
@@ -99,9 +133,8 @@ router
   })
 
   .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.reward_name) {
-      handleNoParams();
-    } else {
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.reward_name) { handleNoParams(); }
+    else {
       const purchaseRequest = req.body;
       let infoReward = {};
       let infoUser = {};
@@ -110,8 +143,11 @@ router
       if (req.body.amount) { amount = req.body.amount; }
 
       pool.getConnection().then(function(mysqlConnection) {
-        const sqlGetRewardData = "SELECT takes, level FROM rewards WHERE name ='"+req.body.reward_name+"';";
-        mysqlConnection.query(sqlGetRewardData)
+        authorize_appkey(req.body.appkey, mysqlConnection)
+        .then(() => {
+          const sqlGetRewardData = "SELECT takes, level FROM rewards WHERE name ='"+req.body.reward_name+"';";
+          return mysqlConnection.query(sqlGetRewardData);
+        })
         .then((result) => {
           infoReward.takes = result[0].takes;
           infoReward.level = result[0].level;
