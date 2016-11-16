@@ -625,6 +625,7 @@ describe('route of events', function() {
   describe('DELETE /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
     after(function() {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
         'event_id' : 'E0-001-096844204-0@2016102500'
@@ -633,6 +634,7 @@ describe('route of events', function() {
         .post('/events/user')
         .set('Accept', 'application/json')
         .send(params)
+        .expect(201)
     });
     it('should not delete an event without an appkey', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
