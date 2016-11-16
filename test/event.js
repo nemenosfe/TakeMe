@@ -325,9 +325,35 @@ describe('route of events', function() {
   });
 
   describe('GET /events/:id', function() {
-    it('should obtain an event with all its info when that event was not created from our app', function(done) {
+    it('should not the event info without the api key', function(done) {
       request
-        .get('/events/' + aux_id)
+        .get("/events/"+aux_id)
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not get the event info with a wrong api key', function(done) {
+      const params = { 'appkey' : '123456' };
+      request
+        .get(buildGetParams("/events/"+aux_id, params))
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should obtain an event with all its info when that event was not created from our app', function(done) {
+      const params = { 'appkey' : '7384d85615237469c2f6022a154b7e2c' };
+      request
+        .get(buildGetParams("/events/"+aux_id, params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)

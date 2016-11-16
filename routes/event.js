@@ -479,13 +479,15 @@ router
   })
 
   .get('/:id', function(req, res, next) {
-    if(!req.params.id) { handleNoParams(res); }
+    if(!req.query || !req.params.id) { handleNoParams(res); }
     else {
-
       pool.getConnection().then(function(mysqlConnection) {
         let eventEventful = null;
-        const params = "id=" + req.params.id;
-        doRequest(params, "get")
+        authorize_appkey(req.query.appkey, mysqlConnection)
+        .then((result) => {
+          const params = "id=" + req.params.id;
+          return doRequest(params, "get");
+        })
         .then((eventResEventful) => {
           return new Promise(function(resolve, reject) {
             if (eventResEventful.error) {
