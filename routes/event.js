@@ -4,6 +4,7 @@ const router = express.Router()
 const rp = require('request-promise');
 const mysql = require('promise-mysql');
 const Promise = require("bluebird");
+const crypto = require('crypto');
 
 const urlEventfulApi = "http://api.eventful.com/json/events/";
 const keyEventfulApi = "KxZvhSVN3f38ct54";
@@ -15,8 +16,8 @@ const pool  = mysql.createPool({
   database : 'takemelegends'
 });
 
-function handleError(err, res, requestVerb) {
-  if (err.error && err.error.status_code && err.error.status_code == 403) {
+function handleError(err, res) {
+  if (err.error && err.error.status_code) {
     res
       .status(err.error.status_code)
       .json({error: true, message: err.error.error_description})
@@ -28,9 +29,26 @@ function handleError(err, res, requestVerb) {
 }
 
 function handleNoParams(res) {
-  res
-    .status(403)
-    .json({error: true, message: 'Missing params'})
+  const errorJSONresponse = {error: {status_code: 403, error_description: 'Missing params'}}
+  handleError(errorJSONresponse, res);
+}
+
+function authorize_appkey(appkey, mysqlConnection) {
+  return new Promise(function(resolve, reject) {
+    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
+    if (!appkey) { reject(errorJSONresponse); }
+    const sqlGetAppKey = "SELECT appkey FROM appkeys;";
+    mysqlConnection.query(sqlGetAppKey)
+    .then((resultDB) => {
+      const real_hashed_appkey = resultDB[0].appkey;
+      const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
+      if (requested_hashed_appkey == real_hashed_appkey) { resolve(1); }
+      else { reject(errorJSONresponse); }
+    })
+    .catch((err) => {
+      reject(err);
+    })
+  });
 }
 
 function doRequest(params, type) {
@@ -147,6 +165,22 @@ function getNewLevel(level, experience) {
   return (new_level > level) ? new_level : level;
 }
 
+function buildSearchParams(params_query, page_size, page_number) {
+  let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
+  if (params_query.location) {
+    params = params + "&location=" + params_query.location;
+    let within = 350;
+    if (params_query.within) {
+      within = params_query.within;
+    }
+    params = params + "&units=km&within=" + within;
+  }
+  if (params_query.keywords) { params = params + "&keywords=" + params_query.keywords; }
+  if (params_query.category) { params = params + "&category=" + params_query.category; }
+  if (params_query.date) { params = params + "&date=" + params_query.date; }
+  return params;
+}
+
 
 router
 
@@ -157,21 +191,13 @@ router
         let eventsEventful;
         let page_size = "10";
         let page_number = "1";
-        if (req.query.page_size) { page_size = req.query.page_size; }
-        if (req.query.page_number) { page_number = req.query.page_number; }
-        let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
-        if (req.query.location) {
-          params = params + "&location=" + req.query.location;
-          let within = 350;
-          if (req.query.within) {
-            within = req.query.within;
-          }
-          params = params + "&units=km&within=" + within;
-        }
-        if (req.query.keywords) { params = params + "&keywords=" + req.query.keywords; }
-        if (req.query.category) { params = params + "&category=" + req.query.category; }
-        if (req.query.date) { params = params + "&date=" + req.query.date; }
-        doRequest(params, "search")
+        authorize_appkey(req.query.appkey, mysqlConnection)
+        .then((result) => {
+          if (req.query.page_size) { page_size = req.query.page_size; }
+          if (req.query.page_number) { page_number = req.query.page_number; }
+          let params = buildSearchParams(req.query, page_size, page_number);
+          return doRequest(params, "search")
+        })
         .then((eventsResEventful) => {
           return new Promise(function(resolve, reject) {
             if (eventsResEventful.error) {
@@ -214,7 +240,7 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          handleError(err, res, "GET");
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -275,7 +301,7 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          handleError(err, res, "GET/user");
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -336,7 +362,7 @@ router
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
-          handleError(err, res, "POST/user");
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -403,7 +429,7 @@ router
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
-          handleError(err, res, "PUT/:id/user");
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -442,7 +468,7 @@ router
               .status(403)
               .json({'error' : "No es pot desmarcar l'assitència si ja s'ha fet el check-in"})
           } else {
-            handleError(err, res, "DELETE/:id/user/");
+            handleError(err, res);
           }
         })
         .finally(() => {
@@ -491,7 +517,7 @@ router
 
         })
         .catch((err) => {
-          handleError(err, res, "GET/:id");
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);

@@ -7,12 +7,21 @@ request = request(host);
 
 var aux_id = "E0-001-095173443-9";
 
+function buildGetParams(path, params) {
+  let str_params = path;
+  for (var key in params) {
+    str_params += (str_params == path) ? "?" : "&";
+    str_params += key + "=" + params[key];
+  }
+  return str_params;
+}
+
 describe('route of events', function() {
 
   this.timeout(120000); // Per les proves
 
   describe('GET /events', function() {
-    it('should get a list of events in Barcelona', function(done) {
+    it('should not get a list of events without the api key', function(done) {
       const params = {
         'location' : 'Barcelona',
         'within' : '20',
@@ -20,12 +29,49 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get("/events/?location="+params.location+"&within="+params.within+"&page_size="+params.page_size+"&page_number="+params.page_number)
+        .get(buildGetParams("/events/", params))
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not get a list of events with a wrong api key', function(done) {
+      const params = {
+        'appkey' : '123456',
+        'location' : 'Barcelona',
+        'within' : '20',
+        'page_size' : '5',
+        'page_number' : '2'
+      };
+      request
+        .get(buildGetParams("/events/", params))
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should get a list of events in Barcelona', function(done) {
+      const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'location' : 'Barcelona',
+        'within' : '20',
+        'page_size' : '5',
+        'page_number' : '2'
+      };
+      request
+        .get(buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-
         expect(res.body).not.to.have.property('first_item');
         expect(res.body).to.have.property('events');
         const events = res.body.events;
@@ -66,12 +112,13 @@ describe('route of events', function() {
     });
     it('should get a list of events with some keywords', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'keywords' : 'LIGA soccer',
         'page_size' : '50',
         'page_number' : '2'
       };
       request
-        .get('/events/?keywords='+params.keywords+"&page_size="+params.page_size+"&page_number="+params.page_number)
+        .get(buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -118,10 +165,11 @@ describe('route of events', function() {
     });
     it('should get a list of events of a category', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'category' : 'art'
       };
       request
-        .get('/events/?category='+params.category)
+        .get(buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -168,12 +216,13 @@ describe('route of events', function() {
     });
     it('should get a list of events of a date', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'date' : 'Next week',
         'page_size' : '50',
         'page_number' : '2'
       };
       request
-        .get('/events/?date='+params.date+"&page_size="+params.page_size+"&page_number="+params.page_number)
+        .get(buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -220,13 +269,14 @@ describe('route of events', function() {
     });
     it('should get a list of events of a category in a date in a place', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'category' : 'music',
         'date' : '2016091200-2017042200',
         'location' : 'Barcelona',
         'page_size' : '25'
       };
       request
-        .get('/events/?category='+params.category+"&date="+params.date+"&location="+params.location+"&page_size="+params.page_size)
+        .get(buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -323,7 +373,7 @@ describe('route of events', function() {
         'page_size' : 20
       };
       request
-        .get('/events/user/?uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
+        .get(buildGetParams("/events/user/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)

@@ -40,6 +40,14 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`events` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `takemelegends`.`appkey`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `takemelegends`.`appkeys` ;
+
+CREATE TABLE IF NOT EXISTS `takemelegends`.`appkeys` (
+  `appkey` VARCHAR(255) NOT NULL PRIMARY KEY)
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `takemelegends`.`users`
@@ -59,6 +67,23 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`users` (
   UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `takemelegends`.`tokens`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `takemelegends`.`tokens` ;
+
+CREATE TABLE IF NOT EXISTS `takemelegends`.`tokens` (
+  `token` VARCHAR(255) NOT NULL,
+  `users_uid` INT NOT NULL,
+  `users_provider` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`token`),
+  INDEX `fk_tokens_has_users_users1_idx` (`users_uid` ASC, `users_provider` ASC),
+  CONSTRAINT `fk_tokens_has_users_users1`
+    FOREIGN KEY (`users_uid` , `users_provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `takemelegends`.`attendances`
