@@ -646,7 +646,7 @@ describe('route of events', function() {
         .delete('/events/'+aux_id+'/user')
         .set('Accept', 'application/json')
         .send(params)
-        .expect(200)
+        .expect(401)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 
@@ -666,7 +666,7 @@ describe('route of events', function() {
         .delete('/events/'+aux_id+'/user')
         .set('Accept', 'application/json')
         .send(params)
-        .expect(200)
+        .expect(401)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
 

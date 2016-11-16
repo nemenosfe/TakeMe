@@ -450,8 +450,11 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id) {  handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        const sql = "SELECT checkin_done FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
-        mysqlConnection.query(sql)
+        authorize_appkey(req.body.appkey, mysqlConnection)
+        .then(() => {
+          const sql = "SELECT checkin_done FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
+          return mysqlConnection.query(sql);
+        })
         .then((result) => {
           return new Promise(function(resolve, reject) {
             if (result.length == 0) {
@@ -474,7 +477,7 @@ router
           if (err == "No es pot desmarcar l'assitència si ja s'ha fet el check-in") {
             res
               .status(403)
-              .json({'error' : "No es pot desmarcar l'assitència si ja s'ha fet el check-in"})
+              .json({'error' : err})
           } else {
             handleError(err, res);
           }
