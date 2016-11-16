@@ -492,8 +492,46 @@ describe('route of events', function() {
   });
 
   describe('POST /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should not create an attendance without the api key', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'event_id' : 'E0-001-093875660-9'
+      };
+      request
+        .post('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not create an attendance with a wrong api key', function(done) {
+      const params = {
+        'appkey' : '123456',
+        'uid' : 1,
+        'provider' : 'provider',
+        'event_id' : 'E0-001-093875660-9'
+      };
+      request
+        .post('/events/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
     it('should create an attendance from a user to an event', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
         'event_id' : 'E0-001-093875660-9'

@@ -317,15 +317,17 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { handleNoParams(res); }
     else {
       const attendanceRequest = req.body;
-
       pool.getConnection().then(function(mysqlConnection) {
-        const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.event_id+"';";
-        mysqlConnection.query(sqlEventInDB)
+        authorize_appkey(req.body.appkey, mysqlConnection)
+        .then((result) => {
+          const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.event_id+"';";
+          return mysqlConnection.query(sqlEventInDB)
+        })
         .then((result) => {
           // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
           if (result[0].event_exists == '1') {
-            return new Promise(function (fulfill, reject){
-              fulfill(1);
+            return new Promise(function (resolve, reject){
+              resolve(1);
             });
           }
           else {
@@ -336,8 +338,8 @@ router
         .then((result) => {
           // Si no tenim l'esdeveniment a la nostra BD, el guardem
           if ( result == 1) {
-            return new Promise(function (fulfill, reject){
-              fulfill(1);
+            return new Promise(function (resolve, reject){
+              resolve(1);
             });
           }
           else {
