@@ -634,9 +634,49 @@ describe('route of events', function() {
         .set('Accept', 'application/json')
         .send(params)
     });
+    it('should not delete an event without an appkey', function(done) {
+      aux_id = 'E0-001-096844204-0@2016102500';
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider'
+      };
+      request
+        .delete('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.be.empty
+
+        done();
+      }, done)
+    });
+    it('should not delete an event with a wrong appkey', function(done) {
+      aux_id = 'E0-001-096844204-0@2016102500';
+      const params = {
+        'appkey' : '123456',
+        'uid' : 1,
+        'provider' : 'provider'
+      };
+      request
+        .delete('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).to.be.empty
+
+        done();
+      }, done)
+    });
     it('should delete an event from a user with the check-in not done', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider'
       };
@@ -656,6 +696,7 @@ describe('route of events', function() {
     it('should not delete an event from a user with the check-in done', function(done) {
       aux_id = 'E0-001-093875660-9' // no ha de deixar, perquè té check-in
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider'
       };
