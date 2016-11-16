@@ -12,6 +12,7 @@ describe('Users route', function() {
     describe('POST /users', function() {
         it('should create a new user', function(done) {
             const params = {
+                'appkey' : '7384d85615237469c2f6022a154b7e2c',
                 'uid' : 31,
                 'provider' : 'providerTest',
                 'name' : 'nameTest',
@@ -43,7 +44,7 @@ describe('Users route', function() {
     describe('GET /users', function() {
         it('should return all users', function(done) {
             request
-                .get('/users')
+                .get('/users?appkey='+'7384d85615237469c2f6022a154b7e2c')
                 .set('Accept', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -68,7 +69,7 @@ describe('Users route', function() {
     describe('GET /users/:id', function() {
         it('should return a certain user', function(done) {
             request
-                .get('/users/31-providerTest')
+                .get('/users/31-providerTest?appkey='+'7384d85615237469c2f6022a154b7e2c')
                 .set('Accept', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
@@ -92,6 +93,7 @@ describe('Users route', function() {
         it('should update a user information', function(done) {
             var updatedMail = "updated" + 31 + "@test.com";
             const params = {
+                'appkey' : '7384d85615237469c2f6022a154b7e2c',
                 'name' : 'updatedName',
                 'surname' : 'updatedSurname',
                 'email' : updatedMail
@@ -117,9 +119,13 @@ describe('Users route', function() {
 
     describe('DELETE users/:id', function() {
         it('should delete a user', function(done) {
+            const params = {
+              'appkey' : '7384d85615237469c2f6022a154b7e2c',
+            };
             request
                 .delete('/users/31-providerTest')
                 .set('Accept', 'application/json')
+                .send(params)
                 .expect(200)
                 .expect('Content-Type', /application\/json/)
             .then((res) => {

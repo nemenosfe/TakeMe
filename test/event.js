@@ -649,9 +649,8 @@ describe('route of events', function() {
         .expect(401)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-
-        expect(res.body).to.be.empty
-
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
         done();
       }, done)
     });
@@ -669,9 +668,8 @@ describe('route of events', function() {
         .expect(401)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-
-        expect(res.body).to.be.empty
-
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
         done();
       }, done)
     });
