@@ -392,8 +392,44 @@ describe('route of events', function() {
   });
 
   describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should not get a list of events without the api key', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'page_size' : 20
+      };
+      request
+        .get(buildGetParams("/events/user/", params))
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not get a list of events with a wrong api key', function(done) {
+      const params = {
+        'appkey' : "123456",
+        'uid' : 1,
+        'provider' : 'provider',
+        'page_size' : 20
+      };
+      request
+        .get(buildGetParams("/events/user/", params))
+        .set('Accept', 'application/json')
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
     it('should obtain all events from a user', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
         'page_size' : 20
