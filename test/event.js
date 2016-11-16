@@ -555,9 +555,47 @@ describe('route of events', function() {
   });
 
   describe('PUT /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+    it('should not mark the check-in without the api key', function(done) {
+      const params = {
+        'uid' : 1,
+        'provider' : 'provider',
+        'checkin_done' : '1'
+      };
+      request
+        .put('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not mark the check-in with a wrong api key', function(done) {
+      const params = {
+        'appkey' : '123456',
+        'uid' : 1,
+        'provider' : 'provider',
+        'checkin_done' : '1'
+      };
+      request
+        .put('/events/'+aux_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
     it('should mark the check-in of an event from a user', function(done) {
       aux_id = 'E0-001-093875660-9';
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
         'checkin_done' : '1'

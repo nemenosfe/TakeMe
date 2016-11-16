@@ -385,7 +385,10 @@ router
       let new_takes = -1;
       let total_takes = -1;
       pool.getConnection().then(function(mysqlConnection) {
-        mysqlConnection.query('START TRANSACTION')
+        authorize_appkey(req.body.appkey, mysqlConnection)
+        .then((result) => {
+          return mysqlConnection.query('START TRANSACTION');
+        })
         .then((result) => { // Fa el check-in
           const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
