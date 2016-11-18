@@ -10,6 +10,20 @@ describe('Users route', function() {
   this.timeout(120000);
 
   describe('POST /users', function() {
+    after(function() {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+      };
+      request
+        .delete('/users/31-providerTest')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.be.empty;
+        })
+    });
     it('should create a new user', function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
@@ -28,6 +42,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('user');
           const userResponse = res.body.user;
+          console.log(userResponse.new_user);
           expect(userResponse).to.have.property('uid', params.uid);
           expect(userResponse).to.have.property('provider', params.provider);
           expect(userResponse).to.have.property('name', params.name);
@@ -118,6 +133,21 @@ describe('Users route', function() {
   });
 
   describe('DELETE users/:id', function() {
+    before(function() {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'uid': 31,
+        'provider': 'providerTest',
+        'name': 'nameTest',
+        'surname': 'surnameTest',
+        'email': 'email31@test.com'
+      };
+      request
+        .post('/users')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+    });
     it('should delete a user', function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
