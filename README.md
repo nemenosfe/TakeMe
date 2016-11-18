@@ -293,10 +293,10 @@ Les diferències respecte a **GET /events/** són les següents:
 GET de tots els esdeveniments d'un usuari.  
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot veure aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada, del que hi ha per ara a falta del token, (en forma de JSON, però s'envien a la URL):
+Exemple de paràmetre d'entrada (en forma de JSON, però s'envien a la URL):
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'page_size' : 20, // paràmetre opcional
@@ -403,10 +403,10 @@ Un exemple seria el següent:
 POST per un "assistiré" d'un usuari a un esdeveniment.
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook' // paràmetre obligatori
@@ -430,10 +430,10 @@ Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E
 **Falta que el check-in li doni els logros que li ha de donar, però això està fora d'aquesta iteració** :ok_hand: :smile: :sunglasses:  
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot fer un check-in d'ell mateix a la nostra API (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
@@ -460,10 +460,10 @@ DELETE d'una assitència a un esdeveniment (si s'ha fet el check-in a aquest esd
 Un exemple d'aquest DELETE seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot desmarcar la seva assitència a un esdeveniment (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).

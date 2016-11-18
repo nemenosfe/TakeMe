@@ -391,9 +391,10 @@ describe('route of events', function() {
     });
   });
 
-  describe('GET /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('GET /events/user/', function() {
     it('should not get a list of events without the api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'page_size' : 20
@@ -411,6 +412,7 @@ describe('route of events', function() {
     });
     it('should not get a list of events with a wrong api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : "123456",
         'uid' : 1,
         'provider' : 'provider',
@@ -429,6 +431,7 @@ describe('route of events', function() {
     });
     it('should obtain all events from a user', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
@@ -491,9 +494,10 @@ describe('route of events', function() {
     });
   });
 
-  describe('POST /events/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('POST /events/user/', function() {
     it('should not create an attendance without the api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'event_id' : 'E0-001-093875660-9'
@@ -512,6 +516,7 @@ describe('route of events', function() {
     });
     it('should not create an attendance with a wrong api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '123456',
         'uid' : 1,
         'provider' : 'provider',
@@ -531,6 +536,7 @@ describe('route of events', function() {
     });
     it('should create an attendance from a user to an event', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
@@ -554,9 +560,10 @@ describe('route of events', function() {
     });
   });
 
-  describe('PUT /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('PUT /events/:id/user/', function() {
     it('should not mark the check-in without the api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'checkin_done' : '1'
@@ -575,6 +582,7 @@ describe('route of events', function() {
     });
     it('should not mark the check-in with a wrong api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '123456',
         'uid' : 1,
         'provider' : 'provider',
@@ -595,6 +603,7 @@ describe('route of events', function() {
     it('should mark the check-in of an event from a user', function(done) {
       aux_id = 'E0-001-093875660-9';
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
@@ -622,9 +631,10 @@ describe('route of events', function() {
     });
   });
 
-  describe('DELETE /events/:id/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('DELETE /events/:id/user/', function() {
     after(function() {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider',
@@ -639,6 +649,7 @@ describe('route of events', function() {
     it('should not delete an event without an appkey', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider'
       };
@@ -657,6 +668,7 @@ describe('route of events', function() {
     it('should not delete an event with a wrong appkey', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '123456',
         'uid' : 1,
         'provider' : 'provider'
@@ -676,6 +688,7 @@ describe('route of events', function() {
     it('should delete an event from a user with the check-in not done', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider'
@@ -696,6 +709,7 @@ describe('route of events', function() {
     it('should not delete an event from a user with the check-in done', function(done) {
       aux_id = 'E0-001-093875660-9' // no ha de deixar, perquè té check-in
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
         'uid' : 1,
         'provider' : 'provider'

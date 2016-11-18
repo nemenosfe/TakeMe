@@ -50,6 +50,26 @@ function authorize_appkey(appkey, mysqlConnection) {
   });
 }
 
+function authorize_token(token, uid, provider, mysqlConnection) {
+  return new Promise(function(resolve, reject) {
+    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
+    if (!token) { reject(errorJSONresponse); }
+    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
+    mysqlConnection.query(sqlGetToken)
+    .then((resultDB) => {
+      if (!resultDB[0]) { reject(errorJSONresponse); }
+      else {
+        const real_hashed_token = resultDB[0]["token"];
+        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
+        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
+      }
+    })
+    .catch((err) => {
+      reject(err);
+    })
+  });
+}
+
 function doRequest(params, type) {
   const finalURL = urlEventfulApi + type + "/" + "?app_key=" + keyEventfulApi + "&" + params;
   let optionsRequest = {
@@ -274,6 +294,9 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
+          return authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
+        })
+        .then((result) => {
           const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances, ev.takes FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.query.uid + " AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
           return mysqlConnection.query(sql)
         })
@@ -318,6 +341,9 @@ router
       const attendanceRequest = req.body;
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
+        .then((result) => {
+          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+        })
         .then((result) => {
           const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.event_id+"';";
           return mysqlConnection.query(sqlEventInDB)
@@ -386,6 +412,9 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
+          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+        })
+        .then((result) => {
           return mysqlConnection.query('START TRANSACTION');
         })
         .then((result) => { // Fa el check-in
@@ -450,6 +479,9 @@ router
     else {
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
+        .then((result) => {
+          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+        })
         .then(() => {
           const sql = "SELECT checkin_done FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
           return mysqlConnection.query(sql);
