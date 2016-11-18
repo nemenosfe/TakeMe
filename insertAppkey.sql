@@ -1,0 +1,1 @@
+INSERT INTO appkeys VALUES("d5f84cd9bd06f14b885ed4b1af686bd8");

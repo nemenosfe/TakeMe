@@ -2,8 +2,6 @@ INSERT INTO users VALUES (1, "provider", "Nom1", "Cognom1", "emailfals1@gmail.co
 INSERT INTO users VALUES (2, "provider", "Nom2", "Cognom2", "emailfals2@gmail.com", 200, 200, 1);
 INSERT INTO users VALUES (3, "provider", "Nom3", "Cognom3", "emailfals3@gmail.com", 60, 60, 1);
 
-INSERT INTO appkeys VALUES("d5f84cd9bd06f14b885ed4b1af686bd8");
-
 INSERT INTO tokens VALUES("b903e0f0b987fc22588f517c9df0274f", 1, "provider");
 INSERT INTO tokens VALUES("29d7ff6dfc46ca6447e75bfbccb185d6", 2, "provider");
 INSERT INTO tokens VALUES("67bfd2aa446a1f125fed5d317dc254a5", 3, "provider");

@@ -38,8 +38,7 @@ function authorize_appkey(appkey, mysqlConnection) {
     .then((resultDB) => {
       const real_hashed_appkey = resultDB[0].appkey;
       const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
-      if (requested_hashed_appkey == real_hashed_appkey) { resolve(1); }
-      else { reject(errorJSONresponse); }
+      (requested_hashed_appkey == real_hashed_appkey) ? resolve(1) : reject(errorJSONresponse);
     })
     .catch((err) => {
       reject(err);

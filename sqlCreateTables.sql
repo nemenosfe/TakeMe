@@ -7,6 +7,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema takemelegends
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `takemelegends`;
+
 CREATE SCHEMA IF NOT EXISTS `takemelegends` DEFAULT CHARACTER SET utf8 ;
 USE `takemelegends` ;
 
@@ -77,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`tokens` (
   CONSTRAINT `fk_tokens_has_users_users1`
     FOREIGN KEY (`users_uid` , `users_provider`)
     REFERENCES `takemelegends`.`users` (`uid` , `provider`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 

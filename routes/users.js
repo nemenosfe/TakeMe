@@ -5,6 +5,7 @@ const mysql = require('promise-mysql');
 const rp = require('request-promise');
 const Promise = require("bluebird");
 const crypto = require('crypto');
+const randomstring = require("randomstring");
 
 var pool = mysql.createPool({
   host: 'localhost',
@@ -57,11 +58,7 @@ function authorize_appkey(appkey, mysqlConnection) {
       .then((resultDB) => {
         const real_hashed_appkey = resultDB[0].appkey;
         const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
-        if (requested_hashed_appkey == real_hashed_appkey) {
-          resolve(1);
-        } else {
-          reject(errorJSONresponse);
-        }
+        (requested_hashed_appkey == real_hashed_appkey) ? resolve(1) : reject(errorJSONresponse);
       })
       .catch((err) => {
         reject(err);
@@ -69,9 +66,13 @@ function authorize_appkey(appkey, mysqlConnection) {
   });
 }
 
+function generateRandomString(numCharacters) {
+  numCharacters = numCharacters || 200;
+  return randomstring.generate(numCharacters);
+}
+
 router
   .post('/', function(req, res, next) {
-    //console.log("POST a new user")
     if (!req.body) {
       res
         .status(403)
@@ -80,18 +81,40 @@ router
           message: 'Empty body'
         })
     } else {
-      let user = req.body
+      let user = {uid: req.body.uid, provider: req.body.provider};
+      user.name = req.body.name || null;
+      user.surname = req.body.surname || null;
+      user.email = req.body.email || null;
 
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
-          .then(() => {
-            //console.log("Table users created: " + JSON.stringify(result));
-            const sqlInsertUserInDB = "INSERT INTO users values (" + user.uid + ", '" + user.provider + "', '" + user.name + "', '" + user.surname + "', '" + user.email + "', 0, 0, 1);";
-            //console.log(sqlInsertUserInDB);
+          .then((result) => {
+            const sql = "SELECT * FROM users u, tokens t WHERE u.uid = '"+user.uid+"' AND u.provider='"+user.provider+"';";
+            return mysqlConnection.query(sql);
+          })
+          .then((result) => {
+            user.new_user = !result[0];
+            return mysqlConnection.query('START TRANSACTION');
+          })
+          .then((result) => {
+            const sqlInsertUserInDB = "INSERT IGNORE INTO users values (" + user.uid + ", '" + user.provider + "', '" + user.name + "', '" + user.surname + "', '" + user.email + "', 0, 0, 1);";
             return mysqlConnection.query(sqlInsertUserInDB);
           })
           .then((result) => {
-            //console.log("User inserted: " + JSON.stringify(result));
+            user.token = generateRandomString(); // Tant si ja existia l'usuari com si no, creem un nou token de sessió
+            const encryptedToken = crypto.createHash('md5').update(user.token).digest("hex");
+
+            const sql =
+              (user.new_user)
+              ? "INSERT INTO tokens values ('"+encryptedToken+"', "+user.uid+", '"+user.provider+"');"
+              : "UPDATE tokens SET token = '" + encryptedToken + "' WHERE users_uid = '" + user.uid + "' AND users_provider = '" + user.provider + "';";
+
+            return mysqlConnection.query(sql);
+          })
+          .then((result) => {
+            return mysqlConnection.query('COMMIT');
+          })
+          .then((result) => {
             user.takes = 0;
             user.experience = 0;
             user.level = 1;
@@ -102,13 +125,7 @@ router
               })
           })
           .catch((err) => {
-            //console.log("Error: " + JSON.stringify(err));
-            res
-              .status(500)
-              .json({
-                error: true,
-                message: 'DB error: ' + JSON.stringify(err)
-              })
+            handleError(err, res);
           })
           .finally(() => {
             pool.releaseConnection(mysqlConnection);
@@ -118,7 +135,6 @@ router
   })
 
 .get('/', function(req, res, next) {
-  //console.log("GET all users");
   const appkey = !(!req.query) ? req.query.appkey : null;
   pool.getConnection().then(function(mysqlConnection) {
     authorize_appkey(appkey, mysqlConnection)
@@ -126,7 +142,6 @@ router
         return mysqlConnection.query("SELECT * FROM users")
       })
       .then((result) => {
-        //console.log("Get users done: " + JSON.stringify(result));
         res
           .status(200)
           .json({
@@ -134,13 +149,7 @@ router
           })
       })
       .catch((err) => {
-        //console.log("Error while getting all users: " + JSON.stringify(err));
-        res
-          .status(500)
-          .json({
-            error: true,
-            message: 'DB error: ' + JSON.stringify(err)
-          })
+        handleError(err, res);
       })
       .finally(() => {
         pool.releaseConnection(mysqlConnection);
@@ -149,7 +158,6 @@ router
 })
 
 .get('/:id', function(req, res, next) {
-  //console.log('Get user with id: ', req.params.id)
   const appkey = !(!req.query) ? req.query.appkey : null;
   if (!req.params.id) {
     res
@@ -162,13 +170,12 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(appkey, mysqlConnection)
         .then(() => {
-          var uid = req.params.id.split('-')[0];
-          var provider = req.params.id.split('-')[1];
-          const singleUserQuery = "SELECT * FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
-          return mysqlConnection.query(singleUserQuery)
+          const uid = req.params.id.split('-')[0];
+          const provider = req.params.id.split('-')[1];
+          const singleUserQuery = "SELECT * FROM users WHERE uid = " + uid + " AND provider = '" + provider + "';";
+          return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
-          //console.log("Get user done: " + JSON.stringify(result));
           res
             .status(200)
             .json({
@@ -176,13 +183,7 @@ router
             })
         })
         .catch((err) => {
-          //console.log("Error while getting single user: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({
-              error: true,
-              message: 'DB error: ' + JSON.stringify(err)
-            })
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -192,7 +193,6 @@ router
 })
 
 .put('/:id', function(req, res, next) {
-  //console.log("PUT:id", req.params.id)
   if (!req.params.id || !req.body) {
     res
       .status(403)
@@ -201,23 +201,18 @@ router
         message: 'Empty params'
       })
   } else {
-    //console.log("REQ.BODY: " + JSON.stringify(req.body));
     const user = req.body;
     user.uid = parseInt(req.params.id.split('-')[0]);
     user.provider = req.params.id.split('-')[1];
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
-          var uid = req.params.id.split('-')[0];
-          //console.log(uid);
-          var provider = req.params.id.split('-')[1];
-          //console.log(provider);
+          const uid = req.params.id.split('-')[0];
+          const provider = req.params.id.split('-')[1];
           const updateQuery = "UPDATE users SET name='" + user.name + "', surname='" + user.surname + "', email='" + user.email + "' WHERE uid=" + uid + " AND provider = '" + provider + "'";
-          //console.log("Query: " + updateQuery);
           return mysqlConnection.query(updateQuery)
         })
         .then((result) => {
-          //console.log("PUT events done: " + JSON.stringify(result));
           res
             .status(200)
             .json({
@@ -225,13 +220,7 @@ router
             })
         })
         .catch((err) => {
-          //console.log("Error PUT: " + JSON.stringify(err));
-          res
-            .status(500)
-            .json({
-              error: true,
-              message: 'DB error: ' + JSON.stringify(err)
-            })
+          handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -241,10 +230,9 @@ router
 })
 
 .delete('/:id', function(req, res, next) {
-  //console.log("DELETE:id", req.params.id)
   const appkey = !(!req.body) ? req.body.appkey : null;
-  var uid = req.params.id.split('-')[0];
-  var provider = req.params.id.split('-')[1];
+  const uid = req.params.id.split('-')[0];
+  const provider = req.params.id.split('-')[1];
   if (!req.params.id) {
     res
       .status(403)
@@ -257,7 +245,6 @@ router
       authorize_appkey(appkey, mysqlConnection)
         .then(() => {
           const deleteQuery = "DELETE FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
-          //console.log(deleteQuery);
           return mysqlConnection.query(deleteQuery)
         })
         .then((result) => {
@@ -289,7 +276,6 @@ router
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
           const insertQuery = "INSERT INTO userPreferences values (" + preference.uid + ", '" + preference.provider + "', '" + preference.categories + "', '" + preference.locations + "', " + preference.start_hour + ", " + preference.end_hour + ", " + preference.week + ", " + preference.weekend + ");";
-          //console.log(insertQuery);
           return mysqlConnection.query(insertQuery)
         })
         .then((result) => {
@@ -314,8 +300,8 @@ router
   pool.getConnection().then(function(mysqlConnection) {
     authorize_appkey(appkey, mysqlConnection)
       .then(() => {
-        var uid = req.params.id.split('-')[0];
-        var provider = req.params.id.split('-')[1];
+        const uid = req.params.id.split('-')[0];
+        const provider = req.params.id.split('-')[1];
         return mysqlConnection.query("SELECT * FROM userPreferences WHERE uid = " + uid + " AND provider = '" + provider + "'")
       })
       .then((result) => {
@@ -348,7 +334,6 @@ router
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
           const updateQuery = "UPDATE userPreferences SET categories='" + preference.categories + "', locations='" + preference.locations + "', start_hour='" + preference.start_hour + "', end_hour='" + preference.end_hour + "', week='" + preference.week + "', weekend='" + preference.weekend + "' WHERE uid=" + uid + " AND provider = '" + provider + "'";
-          //console.log(updateQuery);
           return mysqlConnection.query(updateQuery)
         })
         .then((result) => {
