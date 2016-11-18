@@ -7,10 +7,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema takemelegends
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema takemelegends
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `takemelegends` DEFAULT CHARACTER SET utf8 ;
 USE `takemelegends` ;
 

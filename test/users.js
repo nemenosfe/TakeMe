@@ -7,131 +7,131 @@ request = request(host);
 
 describe('Users route', function() {
 
-    this.timeout(120000);
+  this.timeout(120000);
 
-    describe('POST /users', function() {
-        it('should create a new user', function(done) {
-            const params = {
-                'appkey' : '7384d85615237469c2f6022a154b7e2c',
-                'uid' : 31,
-                'provider' : 'providerTest',
-                'name' : 'nameTest',
-                'surname' : 'surnameTest',
-                'email' : 'email31@test.com'
-            };
-            request
-                .post('/users')
-                .set('Accept', 'application/json')
-                .send(params)
-                .expect(201)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.have.property('user');
-                const userResponse = res.body.user;
-                expect(userResponse).to.have.property('uid', params.uid);
-                expect(userResponse).to.have.property('provider', params.provider);
-                expect(userResponse).to.have.property('name', params.name);
-                expect(userResponse).to.have.property('surname', params.surname);
-                expect(userResponse).to.have.property('email', params.email);
-                expect(userResponse).to.have.property('takes', 0);
-                expect(userResponse).to.have.property('experience', 0);
-                expect(userResponse).to.have.property('level', 1);
-                done();
-            }, done)
-        });
+  describe('POST /users', function() {
+    it('should create a new user', function(done) {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'uid': 31,
+        'provider': 'providerTest',
+        'name': 'nameTest',
+        'surname': 'surnameTest',
+        'email': 'email31@test.com'
+      };
+      request
+        .post('/users')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('user');
+          const userResponse = res.body.user;
+          expect(userResponse).to.have.property('uid', params.uid);
+          expect(userResponse).to.have.property('provider', params.provider);
+          expect(userResponse).to.have.property('name', params.name);
+          expect(userResponse).to.have.property('surname', params.surname);
+          expect(userResponse).to.have.property('email', params.email);
+          expect(userResponse).to.have.property('takes', 0);
+          expect(userResponse).to.have.property('experience', 0);
+          expect(userResponse).to.have.property('level', 1);
+          done();
+        }, done)
     });
+  });
 
-    describe('GET /users', function() {
-        it('should return all users', function(done) {
-            request
-                .get('/users?appkey='+'7384d85615237469c2f6022a154b7e2c')
-                .set('Accept', 'application/json')
-                .expect(200)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.have.property('users');
-                const users = res.body.users;
-                expect(users).to.be.an('array');
-                const user = users[0];
-                expect(user).to.have.property('uid');
-                expect(user).to.have.property('provider');
-                expect(user).to.have.property('name');
-                expect(user).to.have.property('surname');
-                expect(user).to.have.property('email');
-                expect(user).to.have.property('takes');
-                expect(user).to.have.property('experience');
-                expect(user).to.have.property('level');
-                done();
-            }, done)
-        });
+  describe('GET /users', function() {
+    it('should return all users', function(done) {
+      request
+        .get('/users?appkey=' + '7384d85615237469c2f6022a154b7e2c')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('users');
+          const users = res.body.users;
+          expect(users).to.be.an('array');
+          const user = users[0];
+          expect(user).to.have.property('uid');
+          expect(user).to.have.property('provider');
+          expect(user).to.have.property('name');
+          expect(user).to.have.property('surname');
+          expect(user).to.have.property('email');
+          expect(user).to.have.property('takes');
+          expect(user).to.have.property('experience');
+          expect(user).to.have.property('level');
+          done();
+        }, done)
     });
+  });
 
-    describe('GET /users/:id', function() {
-        it('should return a certain user', function(done) {
-            request
-                .get('/users/31-providerTest?appkey='+'7384d85615237469c2f6022a154b7e2c')
-                .set('Accept', 'application/json')
-                .expect(200)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.have.property('user');
-                const user = res.body.user;
-                expect(user).to.have.property('uid', 31);
-                expect(user).to.have.property('provider', 'providerTest');
-                expect(user).to.have.property('name', 'nameTest');
-                expect(user).to.have.property('surname', 'surnameTest');
-                expect(user).to.have.property('email', 'email31@test.com');
-                expect(user).to.have.property('takes', 0);
-                expect(user).to.have.property('experience', 0);
-                expect(user).to.have.property('level', 1);
-                done();
-            }, done)
-        });
+  describe('GET /users/:id', function() {
+    it('should return a certain user', function(done) {
+      request
+        .get('/users/31-providerTest?appkey=' + '7384d85615237469c2f6022a154b7e2c')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('user');
+          const user = res.body.user;
+          expect(user).to.have.property('uid', 31);
+          expect(user).to.have.property('provider', 'providerTest');
+          expect(user).to.have.property('name', 'nameTest');
+          expect(user).to.have.property('surname', 'surnameTest');
+          expect(user).to.have.property('email', 'email31@test.com');
+          expect(user).to.have.property('takes', 0);
+          expect(user).to.have.property('experience', 0);
+          expect(user).to.have.property('level', 1);
+          done();
+        }, done)
     });
+  });
 
-    describe('PUT /users/:id', function() {
-        it('should update a user information', function(done) {
-            var updatedMail = "updated" + 31 + "@test.com";
-            const params = {
-                'appkey' : '7384d85615237469c2f6022a154b7e2c',
-                'name' : 'updatedName',
-                'surname' : 'updatedSurname',
-                'email' : updatedMail
-            };
-            request
-                .put('/users/31-providerTest')
-                .set('Accept', 'application/json')
-                .send(params)
-                .expect(200)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.have.property('user');
-                const user = res.body.user;
-                expect(user).to.have.property('uid', 31);
-                expect(user).to.have.property('provider', 'providerTest');
-                expect(user).to.have.property('name', params.name);
-                expect(user).to.have.property('surname', params.surname);
-                expect(user).to.have.property('email', params.email);
-                done();
-            }, done)
-        });
+  describe('PUT /users/:id', function() {
+    it('should update a user information', function(done) {
+      var updatedMail = "updated" + 31 + "@test.com";
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'name': 'updatedName',
+        'surname': 'updatedSurname',
+        'email': updatedMail
+      };
+      request
+        .put('/users/31-providerTest')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('user');
+          const user = res.body.user;
+          expect(user).to.have.property('uid', 31);
+          expect(user).to.have.property('provider', 'providerTest');
+          expect(user).to.have.property('name', params.name);
+          expect(user).to.have.property('surname', params.surname);
+          expect(user).to.have.property('email', params.email);
+          done();
+        }, done)
     });
+  });
 
-    describe('DELETE users/:id', function() {
-        it('should delete a user', function(done) {
-            const params = {
-              'appkey' : '7384d85615237469c2f6022a154b7e2c',
-            };
-            request
-                .delete('/users/31-providerTest')
-                .set('Accept', 'application/json')
-                .send(params)
-                .expect(200)
-                .expect('Content-Type', /application\/json/)
-            .then((res) => {
-                expect(res.body).to.be.empty;
-                done();
-            }, done)
-        });
+  describe('DELETE users/:id', function() {
+    it('should delete a user', function(done) {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+      };
+      request
+        .delete('/users/31-providerTest')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.be.empty;
+          done();
+        }, done)
     });
+  });
 });
