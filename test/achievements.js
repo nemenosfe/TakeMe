@@ -11,12 +11,10 @@ describe('route of achievements', function() {
 
   this.timeout(4000); // Per les proves
 
-  // ESTAN TOTES LES PROVES COM A SKIP DE MANERA TEMPORAL PERQUÈ S'HAN DE FER CANVIS
-
   describe('GET /achievements', function() {
     it('should get the whole list of achievements', function(done) {
       request
-        .get('/achievements')
+        .get('/achievements/?appkey=7384d85615237469c2f6022a154b7e2c')
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -48,7 +46,7 @@ describe('route of achievements', function() {
         'page_size' : 20
       };
       request
-        .get('/achievements/user/?uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
+        .get('/achievements/user/?appkey=7384d85615237469c2f6022a154b7e2c&uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)
@@ -78,9 +76,11 @@ describe('route of achievements', function() {
     });
   });
 
-  describe('POST /achievements/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('POST /achievements/user/', function() {
     it('should create an acquisition from a user of an achievement', function(done) {
       const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'achievement_id' : 'sales_10'

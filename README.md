@@ -734,7 +734,7 @@ No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
 GET d'una llista de 'logros'.  
 
 #### Paràmetres d'entrada
-No cal cap paràmetre d'entrada, però els següents són opcionals:
+No cal cap paràmetre d'entrada (excepte l'**appkey**), però els següents són opcionals:
   - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.  
   - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1.
 Els logros estan ordenats per alfabèticament pel nom.  
@@ -768,10 +768,12 @@ Els següents són opcionals:
   - **page_size**: Quants 'logros' com a màxim vols rebre. Per defecte és 20.
   - **page_number**: Número de pàgina de 'logros' anant de *page_size* en *page_size*. Per defecte és 1. Els logros estan ordenats per alfabèticament pel nom.  
 Els **paràmetres obligatoris** són els que identifiquen l'usuari: **uid** i **provider**.  
+No cal token de sessió perquè qualsevol persona pot veure els 'logros' de qualsevol altre usuari.
 
 Un exemple de paràmetres d'entrada:  
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'uid' : 1,
   'provider' : 'provider',
   'page_size' : 20
@@ -804,10 +806,11 @@ Un exemple de paràmetres de sortida seria el següent:
 POST per quan usuari guanya un 'logro'.
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):
+Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'achievement_name' : 'nom del logro', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook' // paràmetre obligatori
