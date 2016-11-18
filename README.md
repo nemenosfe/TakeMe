@@ -128,8 +128,8 @@ JSON amb les possibles categories:
 
 ## Events API (Peticions d'esdeveniments)
 
-Pàrametres d'entrada per totes les peticions:
-	- API key (encara que ara per ara funciona sense API key :stuck_out_tongue:)
+Pàrametres d'entrada comunts per totes les peticions:
+	- API key (que sempre és el següent: **7384d85615237469c2f6022a154b7e2c**)
 
 ### GET /events/
 GET d'una llista d'esdeveniments.  
@@ -153,6 +153,7 @@ GET d'una llista d'esdeveniments.
   - Un exemple de paràmetres d'entrada (en forma de JSON, però s'envien a la URL):  
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c',
   'category' : 'comedy',
   'keywords' : 'Espectacle interessant'
   'date' : '2016112500-2017042700',
@@ -234,7 +235,7 @@ GET d'una llista d'esdeveniments.
 GET d'un esdeveniment en particular pel seu ID.  
 
 #### Paràmetres d'entrada
-Cap paràmetre d'entrada, però un exemple d'aquest GET seria (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
+Cap paràmetre d'entrada, però un exemple d'aquest GET seria (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9?appkey=7384d85615237469c2f6022a154b7e2c`  
 
 #### Paràmetres de sortida
 Un exemple resumit al següent JSON (explico els canvis respecte a la informació de **GET /events/** després del JSON):  
@@ -296,6 +297,7 @@ GET de tots els esdeveniments d'un usuari.
 Exemple de paràmetre d'entrada (en forma de JSON, però s'envien a la URL):
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
@@ -406,6 +408,7 @@ POST per un "assistiré" d'un usuari a un esdeveniment.
 Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
@@ -433,6 +436,7 @@ Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E
 Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
@@ -463,6 +467,7 @@ Un exemple d'aquest DELETE seria a la següent URL (sent l'ID de l'esdeveniment:
 Exemple de paràmetre d'entrada:
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
@@ -483,7 +488,7 @@ Si ha hagut l'ERROR de "no es pot esborrar aquesta assitència perquè ja ha fet
 GET d'una llista de recompenses.  
 
 #### Paràmetres d'entrada
-No cal cap paràmetre d'entrada, però els següents són opcionals:
+No cal cap paràmetre d'entrada (excepte l'**appkey**), però els següents són opcionals:
   - **page_size**: Quantes recompenses com a màxim vols rebre. Per defecte és 20.  
   - **page_number**: Número de pàgina de recompenses anant de *page_size* en *page_size*. Per defecte és 1.
 Les recompenses estan ordenades per nivell, després per takes i finalment alfabèticament pel nom.  
@@ -516,11 +521,12 @@ GET de la llista de recompenses d'un usuari.
 Els següents són opcionals:
   - **page_size**: Quantes recompenses com a màxim vols rebre. Per defecte és 20.
   - **page_number**: Número de pàgina de recompenses anant de *page_size* en *page_size*. Per defecte és 1.
-Els **paràmetres obligatoris** són els següents: **uid**, **provider** i **token**.  
+Els **paràmetres obligatoris** són els següents: **uid**, **provider** i **token** (a més de l'**appkey**).  
 
 Un exemple de paràmetres d'entrada:  
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c',
   'token' : '5ba039ba572efb08d6442074d7d478d5',
   'uid' : 1,
   'provider' : 'provider',
@@ -574,6 +580,7 @@ Un exemple de paràmetres de sortida seria el següent:
 Exemple de paràmetre d'entrada:  
 ```javascript
 {
+  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // Paràmetre obligatori
   'uid' : 1, // Paràmetre obligatori
   'provider' : 'provider', // Paràmetre obligatori
@@ -604,7 +611,7 @@ Si tot ha anat bé, retorna el següent:
 GET de tots els usuaris de la base de dades.
 
 #### Paràmetres d'entrada
-No cal cap paràmetre d'entrada.
+No cal cap paràmetre d'entrada excepte l'**appkey**.
 
 #### Paràmetres de sortida
 Un exemple de sortida seria el següent:
@@ -638,7 +645,7 @@ Un exemple de sortida seria el següent:
 GET de l'usuari identificat per uid.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents:
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
  - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris.
 
 #### Paràmetres de sortida
@@ -660,53 +667,62 @@ Un exemple de sortida seria el següent:
 POST utilitzat per tal d'afegir un nou usuari a la base de dades.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents:
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
  - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
  - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
  - **name**: Paràmetre que correspon al nom de l'usuari.
  - **surname**: Paràmetre que correspon al cognom de l'usuari.
  - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
+
+#### Paràmetres de sortida
 Un exemple seria:
 ```javascript
 {
-    'uid' : 31,
+    'uid' : 4,
     'provider' : 'providerTest',
     'name' : 'nameTest',
     'surname' : 'surnameTest',
-    'email' : 'email31@test.com'
+    'email' : 'email31@test.com',
+    'takes' : 0,
+    'experience' : 0,
+    'level' : 1,
+    'new_user' : true, // Si es un nou usuari o si ja existia
+    'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
 }
-```
-
-#### Paràmetres de sortida
-No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
+```  
+Si no existia, el crea i retorna tota la seva informació (amb el token inclòs), si existia, renova el token i el retorna.  
 
 ### PUT /users/:uid
 PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents:
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
  - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
  - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
  - **name**: Paràmetre que correspon al nom de l'usuari.
  - **surname**: Paràmetre que correspon al cognom de l'usuari.
  - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
+
+#### Paràmetres de sortida
 Un exemple seria:
 ```javascript
 {
-    'name' : 'updatedName',
-    'surname' : 'updatedSurname',
-    'email' : updatedMail
-};
+    'uid' : 4,
+    'provider' : 'providerTest',
+    'name' : 'nameTest',
+    'surname' : 'surnameTest',
+    'email' : 'email31@test.com',
+    'takes' : 0,
+    'experience' : 0,
+    'level' : 1,
+}
 ```
-
-#### Paràmetres de sortida
-No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
 
 ### DELETE /users/:uid
 DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents:
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
  - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
 
 #### Paràmetres de sortida
