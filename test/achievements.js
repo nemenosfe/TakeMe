@@ -14,7 +14,7 @@ describe('route of achievements', function() {
   // ESTAN TOTES LES PROVES COM A SKIP DE MANERA TEMPORAL PERQUÈ S'HAN DE FER CANVIS
 
   describe('GET /achievements', function() {
-    it.skip('should get the whole list of achievements', function(done) {
+    it('should get the whole list of achievements', function(done) {
       request
         .get('/achievements')
         .set('Accept', 'application/json')
@@ -30,8 +30,10 @@ describe('route of achievements', function() {
 
         const achievementResponse = achievements[0];
 
+        expect(achievementResponse).to.have.property('id')
         expect(achievementResponse).to.have.property('name')
         expect(achievementResponse).to.have.property('description')
+        expect(achievementResponse).to.have.property('takes')
 
         done();
       }, done)
@@ -39,7 +41,7 @@ describe('route of achievements', function() {
   });
 
   describe('GET /achievements/user/', function() { // No cal token, qualsevol usuari pot veure els logros de qualsevol usuari
-    it.skip('should obtain all achievements from a user', function(done) {
+    it('should obtain all achievements from a user', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
@@ -67,6 +69,8 @@ describe('route of achievements', function() {
         const achievementResponse = achievements[0].achievement;
         //console.log("achievementResponse: --> " + JSON.stringify(achievementResponse));
         expect(achievementResponse).to.have.property('name')
+        expect(achievementResponse).to.have.property('id')
+        expect(achievementResponse).to.have.property('takes')
         expect(achievementResponse).to.have.property('description')
 
         done();
@@ -75,11 +79,11 @@ describe('route of achievements', function() {
   });
 
   describe('POST /achievements/user/', function() { // CAL COMPROBAR EL TOKEN!!!
-    it.skip('should create an acquisition from a user of an achievement', function(done) {
+    it('should create an acquisition from a user of an achievement', function(done) {
       const params = {
         'uid' : 1,
         'provider' : 'provider',
-        'achievement_name' : 'logro 02'
+        'achievement_id' : 'sales_10'
       };
       request
         .post('/achievements/user')
@@ -90,7 +94,7 @@ describe('route of achievements', function() {
       .then((res) => {
         expect(res.body).to.have.property('acquisition');
         const acquisitionResponse = res.body.acquisition;
-        expect(acquisitionResponse).to.have.property('achievement_name', params.achievement_name);
+        expect(acquisitionResponse).to.have.property('achievement_id', params.achievement_id);
         expect(acquisitionResponse).to.have.property('uid', params.uid);
         expect(acquisitionResponse).to.have.property('provider', params.provider);
         done();
