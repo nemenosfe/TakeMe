@@ -516,11 +516,12 @@ GET de la llista de recompenses d'un usuari.
 Els següents són opcionals:
   - **page_size**: Quantes recompenses com a màxim vols rebre. Per defecte és 20.
   - **page_number**: Número de pàgina de recompenses anant de *page_size* en *page_size*. Per defecte és 1.
-Els **paràmetres obligatoris** són els que identifiquen l'usuari: **uid** i **provider**.  
+Els **paràmetres obligatoris** són els següents: **uid**, **provider** i **token**.  
 
 Un exemple de paràmetres d'entrada:  
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5',
   'uid' : 1,
   'provider' : 'provider',
   'page_size' : 20
@@ -570,10 +571,10 @@ Un exemple de paràmetres de sortida seria el següent:
 ### POST /rewards/user  
 
 #### Paràmetres d'entrada
-Faltaria també el token de sessió de l'usuari per assegurar-nos que només el propi usuari pot crear aquesta informació (**encara no implementat** :smile: :octocat:).  
-Exemple de paràmetre d'entrada (del que hi ha per ara a falta del token):  
+Exemple de paràmetre d'entrada:  
 ```javascript
 {
+  'token' : '5ba039ba572efb08d6442074d7d478d5', // Paràmetre obligatori
   'uid' : 1, // Paràmetre obligatori
   'provider' : 'provider', // Paràmetre obligatori
   'reward_name' : 'recompensa 04', // Paràmetre obligatori

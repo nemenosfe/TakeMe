@@ -46,6 +46,26 @@ function authorize_appkey(appkey, mysqlConnection) {
   });
 }
 
+function authorize_token(token, uid, provider, mysqlConnection) {
+  return new Promise(function(resolve, reject) {
+    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
+    if (!token) { reject(errorJSONresponse); }
+    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
+    mysqlConnection.query(sqlGetToken)
+    .then((resultDB) => {
+      if (!resultDB[0]) { reject(errorJSONresponse); }
+      else {
+        const real_hashed_token = resultDB[0]["token"];
+        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
+        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
+      }
+    })
+    .catch((err) => {
+      reject(err);
+    })
+  });
+}
+
 
 router
 
@@ -96,6 +116,9 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
+          return authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
+        })
+        .then((result) => {
           const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.query.uid+"' AND p.users_provider = '"+req.query.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
           return mysqlConnection.query(sql);
         })
@@ -143,6 +166,9 @@ router
 
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
+        .then((result) => {
+          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+        })
         .then(() => {
           const sqlGetRewardData = "SELECT takes, level FROM rewards WHERE name ='"+req.body.reward_name+"';";
           return mysqlConnection.query(sqlGetRewardData);

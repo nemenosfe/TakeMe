@@ -77,7 +77,7 @@ describe('route of rewards', function() {
     });
   });
 
-  describe('GET /rewards/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('GET /rewards/user/', function() {
     it('should not obtain all rewards without the api key', function(done) {
       const params = {
         'uid' : 1,
@@ -115,9 +115,49 @@ describe('route of rewards', function() {
         done();
       }, done)
     });
+    it('should not obtain all rewards without the session token', function(done) {
+      const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'uid' : 1,
+        'provider' : 'provider',
+        'page_size' : 20
+      };
+      request
+        .get(buildGetParams("/rewards/user/", params))
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
+    it('should not obtain all rewards with a wrong session token', function(done) {
+      const params = {
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'token' : '123456',
+        'uid' : 1,
+        'provider' : 'provider',
+        'page_size' : 20
+      };
+      request
+        .get(buildGetParams("/rewards/user/", params))
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(401)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body.error).to.equal(true)
+        expect(res.body.message).to.equal("Unauthorized")
+        done();
+      }, done)
+    });
     it('should obtain all rewards from a user', function(done) {
       const params = {
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'page_size' : 20
@@ -151,9 +191,10 @@ describe('route of rewards', function() {
     });
   });
 
-  describe('POST /rewards/user/', function() { // CAL COMPROBAR EL TOKEN!!!
+  describe('POST /rewards/user/', function() {
     it('should not create a purchase from a user of a reward without the api key', function(done) {
       const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'reward_name' : 'recompensa 04',
@@ -174,6 +215,7 @@ describe('route of rewards', function() {
     it('should not create a purchase from a user of a reward with a wrong api key', function(done) {
       const params = {
         'appkey' : '123456',
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'reward_name' : 'recompensa 04',
@@ -194,6 +236,7 @@ describe('route of rewards', function() {
     it('should create a purchase from a user of a reward', function(done) {
       const params = {
         'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
         'reward_name' : 'recompensa 04',
