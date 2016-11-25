@@ -11,13 +11,13 @@ const pool  = mysql.createPool({
 });
 
 (() => { // Funció anònima que es crida a ella mateixa
-  const object = JSON.parse(fs.readFileSync('achievements.json', 'utf8'));
+  const objectAchievements = JSON.parse(fs.readFileSync('achievements.json', 'utf8'));
   pool.getConnection().then(function(mysqlConnection) {
 
-    var funcInsertAchievements = Promise.method(function(index) {
+    const funcInsertAchievements = Promise.method(function(index) {
       return new Promise((resolve, reject) => {
         if (index >= 0) {
-          const achievement = object["achievements"][index];
+          const achievement = objectAchievements["achievements"][index];
           const insertQuery = "INSERT INTO achievements values ('"+achievement.id+"', '"+achievement.name+"', '"+achievement.description+"', "+achievement.takes+", '"+achievement.category+"', "+achievement.number_required_attendances+");";
           const responseDB = mysqlConnection.query(insertQuery);
           resolve( responseDB.then( funcInsertAchievements.bind(null, index - 1) ) );
@@ -25,7 +25,7 @@ const pool  = mysql.createPool({
       });
     });
 
-    funcInsertAchievements( (object["achievements"].length - 1) )
+    funcInsertAchievements( (objectAchievements["achievements"].length - 1) )
     .catch((err) => {
       console.log("ERROR: " + JSON.stringify(err));
     })
