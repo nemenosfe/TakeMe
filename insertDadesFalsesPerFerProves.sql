@@ -6,9 +6,9 @@ INSERT INTO tokens VALUES("b903e0f0b987fc22588f517c9df0274f", 1, "provider");
 INSERT INTO tokens VALUES("29d7ff6dfc46ca6447e75bfbccb185d6", 2, "provider");
 INSERT INTO tokens VALUES("67bfd2aa446a1f125fed5d317dc254a5", 3, "provider");
 
-INSERT INTO achievements VALUES (1, "logro 01", "random description 01", 10, "music");
-INSERT INTO achievements VALUES (2, "logro 02", "random description 02", 20, "comedy");
-INSERT INTO achievements VALUES (3, "logro 03", "random description 03", 30, "other");
+INSERT INTO achievements VALUES (1, "logro 01", "random description 01", 10, "music", 1);
+INSERT INTO achievements VALUES (2, "logro 02", "random description 02", 20, "comedy", 1);
+INSERT INTO achievements VALUES (3, "logro 03", "random description 03", 30, "other", 1);
 
 INSERT INTO rewards VALUES ("recompensa 01", "Descripció de la primera recompensa", 100, 1);
 INSERT INTO rewards VALUES ("recompensa 02", "Descripció de la segona recompensa", 200, 1);

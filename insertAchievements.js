@@ -1,5 +1,7 @@
+"use strict"
 const fs = require('fs');
 const mysql = require('promise-mysql');
+const Promise = require("bluebird");
 
 const pool  = mysql.createPool({
   host     : 'localhost',
@@ -8,10 +10,29 @@ const pool  = mysql.createPool({
   database : 'takemelegends'
 });
 
-var object = JSON.parse(fs.readFileSync('achievements.json', 'utf8'));
-pool.getConnection().then(function(mysqlConnection) {
-  object["achievements"].forEach(function(item) {
-    var insertQuery = "INSERT INTO achievements values ('"+item.id+"', '"+item.name+"', '"+item.description+"', "+item.takes+", '"+item.category+"', "+item.number_required_attendances+");";
-    mysqlConnection.query(insertQuery);
-  })
-});
+(() => { // Funció anònima que es crida a ella mateixa
+  const object = JSON.parse(fs.readFileSync('achievements.json', 'utf8'));
+  pool.getConnection().then(function(mysqlConnection) {
+
+    var funcInsertAchievements = Promise.method(function(index) {
+      return new Promise((resolve, reject) => {
+        if (index >= 0) {
+          const achievement = object["achievements"][index];
+          const insertQuery = "INSERT INTO achievements values ('"+achievement.id+"', '"+achievement.name+"', '"+achievement.description+"', "+achievement.takes+", '"+achievement.category+"', "+achievement.number_required_attendances+");";
+          const responseDB = mysqlConnection.query(insertQuery);
+          resolve( responseDB.then( funcInsertAchievements.bind(null, index - 1) ) );
+        } else { resolve (1); }
+      });
+    });
+
+    funcInsertAchievements( (object["achievements"].length - 1) )
+    .catch((err) => {
+      console.log("ERROR: " + JSON.stringify(err));
+    })
+    .finally(() => {
+      pool.releaseConnection(mysqlConnection); // Tanco la connexió amb la base de dades
+      // No hem de tancar manualment el fitxer json (fs) perquè "readFileSync" s'encarrega d'obrir-lo i de tancar-lo ell solet.
+      process.exit(); // Tanco aquest procés
+    });
+  });
+})();
