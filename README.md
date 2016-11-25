@@ -126,6 +126,29 @@ JSON amb les possibles categories:
 }
 ```
 
+## Taula resum de l'API (del que tenim per ara totalment fet, testejat i documentat)
+
+| Verb   | Path                       | Auth             | Description                  |
+| -------|----------------------------|:----------------:| ----------------------------:|
+| GET    | /events/                   | appkey           | Veure una llista d'esdeveniments per data, categoria, localització i/o paraules clau |
+| GET    | /events/:id/               | appkey           | Veure un esdeveniment |
+| GET    | /events/user/              | appkey + token   | Veure els 'assitiré' d'un usuari |
+| POST   | /events/user/              | appkey + token   | Crear un 'assitiré'|
+| PUT    | /events/:id/user/          | appkey + token   | Fer un check-in |
+| DELETE | /events/:id/user/          | appkey + token   | Eliminar un 'assitiré' |
+| GET    | /rewards/                  | appkey           | Veure la llista total de recompenses |
+| GET    | /rewards/user/             | appkey + token   | Veure les recompenses d'un usuari |
+| POST   | /rewards/user/             | appkey + token   | Compra d'una recompensa per un usuari |
+| GET    | /users/                    | appkey           | Veure la llista d'usuaris |
+| GET    | /users/:uid-provider       | appkey           | Veure un usuari |
+| POST   | /users/                    | appkey           | Crear un usuari nou o canviar el token si ja existia l'usuari |
+| PUT    | /users/:uid-provider       | appkey           | Canviar la informació d'un usuari |
+| DELETE | /users/:uid-provider       | appkey           | Eliminar un usuari |
+| GET    | /achievements/             | appkey           | Veure la llista de 'logros' |
+| GET    | /achievements/user/        | appkey + token   | Veure els 'logros' d'un usuari |
+| POST   | /achievements/user/        | appkey + token   | Adquirir un 'logro' per un usuari |
+
+
 ## Events API (Peticions d'esdeveniments)
 
 Pàrametres d'entrada comunts per totes les peticions:
