@@ -160,6 +160,7 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`achievements` (
   `description` VARCHAR(500) NULL,
   `takes` INTEGER NULL,
   `category_id` VARCHAR(100) NOT NULL,
+  `number_required_attendances` INTEGER NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_achievement_has_category_idx` (`category_id` ASC),
   CONSTRAINT `fk_achievement_has_category`
