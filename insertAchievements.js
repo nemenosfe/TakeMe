@@ -10,8 +10,8 @@ const pool  = mysql.createPool({
 
 var object = JSON.parse(fs.readFileSync('achievements.json', 'utf8'));
 pool.getConnection().then(function(mysqlConnection) {
-        object["achievements"].forEach(function(item) {
-            var insertQuery = "INSERT INTO achievements values ('"+item.id+"', '"+item.name+"', '"+item.description+"', "+item.takes+", '"+item.category+"');";
-            mysqlConnection.query(insertQuery);
-        })
-    });
+  object["achievements"].forEach(function(item) {
+    var insertQuery = "INSERT INTO achievements values ('"+item.id+"', '"+item.name+"', '"+item.description+"', "+item.takes+", '"+item.category+"');";
+    mysqlConnection.query(insertQuery);
+  })
+});
