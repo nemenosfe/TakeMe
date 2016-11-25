@@ -133,9 +133,9 @@ Aquesta explicació és sobre comandes a la terminal de linux:
 3. `source insertCategories.sql`  
 4. `source insertAppkey.sql`  
 5. En una altra terminal: `node insertAchievements.js`, quan acaba fem `node insertRewards.js` i quan acaba tanquem aquesta nova terminal per tornar a l'anterior (on tenim obert mysql).  
-6. `source insertDadesFalsesPerFerProves.sql` <-- Aquest només cal si volem passar proves automatizades.  
+6. `source insertDadesFalsesPerFerProves.sql` <-- Aquest només cal si volem passar proves automatitzades.  
 7. `exit` i voilà :smile:  
-  
+
 **Els usuaris s'han de crear SEMPRE amb una petició POST i MAI directament a la base de dades, pel token**.  
 
 ## Taula resum de l'API (del que tenim per ara totalment fet, testejat i documentat)
