@@ -195,6 +195,31 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `takemelegends`.`userscategories`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `takemelegends`.`userscategories` ;
+
+CREATE TABLE IF NOT EXISTS `takemelegends`.`userscategories` (
+  `users_uid` INT NOT NULL,
+  `users_provider` VARCHAR(30) NOT NULL,
+  `category_id` VARCHAR(100) NOT NULL,
+  `number_attendances` INT NOT NULL,
+  PRIMARY KEY (`users_uid`, `users_provider`, `category_id`),
+  INDEX `fk_userscategories_has_categories_idx` (`category_id` ASC),
+  INDEX `fk_userscategories_has_users_idx` (`users_uid` ASC, `users_provider` ASC),
+  CONSTRAINT `fk_userscategories_has_categories_idx`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `takemelegends`.`categories` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_userscategories_has_users_idx`
+    FOREIGN KEY (`users_uid` , `users_provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

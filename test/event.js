@@ -1,9 +1,18 @@
 "use strict"
 let request = require('supertest-as-promised');
+const Promise = require("bluebird");
 const api = require('../app');
 const host = api;
+const mysql = require('promise-mysql');
 
 request = request(host);
+
+const pool  = mysql.createPool({
+  host     : 'localhost',
+  user     : 'root',
+  password : '12345678',
+  database : 'takemelegends'
+});
 
 var aux_id = "E0-001-095173443-9";
 
@@ -14,6 +23,24 @@ function buildGetParams(path, params) {
     str_params += key + "=" + params[key];
   }
   return str_params;
+}
+
+function deleteAttendancesAndAcquisitionsFromTestsForUser3() {
+  pool.getConnection().then(function(mysqlConnection) {
+    const sql = "DELETE FROM attendances WHERE users_uid = 3 AND users_provider = 'provider';";
+    mysqlConnection.query(sql)
+    .then(() => {
+      const sql = "DELETE FROM acquisitions WHERE users_uid = 3 AND users_provider = 'provider';";
+      return mysqlConnection.query(sql);
+    })
+    .then(() => {
+      const sql = "DELETE FROM userscategories WHERE users_uid = 3 AND users_provider = 'provider';";
+      return mysqlConnection.query(sql);
+    })
+    .finally(() => {
+      pool.releaseConnection(mysqlConnection);
+    });
+  });
 }
 
 describe('route of events', function() {
@@ -554,13 +581,15 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('event_id', params.event_id);
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
+        expect(attendanceResponse).to.have.property('takes')
+          .and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('checkin_done', '0');
         done();
       }, done)
     });
   });
 
-  describe('PUT /events/:id/user/', function() {
+  describe('PUT /events/:id/user/ for the check-ins', function() {
     it('should not mark the check-in without the api key', function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
@@ -626,9 +655,96 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('achievement', null);
         done();
       }, done)
+    })
+    it('should mark the check-in of an event from a user when the assitance was not done', function(done) {
+      aux_id = 'E0-001-093875660-9';
+      const params = {
+        'token' : '5ba039ba572efb08d6442074d7d478d5',
+        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'uid' : 1,
+        'provider' : 'provider',
+        'checkin_done' : '1'
+      };
+      request
+        .put('/events/E0-001-096784716-9/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body).to.have.property('attendance');
+        const attendanceResponse = res.body.attendance;
+        expect(attendanceResponse).to.have.property('event_id', 'E0-001-096784716-9');
+        expect(attendanceResponse).to.have.property('uid', params.uid);
+        expect(attendanceResponse).to.have.property('provider', params.provider);
+        expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('achievement', null);
+        done();
+      }, done)
+    })
+  });
+
+  describe.skip('PUT /events/:id/user/ for earning achievements with many check-ins for a category', function() {
+    const array_event_ids = [
+      "E0-001-096944568-2", "E0-001-094326294-6", "E0-001-096289239-5",
+      "E0-001-096692991-6@2017030319", "E0-001-096647444-3", "E0-001-096919282-3",
+      "E0-001-096802626-8", "E0-001-096857379-3", "E0-001-096802631-0"
+    ];
+    const params = {
+      'token' : '364b99c40b84b5207e89a207a606720a',
+      'appkey' : '7384d85615237469c2f6022a154b7e2c',
+      'uid' : 3,
+      'provider' : 'provider',
+      'checkin_done' : '1'
+    };
+
+    before(function(done) { // NO VA
+      deleteAttendancesAndAcquisitionsFromTestsForUser3();
+      const insertCheckInsForThisCategory = Promise.method(function(index) {
+        request
+          .put('/events/' + array_event_ids[index] + '/user')
+          .set('Accept', 'application/json')
+          .send(params)
+          .expect(200)
+          .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          if (index == 0) { done(); }
+          else { insertCheckInsForThisCategory.bind(null, index - 1); }
+        });
+      });
+      insertCheckInsForThisCategory( array_event_ids.length - 1 );
     });
+
+    it('should earn an achievement when the required number of attended events is reached', function(done) {
+      const event_id = 'E0-001-096784716-9';
+      request
+        .put('/events/'+event_id+'/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        expect(res.body).to.have.property('attendance');
+        const attendanceResponse = res.body.attendance;
+        expect(attendanceResponse).to.have.property('event_id', event_id);
+        expect(attendanceResponse).to.have.property('uid', params.uid);
+        expect(attendanceResponse).to.have.property('provider', params.provider);
+        expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
+        expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(10);
+        expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(10);
+        expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
+        console.log("EARNED ACHIEVEMENT : " + JSON.stringify(attendanceResponse.achievement));
+        done();
+      }, done)
+    })
   });
 
   describe('DELETE /events/:id/user/', function() {

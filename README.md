@@ -459,10 +459,12 @@ Si tot ha anat bé, retorna el següent:
   'uid' : 1234,
   'provider' : 'facebook',
   'checkin_done' : '0'
+  'takes' : '80' // Takes que es guanyaran quan assiteixi a l'esdeveniment
 }
 ```
 
 ### PUT /events/:id/user/
+**AQUESTA DOCU S'HA DE MILLORAR**
 PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
 Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
 **Falta que el check-in li doni els logros que li ha de donar, però això està fora d'aquesta iteració** :ok_hand: :smile: :sunglasses:  

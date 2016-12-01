@@ -129,6 +129,9 @@ function getNumberOfAssitancesAndTakesFromDBResultByID(DBresult, id) { // PREcon
   return { number_attendances : 0, takes : -1 };
 }
 
+function getFinalCategoryIdFromEventfulResponse(eventEventful) { return eventEventful["categories"] ? eventEventful["categories"]["category"][0]["id"] : null; }
+function getNumberOfPreviousAttendancesOfCategoryByDBResult(DBresult) { return DBresult.length ? DBresult[0].number_attendances : 0; }
+
 function getFinalJSONOfAnEvent(eventEventful, resultDB) {
   const event_id = eventEventful["id"];
   const number_attendances_and_takes = getNumberOfAssitancesAndTakesFromDBResultByID(resultDB, event_id);
@@ -180,8 +183,12 @@ function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
 }
 
 function getNewLevel(level, experience) {
-  const new_level = experience / Math.log10(level);
-  return (new_level > level) ? new_level : level;
+  const log10level = Math.log10(level);
+  if ( log10level == 0 ) return level;
+  else {
+    const new_level = experience / log10level;
+    return (new_level > level) ? new_level : level;
+  }
 }
 
 function buildSearchParams(params_query, page_size, page_number) {
@@ -198,6 +205,59 @@ function buildSearchParams(params_query, page_size, page_number) {
   if (params_query.category) { params = params + "&category=" + params_query.category; }
   if (params_query.date) { params = params + "&date=" + params_query.date; }
   return params;
+}
+
+function createAndSaveAttendanceWithNeededData(mysqlConnection, event_id, uid, provider, checkin_done = false) {
+  return new Promise(function(resolve, reject) {
+    const sqlEventInDB = "SELECT takes FROM events WHERE id='"+event_id+"';";
+    let takes = -1;
+    let toBeSaved;
+    mysqlConnection.query(sqlEventInDB)
+    .then((result) => {
+      // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
+      if (result.length != 0 && result[0].takes) {
+        return new Promise(function (resolve, reject){
+          takes = result[0].takes;
+          toBeSaved = false;
+          resolve(result);
+        });
+      }
+      else {
+        takes = getTakesToEarnInEvent();
+        toBeSaved = true;
+        const params = "id=" + event_id;
+        return doRequest(params, "get");
+      }
+    })
+    .then((result) => {
+      // Si no tenim l'esdeveniment a la nostra BD, el guardem
+      if (toBeSaved) {
+        let start = null;
+        let stop = null;
+        if (result.start_time != null) { start = "'"+result.start_time+"'"; }
+        if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
+        const sqlInsertEventInDB = "INSERT INTO events values ('"+event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+takes+");";
+        return mysqlConnection.query(sqlInsertEventInDB);
+      }
+      else {
+        return new Promise(function (resolve, reject){ resolve(1); });
+      }
+    })
+    .then((result) => { // Inserta l'assitència
+      const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+event_id+"', '"+uid+"', '"+provider+"', "+checkin_done+");";
+      return mysqlConnection.query(sqlInsertAttendanceInDB);
+    })
+    .then((result) => { // Retorna
+      const attendanceResponse = {
+        'event_id' : event_id,
+        'uid' : uid,
+        'provider' : provider,
+        'checkin_done' : checkin_done ? "1" : "0",
+        'takes' : takes
+      };
+      resolve(attendanceResponse);
+    })
+  });
 }
 
 
@@ -338,55 +398,15 @@ router
   .post('/user', function(req, res, next) {
     if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { handleNoParams(res); }
     else {
-      const attendanceRequest = req.body;
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
           return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then((result) => {
-          const sqlEventInDB = "SELECT COUNT(id) AS event_exists FROM events WHERE id='"+req.body.event_id+"';";
-          return mysqlConnection.query(sqlEventInDB)
+          return createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, false);
         })
-        .then((result) => {
-          // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
-          if (result[0].event_exists == '1') {
-            return new Promise(function (resolve, reject){
-              resolve(1);
-            });
-          }
-          else {
-            const params = "id=" + req.body.event_id;
-            return doRequest(params, "get");
-          }
-        })
-        .then((result) => {
-          // Si no tenim l'esdeveniment a la nostra BD, el guardem
-          if ( result == 1) {
-            return new Promise(function (resolve, reject){
-              resolve(1);
-            });
-          }
-          else {
-            let start = null;
-            let stop = null;
-            if (result.start_time != null) { start = "'"+result.start_time+"'"; }
-            if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-            const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+req.body.event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+getTakesToEarnInEvent()+");";
-            return mysqlConnection.query(sqlInsertEventInDB);
-          }
-        })
-        .then((result) => { // Inserta l'assitencia
-        const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+req.body.event_id+"', '"+req.body.uid+"', '"+req.body.provider+"', false);";
-        return mysqlConnection.query(sqlInsertAttendanceInDB);
-        })
-        .then((result) => { // Fa el Response bo :)
-          const attendanceResponse = {
-            'event_id' : req.body.event_id,
-            'uid' : req.body.uid,
-            'provider' : req.body.provider,
-            'checkin_done' : '0'
-          };
+        .then((attendanceResponse) => { // Fa el Response bo :)
           res
             .status(201)
             .json({ attendance: attendanceResponse });
@@ -401,7 +421,7 @@ router
     }
   })
 
-  .put('/:id/user', function(req, res, next) {
+  .put('/:id/user', function(req, res, next) { // S'HA DE MILLORAR
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { handleNoParams(res); }
     else {
       const attendanceRequest = req.body;
@@ -409,13 +429,24 @@ router
       let experience = -1;
       let new_takes = -1;
       let total_takes = -1;
+      let number_attendances_category;
+      let category_id;
+      let earned_achievement = null;
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
           return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
-        .then((result) => {
+        .then((result) => { // Fa la request a Eventful de l'esdeveniment per saber la categoria
+          const paramsForEventful = "id=" + req.params.id;
+          return doRequest(paramsForEventful, "get");
+        })
+        .then((result) => { // Guarda la categoria de l'esdeveniment + Comença la transacció a la BD
+          category_id = getFinalCategoryIdFromEventfulResponse(result);
           return mysqlConnection.query('START TRANSACTION');
+        })
+        .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment)
+          return createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true);
         })
         .then((result) => { // Fa el check-in
           const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
@@ -430,7 +461,7 @@ router
           const sql = "UPDATE users SET takes=takes+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
-        .then((result) => { // Guanya experiencia
+        .then((result) => { // Guanya experiencia per l'esdeveniment
           const sql = "UPDATE users SET experience=experience+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
@@ -438,14 +469,84 @@ router
           const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
-        .then((result) => { // Guanya els takes de l'esdeveniment
+        .then((result) => { // Potser puja de nivell
           total_takes = result[0].takes;
           experience = result[0].experience;
           level = getNewLevel(result[0].level, result[0].experience);
           const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
+        .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
+          const sql = "SELECT number_attendances FROM userscategories WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"';";
+          return mysqlConnection.query(sql);
+        })
         .then((result) => {
+          number_attendances_category = getNumberOfPreviousAttendancesOfCategoryByDBResult(result);
+          const sql = "SELECT * FROM achievements "
+                    + "WHERE category_id='" + category_id + "' "
+                    + "AND number_required_attendances = ("
+                    +   "SELECT MIN(number_required_attendances) FROM achievements "
+                    +   "WHERE category_id='" + category_id + "' "
+                    +   "AND number_required_attendances > " + number_attendances_category
+                    + ");";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Es guarda el nou logro com a guanyat a la BD si n'ha guanyat un nou.
+          console.log("HOLA");
+          return new Promise(function(resolve, reject) {
+            console.log("HI2");
+            const next_achievement_info = result[0];
+            console.log("IF: " + ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances ) + " - " + number_attendances_category + " - " + next_achievement_info.number_required_attendances);
+            if ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances) { // Ha de guanyar un nou 'logro'
+              const sqlInsertacquisitionInDB = "INSERT IGNORE INTO acquisitions values ('"+req.body.uid+"', '"+req.body.provider+"', '"+next_achievement_info.id+"');";
+              console.log(JSON.stringify(next_achievement_info));
+              resolve( mysqlConnection.query(sqlInsertacquisitionInDB) );
+            } else { resolve(1); }
+          });
+        })
+        .then((result) => { // Guanya els takes del logro si l'ha guanyat
+          return new Promise(function(resolve, reject) {
+            if (result == 1) { resolve(1); }
+            else {
+              const sql = "UPDATE users SET takes=takes+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              resolve( mysqlConnection.query(sql) );
+            }
+          });
+        })
+        .then((result) => { // Guanya l'experiencia del logro si l'ha guanyat
+          return new Promise(function(resolve, reject) {
+            if (result == 1) { resolve(1); }
+            else {
+              const sql = "UPDATE users SET experience=experience+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              resolve( mysqlConnection.query(sql) );
+            }
+          });
+        })
+        .then((result) => { // Select del nivell que té
+          return new Promise(function(resolve, reject) {
+            if (result == 1) { resolve(1); }
+            else {
+              const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              resolve( mysqlConnection.query(sql) );
+            }
+          });
+        })
+        .then((result) => { // Potser puja de nivell
+          return new Promise(function(resolve, reject) {
+            if (result == 1) { resolve(1); }
+            else {
+              level = getNewLevel(result[0].level, result[0].experience);
+              const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              resolve( mysqlConnection.query(sql) );
+            }
+          });
+        })
+        .then((result) => { // Nova assitència d'aquesta categoria a la BD
+          const sql = (number_attendances_category == 0)  ? "INSERT INTO userscategories VALUES('"+req.body.uid+"', '"+req.body.provider+"', '"+category_id+"', 1)"
+                                                          : "UPDATE userscategories SET number_attendances = number_attendances + 1 WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"'";
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Fa el commit de la transacció
           return mysqlConnection.query('COMMIT');
         })
         .then((result) => { // Fa el Response bo :)
@@ -457,13 +558,15 @@ router
             'new_takes' : new_takes,
             'total_takes' : total_takes,
             'experience' : experience,
-            'level' : level
+            'level' : level,
+            'achievement' : earned_achievement
           };
           res
             .status(200)
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
+          console.log(err);
           mysqlConnection.query('ROLLBACK');
           handleError(err, res);
         })
