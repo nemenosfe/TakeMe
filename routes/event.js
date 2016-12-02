@@ -426,9 +426,11 @@ router
     else {
       const attendanceRequest = req.body;
       let level = -1;
-      let experience = -1;
-      let new_takes = -1;
+      let total_experience = 0;
+      let new_takes_event = 0;
+      let new_takes_achievement = 0;
       let total_takes = -1;
+
       let number_attendances_category;
       let category_id;
       let earned_achievement = null;
@@ -457,12 +459,12 @@ router
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Guanya els takes de l'esdeveniment
-          new_takes = result[0].takes;
-          const sql = "UPDATE users SET takes=takes+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          new_takes_event = result[0].takes;
+          const sql = "UPDATE users SET takes=takes+"+new_takes_event+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Guanya experiencia per l'esdeveniment
-          const sql = "UPDATE users SET experience=experience+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          const sql = "UPDATE users SET experience=experience+"+new_takes_event+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Select del nivell que té
@@ -471,7 +473,7 @@ router
         })
         .then((result) => { // Potser puja de nivell
           total_takes = result[0].takes;
-          experience = result[0].experience;
+          total_experience = result[0].experience;
           level = getNewLevel(result[0].level, result[0].experience);
           const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
@@ -492,14 +494,14 @@ router
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Es guarda el nou logro com a guanyat a la BD si n'ha guanyat un nou.
-          console.log("HOLA");
           return new Promise(function(resolve, reject) {
-            console.log("HI2");
             const next_achievement_info = result[0];
-            console.log("IF: " + ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances ) + " - " + number_attendances_category + " - " + next_achievement_info.number_required_attendances);
             if ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances) { // Ha de guanyar un nou 'logro'
               const sqlInsertacquisitionInDB = "INSERT IGNORE INTO acquisitions values ('"+req.body.uid+"', '"+req.body.provider+"', '"+next_achievement_info.id+"');";
-              console.log(JSON.stringify(next_achievement_info));
+              earned_achievement = next_achievement_info;
+              new_takes_achievement = earned_achievement.takes;
+              total_experience += new_takes_achievement;
+              total_takes += new_takes_event;
               resolve( mysqlConnection.query(sqlInsertacquisitionInDB) );
             } else { resolve(1); }
           });
@@ -508,7 +510,7 @@ router
           return new Promise(function(resolve, reject) {
             if (result == 1) { resolve(1); }
             else {
-              const sql = "UPDATE users SET takes=takes+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              const sql = "UPDATE users SET takes=takes+"+new_takes_achievement+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
               resolve( mysqlConnection.query(sql) );
             }
           });
@@ -517,16 +519,7 @@ router
           return new Promise(function(resolve, reject) {
             if (result == 1) { resolve(1); }
             else {
-              const sql = "UPDATE users SET experience=experience+"+new_takes+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-              resolve( mysqlConnection.query(sql) );
-            }
-          });
-        })
-        .then((result) => { // Select del nivell que té
-          return new Promise(function(resolve, reject) {
-            if (result == 1) { resolve(1); }
-            else {
-              const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+              const sql = "UPDATE users SET experience=experience+"+new_takes_achievement+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
               resolve( mysqlConnection.query(sql) );
             }
           });
@@ -535,7 +528,7 @@ router
           return new Promise(function(resolve, reject) {
             if (result == 1) { resolve(1); }
             else {
-              level = getNewLevel(result[0].level, result[0].experience);
+              level = getNewLevel(level, total_experience);
               const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
               resolve( mysqlConnection.query(sql) );
             }
@@ -555,9 +548,9 @@ router
             'uid' : req.body.uid,
             'provider' : req.body.provider,
             'checkin_done' : '1',
-            'new_takes' : new_takes,
+            'new_takes' : new_takes_event,
             'total_takes' : total_takes,
-            'experience' : experience,
+            'experience' : total_experience,
             'level' : level,
             'achievement' : earned_achievement
           };
@@ -566,7 +559,6 @@ router
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
-          console.log(err);
           mysqlConnection.query('ROLLBACK');
           handleError(err, res);
         })

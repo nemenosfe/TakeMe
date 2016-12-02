@@ -1,6 +1,5 @@
 "use strict"
 let request = require('supertest-as-promised');
-const Promise = require("bluebird");
 const api = require('../app');
 const host = api;
 const mysql = require('promise-mysql');
@@ -691,7 +690,7 @@ describe('route of events', function() {
     })
   });
 
-  describe.skip('PUT /events/:id/user/ for earning achievements with many check-ins for a category', function() {
+  describe('PUT /events/:id/user/ for earning achievements with many check-ins for a category', function() {
     const array_event_ids = [
       "E0-001-096944568-2", "E0-001-094326294-6", "E0-001-096289239-5",
       "E0-001-096692991-6@2017030319", "E0-001-096647444-3", "E0-001-096919282-3",
@@ -705,21 +704,81 @@ describe('route of events', function() {
       'checkin_done' : '1'
     };
 
-    before(function(done) { // NO VA
+    before(function(done) {
       deleteAttendancesAndAcquisitionsFromTestsForUser3();
-      const insertCheckInsForThisCategory = Promise.method(function(index) {
-        request
-          .put('/events/' + array_event_ids[index] + '/user')
-          .set('Accept', 'application/json')
-          .send(params)
-          .expect(200)
-          .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          if (index == 0) { done(); }
-          else { insertCheckInsForThisCategory.bind(null, index - 1); }
-        });
-      });
-      insertCheckInsForThisCategory( array_event_ids.length - 1 );
+      request
+        .put('/events/' + array_event_ids[0] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[1] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[2] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[3] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[4] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[5] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[6] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[7] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        return request
+        .put('/events/' + array_event_ids[8] + '/user')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      })
+      .then((res) => {
+        done();
+      })
     });
 
     it('should earn an achievement when the required number of attended events is reached', function(done) {
@@ -734,14 +793,19 @@ describe('route of events', function() {
         expect(res.body).to.have.property('attendance');
         const attendanceResponse = res.body.attendance;
         expect(attendanceResponse).to.have.property('event_id', event_id);
-        expect(attendanceResponse).to.have.property('uid', params.uid);
-        expect(attendanceResponse).to.have.property('provider', params.provider);
-        expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
-        expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
-        expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(10);
-        expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(10);
+        expect(attendanceResponse).to.have.property('checkin_done', '1');
+        expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1 + 100);
+        expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(10 + 100);
+        expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(10 + 100);
         expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
-        console.log("EARNED ACHIEVEMENT : " + JSON.stringify(attendanceResponse.achievement));
+        expect(attendanceResponse).to.have.property('achievement');
+        const earnedAchievement = attendanceResponse.achievement;
+        expect(earnedAchievement).to.have.property('id', 'music_10');
+        expect(earnedAchievement).to.have.property('name', 'Interesado en Música.');
+        expect(earnedAchievement).to.have.property('description', 'Has asistido a 10 eventos de Música.');
+        expect(earnedAchievement).to.have.property('takes', 100);
+        expect(earnedAchievement).to.have.property('category_id', 'music');
+        expect(earnedAchievement).to.have.property('number_required_attendances', 10);
         done();
       }, done)
     })
