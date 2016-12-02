@@ -450,7 +450,7 @@ router
         .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment)
           return createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true);
         })
-        .then((result) => { // Fa el check-in
+        .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
           const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
@@ -458,27 +458,15 @@ router
           const sql = "SELECT takes FROM events WHERE id = '"+req.params.id+"';";
           return mysqlConnection.query(sql);
         })
-        .then((result) => { // Guanya els takes de l'esdeveniment
-          new_takes_event = result[0].takes;
-          const sql = "UPDATE users SET takes=takes+"+new_takes_event+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-          return mysqlConnection.query(sql);
-        })
-        .then((result) => { // Guanya experiencia per l'esdeveniment
-          const sql = "UPDATE users SET experience=experience+"+new_takes_event+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-          return mysqlConnection.query(sql);
-        })
         .then((result) => { // Select del nivell que té
+          new_takes_event = result[0].takes;
           const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
           return mysqlConnection.query(sql);
         })
-        .then((result) => { // Potser puja de nivell
+        .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           total_takes = result[0].takes;
           total_experience = result[0].experience;
           level = getNewLevel(result[0].level, result[0].experience);
-          const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-          return mysqlConnection.query(sql);
-        })
-        .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           const sql = "SELECT number_attendances FROM userscategories WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"';";
           return mysqlConnection.query(sql);
         })
@@ -506,33 +494,22 @@ router
             } else { resolve(1); }
           });
         })
-        .then((result) => { // Guanya els takes del logro si l'ha guanyat
-          return new Promise(function(resolve, reject) {
-            if (result == 1) { resolve(1); }
-            else {
-              const sql = "UPDATE users SET takes=takes+"+new_takes_achievement+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-              resolve( mysqlConnection.query(sql) );
-            }
-          });
+        .then((result) => { // Guanya els takes de l'esdeveniment (i del logro si l'ha guanyat, si no aquest atribut val 0)
+          const sql = "UPDATE users SET takes=takes+"+(new_takes_event+new_takes_achievement)+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
         })
-        .then((result) => { // Guanya l'experiencia del logro si l'ha guanyat
-          return new Promise(function(resolve, reject) {
-            if (result == 1) { resolve(1); }
-            else {
-              const sql = "UPDATE users SET experience=experience+"+new_takes_achievement+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-              resolve( mysqlConnection.query(sql) );
-            }
-          });
+        .then((result) => { // Guanya l'experiencia de l'esdeveniment (i del logro si l'ha guanyat)
+          const sql = "UPDATE users SET experience=experience+"+(new_takes_event+new_takes_achievement)+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          return mysqlConnection.query(sql);
         })
         .then((result) => { // Potser puja de nivell
-          return new Promise(function(resolve, reject) {
-            if (result == 1) { resolve(1); }
-            else {
-              level = getNewLevel(level, total_experience);
-              const sql = "UPDATE users SET level="+level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
-              resolve( mysqlConnection.query(sql) );
-            }
-          });
+          const new_level = getNewLevel(level, total_experience);
+          if (new_level > level) {
+            level = new_level;
+            const sql = "UPDATE users SET level="+new_level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+            return mysqlConnection.query(sql);
+          }
+          else { return new Promise(function(resolve, reject) { resolve(1); }); }
         })
         .then((result) => { // Nova assitència d'aquesta categoria a la BD
           const sql = (number_attendances_category == 0)  ? "INSERT INTO userscategories VALUES('"+req.body.uid+"', '"+req.body.provider+"', '"+category_id+"', 1)"
