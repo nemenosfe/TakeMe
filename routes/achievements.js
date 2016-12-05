@@ -138,39 +138,4 @@ router
     }
   })
 
-  .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.achievement_id) {
-      handleNoParams();
-    } else {
-      const acquisitionRequest = req.body;
-
-      pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
-        .then((result) => {
-          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
-        })
-        .then((result) => {
-          const sqlInsertacquisitionInDB = "INSERT IGNORE INTO acquisitions values ('"+req.body.uid+"', '"+req.body.provider+"', '"+req.body.achievement_id+"');";
-          mysqlConnection.query(sqlInsertacquisitionInDB);
-        })
-        .then((result) => {
-          const acquisitionResponse = {
-            'uid' : req.body.uid,
-            'provider' : req.body.provider,
-            'achievement_id' : req.body.achievement_id
-          };
-          res
-            .status(201)
-            .json({ acquisition: acquisitionResponse });
-        })
-        .catch((err) => {
-          handleError(err, res, "GET/:id");
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
-      });
-    }
-  })
-
 module.exports = router

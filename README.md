@@ -158,7 +158,6 @@ Aquesta explicació és sobre comandes a la terminal de linux:
 | DELETE | /users/:uid-provider       | appkey           | Eliminar un usuari |
 | GET    | /achievements/             | appkey           | Veure la llista de 'logros' |
 | GET    | /achievements/user/        | appkey + token   | Veure els 'logros' d'un usuari |
-| POST   | /achievements/user/        | appkey + token   | Adquirir un 'logro' per un usuari |
 
 
 ## Events API (Peticions d'esdeveniments)
@@ -464,35 +463,42 @@ Si tot ha anat bé, retorna el següent:
 ```
 
 ### PUT /events/:id/user/
-**AQUESTA DOCU S'HA DE MILLORAR**
-PUT per fer el check-in d'una assitència a un esdeveniment (s'ha d'haver marcat previament com 'assitiré').
+PUT per fer el check-in d'una assitència a un esdeveniment (no cal que s'hagi marcat previament com a "assistiré").
 Un exemple d'aquest PUT seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
-**Falta que el check-in li doni els logros que li ha de donar, però això està fora d'aquesta iteració** :ok_hand: :smile: :sunglasses:  
+Recordeu que sempre cal enviar també l'appkey.  
 
 #### Paràmetres d'entrada
-Exemple de paràmetre d'entrada:
+Exemple de paràmetre d'entrada (Tots els paràmetres són obligatoris):
 ```javascript
 {
-  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
-  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
-  'provider' : 'facebook', // paràmetre obligatori
-  'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
-  'new_takes' : 30, // els takes que acaba de guanyar per aquest esdeveniment
-  'total_takes' : 200, // el total de takes que té
-  'experience' : 245, // l'experiencia que té total
-  'level' : 5 // el seu nivell
+  'token' : '364b99c40b84b5207e89a207a606720a',
+  'appkey' : '7384d85615237469c2f6022a154b7e2c',
+  'uid' : 3,
+  'provider' : 'provider',
+  'checkin_done' : '1' // Cal que sigui un 1 !!!
 }
 ```
 
 #### Paràmetres de sortida
 Si tot ha anat bé, retorna el següent:
 ```javascript
-'attendance' : {
-  'event_id' : 'E0-001-093875660-9',
-  'uid' : 1234,
-  'provider' : 'facebook',
-  'checkin_done' : '1'
+"attendance": {
+  "event_id": "E0-001-096784716-9",
+  "uid": 3,
+  "provider": "provider",
+  "checkin_done": "1",
+  "new_takes": 886,
+  "total_takes": 16355,
+  "experience": 15569,
+  "level": 1,
+  "achievement": {
+    "id": "music_10",
+    "name": "Interesado en Música.",
+    "description": "Has asistido a 10 eventos de Música.",
+    "takes": 100,
+    "category_id": "music",
+    "number_required_attendances": 10
+  }
 }
 ```
 
@@ -838,28 +844,3 @@ Un exemple de paràmetres de sortida seria el següent:
   ]
 }
 ```  
-
-### POST /achievements/user/
-POST per quan usuari guanya un 'logro'.
-
-#### Paràmetres d'entrada
-Exemple de paràmetre d'entrada:
-```javascript
-{
-  'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
-  'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
-  'achievement_name' : 'nom del logro', // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
-  'provider' : 'facebook' // paràmetre obligatori
-}
-```
-
-#### Paràmetres de sortida
-Si tot ha anat bé, retorna el següent:
-```javascript
-'acquisition' : {
-  'achievement_name' : 'nom del logro',
-  'uid' : 1234,
-  'provider' : 'facebook'
-}
-```

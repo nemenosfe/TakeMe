@@ -76,30 +76,4 @@ describe('route of achievements', function() {
     });
   });
 
-  describe('POST /achievements/user/', function() {
-    it('should create an acquisition from a user of an achievement', function(done) {
-      const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
-        'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'uid' : 1,
-        'provider' : 'provider',
-        'achievement_id' : 'sales_10'
-      };
-      request
-        .post('/achievements/user')
-        .set('Accept', 'application/json')
-        .send(params)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-      .then((res) => {
-        expect(res.body).to.have.property('acquisition');
-        const acquisitionResponse = res.body.acquisition;
-        expect(acquisitionResponse).to.have.property('achievement_id', params.achievement_id);
-        expect(acquisitionResponse).to.have.property('uid', params.uid);
-        expect(acquisitionResponse).to.have.property('provider', params.provider);
-        done();
-      }, done)
-    });
-  });
-
 });
