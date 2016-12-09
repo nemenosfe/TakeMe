@@ -220,6 +220,29 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`userscategories` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `takemelegends`.`userpreferences`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `takemelegends`.`userspreferences` ;
+
+CREATE TABLE IF NOT EXISTS `takemelegends`.`userspreferences` (
+  `users_uid` INT NOT NULL,
+  `users_provider` VARCHAR(30) NOT NULL,
+  `football` BOOLEAN,
+  `basketball` BOOLEAN,
+  `sports` BOOLEAN,
+  `music` BOOLEAN,
+  `art` BOOLEAN,
+  `theater` BOOLEAN,
+  `cinema` BOOLEAN,
+  `location` VARCHAR(30),
+  `start_hour` VARCHAR(30),
+  `end_hour` VARCHAR(30),
+  `week` BOOLEAN,
+  `weekend` BOOLEAN,
+  PRIMARY KEY (`users_uid`, `users_provider`))
+ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
