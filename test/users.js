@@ -250,37 +250,4 @@ describe('Users route', function() {
         }, done)
     });
   });
-
-  describe('DELETE users/:id', function() {
-    before(function() {
-      const params = {
-        'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'uid': 31,
-        'provider': 'providerTest',
-        'name': 'nameTest',
-        'surname': 'surnameTest',
-        'email': 'email31@test.com'
-      };
-      request
-        .post('/users')
-        .set('Accept', 'application/json')
-        .send(params)
-        .expect(201)
-    });
-    it('should delete a user', function(done) {
-      const params = {
-        'appkey': '7384d85615237469c2f6022a154b7e2c',
-      };
-      request
-        .delete('/users/31-providerTest')
-        .set('Accept', 'application/json')
-        .send(params)
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          expect(res.body).to.be.empty;
-          done();
-        }, done)
-    });
-  });
 });
