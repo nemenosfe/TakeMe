@@ -263,7 +263,6 @@ router
 })
 
 .post('/:id/preferences', function(req, res, next) {
-  //TODO: Split de la id
   if (!req.body) {
     res
       .status(403)
@@ -276,7 +275,9 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
-          const insertQuery = "INSERT INTO userspreferences values (" + preference.uid + ", '" + preference.provider + "', '" + preference.football + "', '" + preference.basketball + "', '" + preference.sports + "', '" + preference.music + "', '" + preference.art +
+          const uid = req.params.id.split('-')[0];
+          const provider = req.params.id.split('-')[1];
+          const insertQuery = "INSERT INTO userspreferences values (" + uid + ", '" + provider + "', '" + preference.football + "', '" + preference.basketball + "', '" + preference.sports + "', '" + preference.music + "', '" + preference.art +
            "', '" + preference.cinema + "', '" + preference.theater + "', '" + preference.location + "', " + preference.start_hour + ", " + preference.end_hour + ", " + preference.week + ", " + preference.weekend + ");";
           return mysqlConnection.query(insertQuery)
         })
@@ -335,6 +336,8 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
+            const uid = req.params.id.split('-')[0];
+            const provider = req.params.id.split('-')[1];
           const updateQuery = "UPDATE userspreferences SET theater='" + preference.theater + "', cinema='" + preference.cinema + "', art='" + preference.art + "', music='" + preference.music + "', football='" + preference.football + "', basketball = '" + preference.basketball + "', sports='"+ preference.sports +"', location='" + preference.location+
           "', start_hour='" + preference.start_hour + "', end_hour='" + preference.end_hour + "', week='" + preference.week + "', weekend='" + preference.weekend +"' WHERE uid=" + uid + " AND provider = '" + provider + "'";
           return mysqlConnection.query(updateQuery)
