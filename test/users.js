@@ -253,7 +253,7 @@ describe('Users route', function() {
 
   describe('POST /users/:id/preferences', function() {
     let token;
-    /*after(function() {
+    after(function() {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
       };
@@ -266,7 +266,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.be.empty;
         })
-    });*/
+    });
     it("should create the identified user's preferences", function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',

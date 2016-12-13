@@ -359,4 +359,28 @@ router
   }
 })
 
+.delete('/:id/preferences', function(req, res, next) {
+    pool.getConnection().then(function(mysqlConnection) {
+    .then(() => {
+        const uid = req.params.id.split('-')[0];
+        const provider = req.params.id.split('-')[1];
+      const deleteQuery = "DELETE FROM userspreferences WHERE uid=" + uid + " AND provider = '" + provider + "'";
+      return mysqlConnection.query(deleteQuery)
+    })
+    .then((result) => {
+      res
+        .status(200)
+        .json({
+          message: "Preference deleted"
+        })
+    })
+    .catch((err) => {
+      handleError(err, res);
+    })
+    .finally(() => {
+      pool.releaseConnection(mysqlConnection);
+    })
+    });
+})
+
 module.exports = router
