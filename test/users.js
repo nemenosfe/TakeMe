@@ -366,58 +366,58 @@ describe('Users route', function() {
     });
   });
 
-  describe('PUT /users/:id', function() {
-    before(function() {
+  describe('PUT /users/:id/preferences', function() {
+      before(function() {
+          const params = {
+            'appkey': '7384d85615237469c2f6022a154b7e2c',
+            'uid': 32,
+            'provider': 'providerTest2',
+            'football': true,
+            'basketball': false,
+            'sports': true,
+            'music': false,
+            'art': false,
+            'cinema': true,
+            'theater': false,
+            'location': 'Barcelona',
+            'start_hour': '00:00',
+            'end_hour': '00:00',
+            'week': false,
+            'weekend': true
+          };
+          request
+            .post('/users/32-providerTest2/preferences')
+            .set('Accept', 'application/json')
+            .send(params)
+            .expect(201)
+      });
+      after(function() {
+        const params = {
+          'appkey': '7384d85615237469c2f6022a154b7e2c',
+        };
+        request
+          .delete('/users/32-providerTest2/preferences')
+          .set('Accept', 'application/json')
+          .send(params)
+          .expect(200)
+          .expect('Content-Type', /application\/json/)
+          .then((res) => {
+            expect(res.body).to.be.empty;
+          })
+      });
+    it('should update a user preferences', function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'uid': 31,
-        'provider': 'providerTest',
-        'name': 'nameTest',
-        'surname': 'surnameTest',
-        'email': 'email31@test.com'
+        'football': false,
+        'music': true
       };
       request
-        .post('/users')
-        .set('Accept', 'application/json')
-        .send(params)
-        .expect(201)
-    });
-    after(function() {
-      const params = {
-        'appkey': '7384d85615237469c2f6022a154b7e2c',
-      };
-      request
-        .delete('/users/31-providerTest')
+        .put('/users/32-providerTest2/preferences')
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)
         .expect('Content-Type', /application\/json/)
         .then((res) => {
-          expect(res.body).to.be.empty;
-        })
-    });
-    it('should update a user information', function(done) {
-      var updatedMail = "updated" + 31 + "@test.com";
-      const params = {
-        'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'name': 'updatedName',
-        'surname': 'updatedSurname',
-        'email': updatedMail
-      };
-      request
-        .put('/users/31-providerTest')
-        .set('Accept', 'application/json')
-        .send(params)
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-        .then((res) => {
-          expect(res.body).to.have.property('user');
-          const user = res.body.user;
-          expect(user).to.have.property('uid', 31);
-          expect(user).to.have.property('provider', 'providerTest');
-          expect(user).to.have.property('name', params.name);
-          expect(user).to.have.property('surname', params.surname);
-          expect(user).to.have.property('email', params.email);
           done();
         }, done)
     });

@@ -346,7 +346,7 @@ router
           res
             .status(200)
             .json({
-              message: "Preference updated"
+              message: "Preferences updated"
             })
         })
         .catch((err) => {
@@ -370,7 +370,7 @@ router
       res
         .status(200)
         .json({
-          message: "Preference deleted"
+          message: "Preferences deleted"
         })
     })
     .catch((err) => {
