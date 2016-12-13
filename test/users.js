@@ -314,29 +314,110 @@ describe('Users route', function() {
   });
 
   describe('GET /users/:id/preferences', function() {
+      before(function() {
+          const params = {
+            'appkey': '7384d85615237469c2f6022a154b7e2c',
+            'uid': 32,
+            'provider': 'providerTest2',
+            'football': true,
+            'basketball': false,
+            'sports': true,
+            'music': false,
+            'art': false,
+            'cinema': true,
+            'theater': false,
+            'location': 'Barcelona',
+            'start_hour': '00:00',
+            'end_hour': '00:00',
+            'week': false,
+            'weekend': true
+          };
+          request
+            .post('/users/32-providerTest2/preferences')
+            .set('Accept', 'application/json')
+            .send(params)
+            .expect(201)
+      });
     it("should return a certain user's preferences", function(done) {
       request
-        .get('/users/33-providerTest2/preferences?appkey=' + '7384d85615237469c2f6022a154b7e2c')
+        .get('/users/32-providerTest2/preferences?appkey=' + '7384d85615237469c2f6022a154b7e2c')
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
         .then((res) => {
           expect(res.body).to.have.property('preferences');
           const preferenceResponse = res.body.preferences;
-          expect(preferenceResponse).to.have.property('uid', 33);
+          expect(preferenceResponse).to.have.property('uid', 32);
           expect(preferenceResponse).to.have.property('provider', 'providerTest2');
-          expect(preferenceResponse).to.have.property('football', params.football);
-          expect(preferenceResponse).to.have.property('basketball');
-          expect(preferenceResponse).to.have.property('sports');
-          expect(preferenceResponse).to.have.property('music');
-          expect(preferenceResponse).to.have.property('art');
-          expect(preferenceResponse).to.have.property('cinema');
-          expect(preferenceResponse).to.have.property('theater');
-          expect(preferenceResponse).to.have.property('location');
-          expect(preferenceResponse).to.have.property('start_hour');
-          expect(preferenceResponse).to.have.property('end_hour');
-          expect(preferenceResponse).to.have.property('week');
-          expect(preferenceResponse).to.have.property('weekend');
+          expect(preferenceResponse).to.have.property('football', true);
+          expect(preferenceResponse).to.have.property('basketball', false);
+          expect(preferenceResponse).to.have.property('sports', true);
+          expect(preferenceResponse).to.have.property('music', false);
+          expect(preferenceResponse).to.have.property('art', false);
+          expect(preferenceResponse).to.have.property('cinema', true);
+          expect(preferenceResponse).to.have.property('theater', false);
+          expect(preferenceResponse).to.have.property('location', 'Barcelona');
+          expect(preferenceResponse).to.have.property('start_hour', '00:00');
+          expect(preferenceResponse).to.have.property('end_hour', '00:00');
+          expect(preferenceResponse).to.have.property('week', false);
+          expect(preferenceResponse).to.have.property('weekend', true);
+          done();
+        }, done)
+    });
+  });
+
+  describe('PUT /users/:id', function() {
+    before(function() {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'uid': 31,
+        'provider': 'providerTest',
+        'name': 'nameTest',
+        'surname': 'surnameTest',
+        'email': 'email31@test.com'
+      };
+      request
+        .post('/users')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+    });
+    after(function() {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+      };
+      request
+        .delete('/users/31-providerTest')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.be.empty;
+        })
+    });
+    it('should update a user information', function(done) {
+      var updatedMail = "updated" + 31 + "@test.com";
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'name': 'updatedName',
+        'surname': 'updatedSurname',
+        'email': updatedMail
+      };
+      request
+        .put('/users/31-providerTest')
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('user');
+          const user = res.body.user;
+          expect(user).to.have.property('uid', 31);
+          expect(user).to.have.property('provider', 'providerTest');
+          expect(user).to.have.property('name', params.name);
+          expect(user).to.have.property('surname', params.surname);
+          expect(user).to.have.property('email', params.email);
           done();
         }, done)
     });
