@@ -313,4 +313,33 @@ describe('Users route', function() {
     });
   });
 
+  describe('GET /users/:id/preferences', function() {
+    it("should return a certain user's preferences", function(done) {
+      request
+        .get('/users/33-providerTest2/preferences?appkey=' + '7384d85615237469c2f6022a154b7e2c')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.have.property('preferences');
+          const preferenceResponse = res.body.preferences;
+          expect(preferenceResponse).to.have.property('uid', 33);
+          expect(preferenceResponse).to.have.property('provider', 'providerTest2');
+          expect(preferenceResponse).to.have.property('football', params.football);
+          expect(preferenceResponse).to.have.property('basketball');
+          expect(preferenceResponse).to.have.property('sports');
+          expect(preferenceResponse).to.have.property('music');
+          expect(preferenceResponse).to.have.property('art');
+          expect(preferenceResponse).to.have.property('cinema');
+          expect(preferenceResponse).to.have.property('theater');
+          expect(preferenceResponse).to.have.property('location');
+          expect(preferenceResponse).to.have.property('start_hour');
+          expect(preferenceResponse).to.have.property('end_hour');
+          expect(preferenceResponse).to.have.property('week');
+          expect(preferenceResponse).to.have.property('weekend');
+          done();
+        }, done)
+    });
+  });
+
 });

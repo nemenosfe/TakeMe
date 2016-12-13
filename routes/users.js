@@ -285,7 +285,7 @@ router
           res
             .status(201)
             .json({
-              preference: preference
+              preference: result
             })
         })
         .catch((err) => {
