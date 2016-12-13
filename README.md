@@ -505,6 +505,7 @@ Si tot ha anat bé, retorna el següent:
 ### DELETE /events/:id/user/
 DELETE d'una assitència a un esdeveniment (si s'ha fet el check-in a aquest esdeveniment, donarà error i no s'esborrarà l'assitència).
 Un exemple d'aquest DELETE seria a la següent URL (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9`  
+No es pot fer un DELETE quan ja s'ha fet el check-in.
 
 #### Paràmetres d'entrada
 Exemple de paràmetre d'entrada:
@@ -514,7 +515,6 @@ Exemple de paràmetre d'entrada:
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'uid' : 1234, // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
-  'checkin_done' : '1' // paràmetre obligatori, i ha de ser un '1' o un 'true' (ara mateix la API no accepta desmarcar un check-in fet anteriorment).
 }
 ```
 
