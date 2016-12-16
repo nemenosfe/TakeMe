@@ -240,7 +240,12 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`userspreferences` (
   `end_hour` VARCHAR(30),
   `week` BOOLEAN,
   `weekend` BOOLEAN,
-  PRIMARY KEY (`users_uid`, `users_provider`))
+  PRIMARY KEY (`users_uid`, `users_provider`),
+  CONSTRAINT `fk_userspreferences_has_users_idx`
+    FOREIGN KEY (`users_uid` , `users_provider`)
+    REFERENCES `takemelegends`.`users` (`uid` , `provider`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
