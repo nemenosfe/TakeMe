@@ -327,37 +327,43 @@ router
 })
 
 .put('/:id/preferences', function(req, res, next) {
-  if (!req.body) {
-    res
-      .status(403)
-      .json({
-        error: true,
-        message: 'Empty body'
-      })
-  } else {
-    let preference = req.body
+  if (!req.body || (!req.body.categories && !req.body.locations) || !req.params.id) { handleNoParams(res); }
+  else {
+    const uid = req.params.id.split('-')[0];
+    const provider = req.params.id.split('-')[1];
+    let categories = req.body.categories || null;
+    let locations = req.body.locations || null;
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(req.body.appkey, mysqlConnection)
-        .then(() => {
-            const uid = req.params.id.split('-')[0];
-            const provider = req.params.id.split('-')[1];
-          const updateQuery = "UPDATE userspreferences SET theater='" + preference.theater + "', cinema='" + preference.cinema + "', art='" + preference.art + "', music='" + preference.music + "', football='" + preference.football + "', basketball = '" + preference.basketball + "', sports='"+ preference.sports +"', location='" + preference.location+
-          "', start_hour='" + preference.start_hour + "', end_hour='" + preference.end_hour + "', week='" + preference.week + "', weekend='" + preference.weekend +"' WHERE uid=" + uid + " AND provider = '" + provider + "'";
-          return mysqlConnection.query(updateQuery)
-        })
-        .then((result) => {
-          res
-            .status(200)
-            .json({
-              message: "Preferences updated"
-            })
-        })
-        .catch((err) => {
-          handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+      .then(() => {
+        let updateQuery = "UPDATE userspreferences SET ";
+        if (categories) {
+          updateQuery += `categories='${categories}'`;
+          if (locations) { updateQuery += `, locations='${locations}'`; }
+        } else { updateQuery += `locations='${locations}'`; }
+        updateQuery += ` WHERE users_uid = ${uid} AND users_provider = '${provider}'`;
+        return mysqlConnection.query(updateQuery)
+      })
+      .then(() => {
+        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
+        return mysqlConnection.query(getQuery);
+      })
+      .then((result) => {
+        if (result.length > 0) {
+          categories = result[0].categories;
+          locations = result[0].locations;
+        }
+        res
+          .status(200)
+          .json({ preferences: { uid, provider, categories, locations} })
+      })
+      .catch((err) => {
+        console.log("ERROR: " + JSON.stringify(err));
+        handleError(err, res);
+      })
+      .finally(() => {
+        pool.releaseConnection(mysqlConnection);
+      })
     });
   }
 })
