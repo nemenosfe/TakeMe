@@ -258,6 +258,7 @@ describe('Users route', function() {
     after(function() {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken'
       };
       request
         .delete(`/users/${uid}-${provider}/preferences`)
@@ -272,6 +273,7 @@ describe('Users route', function() {
     it("should create the identified user's preferences", function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken',
         'categories': 'music||comedy||art||sports',
         'locations': 'Barcelona||Madrid||Bilbao'
       };
@@ -298,6 +300,7 @@ describe('Users route', function() {
     before(function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken',
         'categories': 'music||comedy||art||sports',
         'locations': 'Barcelona||Madrid||Bilbao'
       };
@@ -312,6 +315,7 @@ describe('Users route', function() {
     it("should delete the identified user's preferences", function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken',
       };
       request
         .delete(`/users/${uid}-${provider}/preferences`)
@@ -333,8 +337,9 @@ describe('Users route', function() {
     before(function(done) { // Abans: crea la preference
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'categories': categories,
-        'locations': locations
+        'token': 'randomToken',
+        categories,
+        locations
       };
       request
         .post(`/users/${uid}-${provider}/preferences`)
@@ -347,6 +352,7 @@ describe('Users route', function() {
     after(function(done) { // Després: elimina la preference
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken'
       };
       request
         .delete(`/users/${uid}-${provider}/preferences`)
@@ -361,7 +367,7 @@ describe('Users route', function() {
     });
     it("should return a certain user's preferences", function(done) {
       request
-        .get(`/users/${uid}-${provider}/preferences?appkey=7384d85615237469c2f6022a154b7e2c`)
+        .get(`/users/${uid}-${provider}/preferences?appkey=7384d85615237469c2f6022a154b7e2c&token=randomToken`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -384,8 +390,9 @@ describe('Users route', function() {
     before(function(done) { // Abans: crea la preference
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'categories': categories,
-        'locations': locations
+        'token': 'randomToken',
+        categories,
+        locations
       };
       request
         .post(`/users/${uid}-${provider}/preferences`)
@@ -398,6 +405,7 @@ describe('Users route', function() {
     after(function(done) { // Després: elimina la preference
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken'
       };
       request
         .delete(`/users/${uid}-${provider}/preferences`)
@@ -412,7 +420,11 @@ describe('Users route', function() {
     });
     it('should update a user preferences', function(done) {
       categories = "music||learning_education";
-      const params = { 'appkey': '7384d85615237469c2f6022a154b7e2c', categories };
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'token': 'randomToken',
+        categories
+      };
       request
         .put(`/users/${uid}-${provider}/preferences`)
         .set('Accept', 'application/json')

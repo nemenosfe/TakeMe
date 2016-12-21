@@ -66,6 +66,26 @@ function authorize_appkey(appkey, mysqlConnection) {
   });
 }
 
+function authorize_token(token, uid, provider, mysqlConnection) {
+  return new Promise(function(resolve, reject) {
+    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
+    if (!token) { reject(errorJSONresponse); }
+    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
+    mysqlConnection.query(sqlGetToken)
+    .then((resultDB) => {
+      if (!resultDB[0]) { reject(errorJSONresponse); }
+      else {
+        const real_hashed_token = resultDB[0]["token"];
+        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
+        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
+      }
+    })
+    .catch((err) => {
+      reject(err);
+    })
+  });
+}
+
 function generateRandomString(numCharacters) {
   numCharacters = numCharacters || 200;
   return randomstring.generate(numCharacters);
@@ -273,22 +293,25 @@ router
       const categories = req.body.categories || null;
       const locations = req.body.locations || null;
       authorize_appkey(req.body.appkey, mysqlConnection)
-        .then(() => {
-          const insertQuery = `INSERT INTO userspreferences VALUES (${uid}, '${provider}', '${categories}', '${locations}');`;
-          return mysqlConnection.query(insertQuery);
-        })
-        .then((result) => {
-          res
-            .status(201)
-            .json({ preferences: {uid, provider, categories, locations} })
-        })
-        .catch((err) => {
-          console.log("ERROR: " + JSON.stringify(err));
-          handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+      .then((result) => {
+        return authorize_token(req.body.token, uid, provider, mysqlConnection);
+      })
+      .then(() => {
+        const insertQuery = `INSERT INTO userspreferences VALUES (${uid}, '${provider}', '${categories}', '${locations}');`;
+        return mysqlConnection.query(insertQuery);
+      })
+      .then((result) => {
+        res
+          .status(201)
+          .json({ preferences: {uid, provider, categories, locations} })
+      })
+      .catch((err) => {
+        console.log("ERROR: " + JSON.stringify(err));
+        handleError(err, res);
+      })
+      .finally(() => {
+        pool.releaseConnection(mysqlConnection);
+      })
     });
   }
 })
@@ -301,6 +324,9 @@ router
     const provider = req.params.id.split('-')[1];
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(appkey, mysqlConnection)
+      .then((result) => {
+        return authorize_token(req.query.token, uid, provider, mysqlConnection);
+      })
       .then(() => {
         const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
         return mysqlConnection.query(getQuery);
@@ -335,6 +361,9 @@ router
     let locations = req.body.locations || null;
     pool.getConnection().then(function(mysqlConnection) {
       authorize_appkey(req.body.appkey, mysqlConnection)
+      .then((result) => {
+        return authorize_token(req.body.token, uid, provider, mysqlConnection);
+      })
       .then(() => {
         let updateQuery = "UPDATE userspreferences SET ";
         if (categories) {
@@ -374,8 +403,11 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       const uid = req.params.id.split('-')[0];
       const provider = req.params.id.split('-')[1];
-      const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
-      mysqlConnection.query(deleteQuery)
+      authorize_token(req.body.token, uid, provider, mysqlConnection)
+      .then((result) => {
+        const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
+        return mysqlConnection.query(deleteQuery);
+      })
       .then((result) => {
         res
           .status(200)

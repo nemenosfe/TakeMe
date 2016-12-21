@@ -3,7 +3,7 @@ INSERT INTO users VALUES (2, "provider", "Nom2", "Cognom2", "emailfals2@gmail.co
 INSERT INTO users VALUES (3, "provider", "Nom3", "Cognom3", "emailfals3@gmail.com", 60, 60, 1);
 
 INSERT INTO tokens VALUES("b903e0f0b987fc22588f517c9df0274f", 1, "provider");
-INSERT INTO tokens VALUES("29d7ff6dfc46ca6447e75bfbccb185d6", 2, "provider");
+INSERT INTO tokens VALUES("526b0e737e7ad6e3344da44e56559ce5", 2, "provider");
 INSERT INTO tokens VALUES("67bfd2aa446a1f125fed5d317dc254a5", 3, "provider");
 
 INSERT INTO achievements VALUES (1, "logro 01", "random description 01", 10, "music", 1);
