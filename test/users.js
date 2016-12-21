@@ -285,11 +285,11 @@ describe('Users route', function() {
         .expect('Content-Type', /application\/json/)
         .then((res) => {
           expect(res.body).to.have.property('preferences');
-          const preferenceResponse = res.body.preferences;
-          expect(preferenceResponse).to.have.property('uid', uid.toString());
-          expect(preferenceResponse).to.have.property('provider', provider.toString());
-          expect(preferenceResponse).to.have.property('categories', params.categories);
-          expect(preferenceResponse).to.have.property('locations', params.locations);
+          const preferencesResponse = res.body.preferences;
+          expect(preferencesResponse).to.have.property('uid', uid.toString());
+          expect(preferencesResponse).to.have.property('provider', provider.toString());
+          expect(preferencesResponse).to.have.property('categories', params.categories);
+          expect(preferencesResponse).to.have.property('locations', params.locations);
           done();
         }, done)
     });
@@ -433,11 +433,11 @@ describe('Users route', function() {
         .expect('Content-Type', /application\/json/)
         .then((res) => {
           expect(res.body).to.have.property('preferences');
-          const preferenceResponse = res.body.preferences;
-          expect(preferenceResponse).to.have.property('uid', uid.toString());
-          expect(preferenceResponse).to.have.property('provider', provider.toString());
-          expect(preferenceResponse).to.have.property('categories', categories);
-          expect(preferenceResponse).to.have.property('locations', locations);
+          const preferencesResponse = res.body.preferences;
+          expect(preferencesResponse).to.have.property('uid', uid.toString());
+          expect(preferencesResponse).to.have.property('provider', provider.toString());
+          expect(preferencesResponse).to.have.property('categories', categories);
+          expect(preferencesResponse).to.have.property('locations', locations);
           done();
         }, done)
     });
