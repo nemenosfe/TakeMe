@@ -6,6 +6,7 @@ const event = require('./routes/event');
 const user = require('./routes/users');
 const reward = require('./routes/rewards');
 const achievement = require('./routes/achievements');
+const recommendation = require('./routes/recommendations');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -14,6 +15,7 @@ app.use('/events', event);
 app.use('/users', user);
 app.use('/rewards', reward);
 app.use('/achievements', achievement);
+app.use('/recommendations', recommendation);
 
 app.use(cors());
 
