@@ -115,7 +115,7 @@ describe('Users route', function() {
     });
   });
 
-  describe('GET /users/:id', function() {
+  describe.only('GET /users/:id', function() {
     before(function() {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
@@ -156,6 +156,8 @@ describe('Users route', function() {
           expect(user).to.have.property('takes', 0);
           expect(user).to.have.property('experience', 0);
           expect(user).to.have.property('level', 1);
+          expect(user).to.have.property('experience_of_next_level')
+            .and.to.be.at.least(0.60);
           done();
         }, done)
     });

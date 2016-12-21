@@ -71,6 +71,8 @@ function generateRandomString(numCharacters) {
   return randomstring.generate(numCharacters);
 }
 
+function getNextLevelExperience(nextLevel) { return nextLevel * Math.log10(nextLevel); }
+
 router
   .post('/', function(req, res, next) {
     if (!req.body) {
@@ -176,11 +178,11 @@ router
           return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
+          const response = {user: result[0]};
+          response.user.experience_of_next_level = getNextLevelExperience(result[0].level + 1);
           res
             .status(200)
-            .json({
-              user: result[0]
-            })
+            .json(response)
         })
         .catch((err) => {
           handleError(err, res);
