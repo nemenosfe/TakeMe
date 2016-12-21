@@ -228,18 +228,8 @@ DROP TABLE IF EXISTS `takemelegends`.`userspreferences` ;
 CREATE TABLE IF NOT EXISTS `takemelegends`.`userspreferences` (
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
-  `football` BOOLEAN,
-  `basketball` BOOLEAN,
-  `sports` BOOLEAN,
-  `music` BOOLEAN,
-  `art` BOOLEAN,
-  `theater` BOOLEAN,
-  `cinema` BOOLEAN,
-  `location` VARCHAR(30),
-  `start_hour` VARCHAR(30),
-  `end_hour` VARCHAR(30),
-  `week` BOOLEAN,
-  `weekend` BOOLEAN,
+  `categories` MEDIUMTEXT,
+  `locations` MEDIUMTEXT,
   PRIMARY KEY (`users_uid`, `users_provider`),
   CONSTRAINT `fk_userspreferences_has_users_idx`
     FOREIGN KEY (`users_uid` , `users_provider`)

@@ -265,32 +265,27 @@ router
 })
 
 .post('/:id/preferences', function(req, res, next) {
-  if (!req.body) {
-    res
-      .status(403)
-      .json({
-        error: true,
-        message: 'Empty body'
-      })
-  } else {
-    let preference = req.body
+  if (!req.body || (!req.body.categories && !req.body.locations) || !req.params.id) { handleNoParams(res); }
+  else {
     pool.getConnection().then(function(mysqlConnection) {
+      const uid = req.params.id.split('-')[0];
+      const provider = req.params.id.split('-')[1];
+      const categories = req.body.categories || null;
+      const locations = req.body.locations || null;
       authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
-          const uid = req.params.id.split('-')[0];
-          const provider = req.params.id.split('-')[1];
-          const insertQuery = "INSERT INTO userspreferences values (" + uid + ", '" + provider + "', '" + preference.football + "', '" + preference.basketball + "', '" + preference.sports + "', '" + preference.music + "', '" + preference.art +
-           "', '" + preference.cinema + "', '" + preference.theater + "', '" + preference.location + "', " + preference.start_hour + ", " + preference.end_hour + ", " + preference.week + ", " + preference.weekend + ");";
-          return mysqlConnection.query(insertQuery)
+          const insertQuery = `INSERT INTO userspreferences VALUES (${uid}, '${provider}', '${categories}', '${locations}');`;
+          return mysqlConnection.query(insertQuery);
         })
         .then((result) => {
           res
             .status(201)
             .json({
-              preference: result
+              preference: {uid, provider, categories, locations}
             })
         })
         .catch((err) => {
+          console.log("ERROR: " + JSON.stringify(err));
           handleError(err, res);
         })
         .finally(() => {
@@ -362,25 +357,27 @@ router
 })
 
 .delete('/:id/preferences', function(req, res, next) {
+  if (!req.params || !req.params.id) { handleNoParams(res); }
+  else {
     pool.getConnection().then(function(mysqlConnection) {
-        const uid = req.params.id.split('-')[0];
-        const provider = req.params.id.split('-')[1];
-      const deleteQuery = "DELETE FROM userspreferences WHERE uid=" + uid + " AND provider = '" + provider + "'";
-      return mysqlConnection.query(deleteQuery)
+      const uid = req.params.id.split('-')[0];
+      const provider = req.params.id.split('-')[1];
+      const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
+      mysqlConnection.query(deleteQuery)
+      .then((result) => {
+        res
+          .status(200)
+          .json({})
+      })
+      .catch((err) => {
+        console.log("ERROR: " + JSON.stringify(err));
+        handleError(err, res);
+      })
+      .finally(() => {
+        pool.releaseConnection(mysqlConnection);
+      })
     })
-    .then((result) => {
-      res
-        .status(200)
-        .json({
-          message: "Preferences deleted"
-        })
-    })
-    .catch((err) => {
-      handleError(err, res);
-    })
-    .finally(() => {
-      pool.releaseConnection(mysqlConnection);
-    })
+  }
 })
 
 module.exports = router

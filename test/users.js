@@ -253,14 +253,14 @@ describe('Users route', function() {
     });
   });
 
-  describe('POST /users/:id/preferences', function() {
-    let token;
+  describe.only('POST /users/:id/preferences', function() {
+    const uid = 2, provider = 'provider';
     after(function() {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
       };
       request
-        .delete('/users/32-providerTest2/preferences')
+        .delete(`/users/${uid}-${provider}/preferences`)
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)
@@ -272,23 +272,11 @@ describe('Users route', function() {
     it("should create the identified user's preferences", function(done) {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
-        'uid': 32,
-        'provider': 'providerTest2',
-        'football': true,
-        'basketball': false,
-        'sports': true,
-        'music': false,
-        'art': false,
-        'cinema': true,
-        'theater': false,
-        'location': 'Barcelona',
-        'start_hour': '00:00',
-        'end_hour': '00:00',
-        'week': false,
-        'weekend': true
+        'categories': 'music||comedy||art||sports',
+        'locations': 'Barcelona||Madrid||Bilbao'
       };
       request
-        .post('/users/32-providerTest2/preferences')
+        .post(`/users/${uid}-${provider}/preferences`)
         .set('Accept', 'application/json')
         .send(params)
         .expect(201)
@@ -296,26 +284,48 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('preference');
           const preferenceResponse = res.body.preference;
-          expect(preferenceResponse).to.have.property('uid', params.uid);
-          expect(preferenceResponse).to.have.property('provider', params.provider);
-          expect(preferenceResponse).to.have.property('football', params.football);
-          expect(preferenceResponse).to.have.property('basketball', params.basketball);
-          expect(preferenceResponse).to.have.property('sports', params.sports);
-          expect(preferenceResponse).to.have.property('music', params.music);
-          expect(preferenceResponse).to.have.property('art', params.art);
-          expect(preferenceResponse).to.have.property('cinema', params.cinema);
-          expect(preferenceResponse).to.have.property('theater', params.theater);
-          expect(preferenceResponse).to.have.property('location', params.location);
-          expect(preferenceResponse).to.have.property('start_hour', params.start_hour);
-          expect(preferenceResponse).to.have.property('end_hour', params.end_hour);
-          expect(preferenceResponse).to.have.property('week', params.week);
-          expect(preferenceResponse).to.have.property('weekend', params.weekend);
+          expect(preferenceResponse).to.have.property('uid', uid.toString());
+          expect(preferenceResponse).to.have.property('provider', provider.toString());
+          expect(preferenceResponse).to.have.property('categories', params.categories);
+          expect(preferenceResponse).to.have.property('locations', params.locations);
           done();
         }, done)
     });
   });
 
-  describe('GET /users/:id/preferences', function() {
+  describe.only('DELETE /users/:id/preferences', function() {
+    const uid = 2, provider = 'provider';
+    before(function() {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+        'categories': 'music||comedy||art||sports',
+        'locations': 'Barcelona||Madrid||Bilbao'
+      };
+      request
+        .post(`/users/${uid}-${provider}/preferences`)
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    });
+    it("should delete the identified user's preferences", function(done) {
+      const params = {
+        'appkey': '7384d85615237469c2f6022a154b7e2c',
+      };
+      request
+        .delete(`/users/${uid}-${provider}/preferences`)
+        .set('Accept', 'application/json')
+        .send(params)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then((res) => {
+          expect(res.body).to.be.empty;
+          done();
+        }, done)
+    });
+  });
+
+  describe.skip('GET /users/:id/preferences', function() {
       before(function() {
           const params = {
             'appkey': '7384d85615237469c2f6022a154b7e2c',
@@ -368,7 +378,7 @@ describe('Users route', function() {
     });
   });
 
-  describe('PUT /users/:id/preferences', function() {
+  describe.skip('PUT /users/:id/preferences', function() {
       before(function() {
           const params = {
             'appkey': '7384d85615237469c2f6022a154b7e2c',
