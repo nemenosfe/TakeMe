@@ -280,9 +280,7 @@ router
         .then((result) => {
           res
             .status(201)
-            .json({
-              preference: {uid, provider, categories, locations}
-            })
+            .json({ preferences: {uid, provider, categories, locations} })
         })
         .catch((err) => {
           console.log("ERROR: " + JSON.stringify(err));
@@ -296,28 +294,36 @@ router
 })
 
 .get('/:id/preferences', function(req, res, next) {
-  const appkey = !(!req.query) ? req.query.appkey : null;
-  pool.getConnection().then(function(mysqlConnection) {
-    authorize_appkey(appkey, mysqlConnection)
+  if (!req.params || !req.params.id) { handleNoParams(res); }
+  else {
+    const appkey = !(!req.query) ? req.query.appkey : null;
+    const uid = req.params.id.split('-')[0];
+    const provider = req.params.id.split('-')[1];
+    pool.getConnection().then(function(mysqlConnection) {
+      authorize_appkey(appkey, mysqlConnection)
       .then(() => {
-        const uid = req.params.id.split('-')[0];
-        const provider = req.params.id.split('-')[1];
-        return mysqlConnection.query("SELECT * FROM userspreferences WHERE uid = " + uid + " AND provider = '" + provider + "'")
+        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
+        return mysqlConnection.query(getQuery);
       })
       .then((result) => {
+        let categories = null, locations = null;
+        if (result.length > 0) {
+          categories = result[0].categories;
+          locations = result[0].locations;
+        }
         res
           .status(200)
-          .json({
-            preferences: result
-          })
+          .json({ preferences: { uid, provider, categories, locations} })
       })
       .catch((err) => {
+        console.log("ERROR: " + JSON.stringify(err));
         handleError(err, res);
       })
       .finally(() => {
         pool.releaseConnection(mysqlConnection);
       })
-  });
+    });
+  }
 })
 
 .put('/:id/preferences', function(req, res, next) {
