@@ -142,22 +142,26 @@ Aquesta explicació és sobre comandes a la terminal de linux:
 
 | Verb   | Path                       | Auth             | Description                  |
 | -------|----------------------------|:----------------:| ----------------------------:|
-| GET    | /events/                   | appkey           | Veure una llista d'esdeveniments per data, categoria, localització i/o paraules clau |
-| GET    | /events/:id/               | appkey           | Veure un esdeveniment |
-| GET    | /events/user/              | appkey + token   | Veure els 'assitiré' d'un usuari |
-| POST   | /events/user/              | appkey + token   | Crear un 'assitiré'|
-| PUT    | /events/:id/user/          | appkey + token   | Fer un check-in |
-| DELETE | /events/:id/user/          | appkey + token   | Eliminar un 'assitiré' |
-| GET    | /rewards/                  | appkey           | Veure la llista total de recompenses |
-| GET    | /rewards/user/             | appkey + token   | Veure les recompenses d'un usuari |
-| POST   | /rewards/user/             | appkey + token   | Compra d'una recompensa per un usuari |
-| GET    | /users/                    | appkey           | Veure la llista d'usuaris |
-| GET    | /users/:uid-provider       | appkey           | Veure un usuari |
-| POST   | /users/                    | appkey           | Crear un usuari nou o canviar el token si ja existia l'usuari |
-| PUT    | /users/:uid-provider       | appkey           | Canviar la informació d'un usuari |
-| DELETE | /users/:uid-provider       | appkey           | Eliminar un usuari |
-| GET    | /achievements/             | appkey           | Veure la llista de 'logros' |
-| GET    | /achievements/user/        | appkey + token   | Veure els 'logros' d'un usuari |
+| GET    | /events/                           | appkey           | Veure una llista d'esdeveniments per data, categoria, localització i/o paraules clau |
+| GET    | /events/:id/                       | appkey           | Veure un esdeveniment |
+| GET    | /events/user/                      | appkey + token   | Veure els 'assitiré' d'un usuari |
+| POST   | /events/user/                      | appkey + token   | Crear un 'assitiré'|
+| PUT    | /events/:id/user/                  | appkey + token   | Fer un check-in |
+| DELETE | /events/:id/user/                  | appkey + token   | Eliminar un 'assitiré' |
+| GET    | /rewards/                          | appkey           | Veure la llista total de recompenses |
+| GET    | /rewards/user/                     | appkey + token   | Veure les recompenses d'un usuari |
+| POST   | /rewards/user/                     | appkey + token   | Compra d'una recompensa per un usuari |
+| GET    | /users/                            | appkey           | Veure la llista d'usuaris |
+| GET    | /users/:uid-provider               | appkey           | Veure un usuari |
+| POST   | /users/                            | appkey           | Crear un usuari nou o canviar el token si ja existia l'usuari |
+| PUT    | /users/:uid-provider               | appkey           | Canviar la informació d'un usuari |
+| DELETE | /users/:uid-provider               | appkey           | Eliminar un usuari |
+| GET    | /users/:uid-provider/preferences   | appkey           | Veure les preferences d'un usuari |
+| POST   | /users/preferences                 | appkey           | Crear les preferences d'un usuari |
+| PUT    | /users/:uid-provider/preferences   | appkey           | Modificar les preferences d'un usuari |
+| DELETE | /users/:uid-provider/preferences   | appkey           | Eliminar les preferences d'un usuari |
+| GET    | /achievements/                     | appkey           | Veure la llista de 'logros' |
+| GET    | /achievements/user/                | appkey + token   | Veure els 'logros' d'un usuari |
 
 
 ## Events API (Peticions d'esdeveniments)
@@ -654,7 +658,7 @@ Si tot ha anat bé, retorna el següent:
 }
 ```
 
-## Users API (Peticions d'usuaris)
+## Users API (Peticions d'usuaris i de les seves preferències)
 
 ### GET /users/
 GET de tots els usuaris de la base de dades.
@@ -778,6 +782,86 @@ DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per
 Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
  - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
  - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
+ **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
+ *DELETE /users/31-providerTest*.
+
+#### Paràmetres de sortida
+No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
+
+
+### GET /users/:uid-provider/preferences
+GET de les preferències de l'usuari identificat per uid i provider en format: uid-provider.
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
+ - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
+ - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
+ - **token**: Token de la sessió de l'usuari.
+ **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
+ *GET /users/2-provider/preferences*.
+
+#### Paràmetres de sortida
+Un exemple de sortida seria el següent:
+```javascript
+{
+  "uid": "2",
+  "provider": "provider",
+  "categories": "music||comedy||art||sports",
+  "locations": "Barcelona||Madrid||Bilbao"
+}
+```
+
+### POST /users/:uid-provider/preferences
+POST utilitzat per tal d'afegir les preferències de l'usuari a la base de dades.  
+Només feu aquesta petició quan no té guardades les preferències, però si estan guardades i voleu modificar-les, feu la petició PUT.  
+Exemple de la petició per un usuari amb uid 1 i provider facebook: *POST /users/1-facebook/preferences*  
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris al *body* són els següents (a més de l'**appkey**):
+ - **token**: Token de la sessió de l'usuari.
+ - A més, cal enviar les **categories** i/o les **locations** (podeu enviar només una de les 2 o les 2).  
+
+#### Paràmetres de sortida
+Un exemple seria:
+```javascript
+{
+  "uid": "2",
+  "provider": "provider",
+  "categories": "music||comedy||art||sports",
+  "locations": "Barcelona||Madrid||Bilbao"
+}
+```  
+
+### PUT /users/:uid-provider/preferences
+PUT utilitzat per tal de modificar les preferències de l'usuari previament guardades amb un POST.  
+Exemple de la petició per un usuari amb uid 1 i provider facebook: *PUT /users/1-facebook/preferences*  
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris al *body* són els següents (a més de l'**appkey**):
+ - **token**: Token de la sessió de l'usuari.
+ - A més, cal enviar les **categories** i/o les **locations** (podeu enviar només una de les 2 o les 2).  
+
+#### Paràmetres de sortida
+Un exemple seria:
+```javascript
+{
+  "uid": "2",
+  "provider": "provider",
+  "categories": "music||comedy||art||sports",
+  "locations": "Barcelona||Madrid||Bilbao"
+}
+```  
+Si s'han modificat només les *categories* o només les *locations*, igualment es retornen les *categories* i *locations* que té actualment, encara que un d'ells no s'hagi modificat (o sí, si envieu els 2 paràmetres).  
+
+### DELETE /users/:uid-provider/preferences
+DELETE utilitzat per tal d'esborrar les preferències de l'usuari.  
+Exemple de la petició per un usuari amb uid 1 i provider facebook: *DELETE /users/1-facebook/preferences*  
+
+#### Paràmetres d'entrada
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
+ - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
+ - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
+ - **token**: Token de la sessió de l'usuari.
  **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
  *DELETE /users/31-providerTest*.
 
