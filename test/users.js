@@ -115,7 +115,7 @@ describe('Users route', function() {
     });
   });
 
-  describe.only('GET /users/:id', function() {
+  describe('GET /users/:id', function() {
     before(function() {
       const params = {
         'appkey': '7384d85615237469c2f6022a154b7e2c',
