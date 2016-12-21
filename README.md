@@ -690,12 +690,15 @@ Un exemple de sortida seria el següent:
 ]
 ```
 
-### GET /users/:uid
-GET de l'usuari identificat per uid.
+### GET /users/:id
+GET de l'usuari identificat per uid i provider en format: uid-provider.
 
 #### Paràmetres d'entrada
 Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
- - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris.
+ - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
+ - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
+ **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
+ *GET /users/31-providerTest*.
 
 #### Paràmetres de sortida
 Un exemple de sortida seria el següent:
@@ -708,7 +711,8 @@ Un exemple de sortida seria el següent:
     "email":"email31@test.com",
     "takes":0,
     "experience":0,
-    "level":1
+    "level":1,
+    "experience_of_next_level":0.6
 }
 ```
 
@@ -741,8 +745,8 @@ Un exemple seria:
 ```  
 Si no existia, el crea i retorna tota la seva informació (amb el token inclòs), si existia, renova el token i el retorna.  
 
-### PUT /users/:uid
-PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid.
+### PUT /users/:id
+PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid i provider.
 
 #### Paràmetres d'entrada
 Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
@@ -767,12 +771,15 @@ Un exemple seria:
 }
 ```
 
-### DELETE /users/:uid
-DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid.
+### DELETE /users/:id
+DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid i el seu provider.
 
 #### Paràmetres d'entrada
 Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
- - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
+ - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
+ - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
+ **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
+ *DELETE /users/31-providerTest*.
 
 #### Paràmetres de sortida
 No hi ha paràmetres de sortida, només el propi codi HTTP de resposta.
