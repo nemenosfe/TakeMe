@@ -192,7 +192,7 @@ function getNewLevel(level, experience) {
 }
 
 function buildSearchParams(params_query, page_size, page_number) {
-  let params = "sort_order=date&page_size="+page_size+"&page_number="+page_number;
+  let params = `sort_order=date&page_size=${page_size}&page_number=${page_number}&include=categories`;
   if (params_query.location) {
     params = params + "&location=" + params_query.location;
     let within = 350;

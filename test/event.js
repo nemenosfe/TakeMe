@@ -123,7 +123,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
-        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('categories');
+        expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
@@ -175,7 +176,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
-        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('categories');
+        expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
@@ -226,7 +228,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
-        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('categories');
+        expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
@@ -279,7 +282,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
-        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('categories');
+        expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
@@ -334,7 +338,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('latitude')
         expect(eventResponse).to.have.property('longitude')
         expect(eventResponse).to.have.property('all_day')
-        //expect(eventResponse).to.have.property('category_id')
+        expect(eventResponse).to.have.property('categories');
+        expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
