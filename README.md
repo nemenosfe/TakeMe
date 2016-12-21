@@ -242,8 +242,14 @@ GET d'una llista d'esdeveniments.
               "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
             }
           },
-          ,
-          "categories": null, // Des d'aquí, sempre serà null
+          "categories":{ // Sempre he vist que ve 1 i només 1 categoria dins del següent array, i mai ho he vist com a null (però això ho trec dels exemples que he vist, no es que m'ho digui la especificació que he llegit)
+            "category":[  
+              {  
+                "name":"Other &amp; Miscellaneous",
+                "id":"other"
+              }
+            ]
+           },
            "free": null, // Des d'aquí, sempre serà null
            "price": null, // Des d'aquí, sempre serà null
         },
