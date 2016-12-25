@@ -5,10 +5,11 @@ const mysql = require('promise-mysql');
 const rp = require('request-promise');
 const Promise = require("bluebird");
 const crypto = require('crypto');
-const randomstring = require("randomstring");
+
 
 const utilsErrors = require('../utils/handleErrors'),
-      utilsSecurity = require('../utils/security');
+      utilsSecurity = require('../utils/security'),
+      utilsCommon = require('../utils/common');
 
 var pool = mysql.createPool({
   host: 'localhost',
@@ -16,11 +17,6 @@ var pool = mysql.createPool({
   password: '12345678',
   database: 'takemelegends'
 });
-
-function generateRandomString(numCharacters) {
-  numCharacters = numCharacters || 200;
-  return randomstring.generate(numCharacters);
-}
 
 function getNextLevelExperience(nextLevel) { return nextLevel * Math.log10(nextLevel); }
 
@@ -54,7 +50,7 @@ router
             return mysqlConnection.query(sqlInsertUserInDB);
           })
           .then((result) => {
-            user.token = generateRandomString(); // Tant si ja existia l'usuari com si no, creem un nou token de sessió
+            user.token = utilsCommon.generateRandomString(); // Tant si ja existia l'usuari com si no, creem un nou token de sessió
             const encryptedToken = crypto.createHash('md5').update(user.token).digest("hex");
 
             const sql =
