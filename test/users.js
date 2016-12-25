@@ -1,9 +1,7 @@
 "use strict"
 let request = require('supertest-as-promised');
 const api = require('../app');
-const host = api;
-
-request = request(host);
+request = request(api);
 
 describe('Users route', function() {
 

@@ -1,19 +1,13 @@
 "use strict"
 let request = require('supertest-as-promised');
-const api = require('../app');
-const host = api;
-const mysql = require('promise-mysql');
+const api = require('../app'),
+      utilsDatabaseRelated = require('../utils/databaseRelated'),
+      helperCommon = require('./helpers/common'),
+      pool = utilsDatabaseRelated.getPool();
+request = request(api);
 
-request = request(host);
 
-const pool  = mysql.createPool({
-  host     : 'localhost',
-  user     : 'root',
-  password : '12345678',
-  database : 'takemelegends'
-});
-
-var aux_id = "E0-001-095173443-9";
+let aux_id = "E0-001-095173443-9";
 
 function buildGetParams(path, params) {
   let str_params = path;
@@ -86,7 +80,7 @@ describe('route of events', function() {
     });
     it('should get a list of events in Barcelona', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'location' : 'Barcelona',
         'within' : '20',
         'page_size' : '5',
@@ -139,7 +133,7 @@ describe('route of events', function() {
     });
     it('should get a list of events with some keywords', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'keywords' : 'LIGA soccer',
         'page_size' : '50',
         'page_number' : '2'
@@ -193,7 +187,7 @@ describe('route of events', function() {
     });
     it('should get a list of events of a category', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'category' : 'art'
       };
       request
@@ -245,7 +239,7 @@ describe('route of events', function() {
     });
     it('should get a list of events of a date', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'date' : 'Next week',
         'page_size' : '50',
         'page_number' : '2'
@@ -299,7 +293,7 @@ describe('route of events', function() {
     });
     it('should get a list of events of a category in a date in a place', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'category' : 'music',
         'date' : '2016091200-2017042200',
         'location' : 'Barcelona',
@@ -382,7 +376,7 @@ describe('route of events', function() {
       }, done)
     });
     it('should obtain an event with all its info when that event was not created from our app', function(done) {
-      const params = { 'appkey' : '7384d85615237469c2f6022a154b7e2c' };
+      const params = { 'appkey' : helperCommon.appkey };
       request
         .get(buildGetParams("/events/"+aux_id, params))
         .set('Accept', 'application/json')
@@ -463,7 +457,7 @@ describe('route of events', function() {
     it('should obtain all events from a user', function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'page_size' : 20
@@ -568,7 +562,7 @@ describe('route of events', function() {
     it('should create an attendance from a user to an event', function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'event_id' : 'E0-001-093875660-9'
@@ -637,7 +631,7 @@ describe('route of events', function() {
       aux_id = 'E0-001-093875660-9';
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'checkin_done' : '1'
@@ -667,7 +661,7 @@ describe('route of events', function() {
       aux_id = 'E0-001-093875660-9';
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'checkin_done' : '1'
@@ -703,7 +697,7 @@ describe('route of events', function() {
     ];
     const params = {
       'token' : '364b99c40b84b5207e89a207a606720a',
-      'appkey' : '7384d85615237469c2f6022a154b7e2c',
+      'appkey' : helperCommon.appkey,
       'uid' : 3,
       'provider' : 'provider',
       'checkin_done' : '1'
@@ -820,7 +814,7 @@ describe('route of events', function() {
     after(function() {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'event_id' : 'E0-001-096844204-0@2016102500'
@@ -874,7 +868,7 @@ describe('route of events', function() {
       aux_id = 'E0-001-096844204-0@2016102500';
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider'
       };
@@ -895,7 +889,7 @@ describe('route of events', function() {
       aux_id = 'E0-001-093875660-9' // no ha de deixar, perquè té check-in
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider'
       };

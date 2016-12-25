@@ -1,11 +1,9 @@
 "use strict"
 let request = require('supertest-as-promised');
-const api = require('../app');
-const host = api;
+const api = require('../app'),
+      helperCommon = require('./helpers/common');
+request = request(api);
 
-request = request(host);
-
-const appkey = '7384d85615237469c2f6022a154b7e2c';
 const default_page_size = 20;
 
 describe('Recommendations route', function() {
@@ -23,7 +21,7 @@ describe('Recommendations route', function() {
 
     before(function(done) { // Abans: crea la preference
       const postParams = {
-        appkey: appkey,
+        appkey: helperCommon.appkey,
         token: paramsWP.token,
         categories,
         locations
@@ -38,7 +36,7 @@ describe('Recommendations route', function() {
     });
     after(function(done) { // Després: elimina la preference
       const deleteParams = {
-        appkey: appkey,
+        appkey: helperCommon.appkey,
         token: paramsWP.token
       };
       request
@@ -55,7 +53,7 @@ describe('Recommendations route', function() {
 
     it(`returns ${default_page_size} events with the selected preferences`, function(done) {
       request
-        .get(`/recommendations/${paramsWP.uid}-${paramsWP.provider}?appkey=${appkey}&token=${paramsWP.token}`)
+        .get(`/recommendations/${paramsWP.uid}-${paramsWP.provider}?appkey=${helperCommon.appkey}&token=${paramsWP.token}`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -105,7 +103,7 @@ describe('Recommendations route', function() {
       };
 
       request
-        .get(`/recommendations/${paramsWOP.uid}-${paramsWOP.provider}?appkey=${appkey}&token=${paramsWOP.token}`)
+        .get(`/recommendations/${paramsWOP.uid}-${paramsWOP.provider}?appkey=${helperCommon.appkey}&token=${paramsWOP.token}`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)

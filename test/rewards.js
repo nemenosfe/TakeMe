@@ -1,11 +1,9 @@
 "use strict"
 let request = require('supertest-as-promised');
 const api = require('../app');
-const host = api;
+request = request(api);
 
-request = request(host);
-
-var aux_id = "1";
+let aux_id = "1";
 
 function buildGetParams(path, params) {
   let str_params = path;
