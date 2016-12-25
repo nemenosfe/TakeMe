@@ -145,7 +145,11 @@ router
           return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then((result) => {
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, false);
+          const params = `id=${req.body.event_id}`;
+          return utilsEventRelated.doRequest(params, "get");
+        })
+        .then((result) => {
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, false, result.start_time, result.stop_time, result.all_day);
         })
         .then((attendanceResponse) => { // Fa el Response bo :)
           res
@@ -165,17 +169,19 @@ router
   .put('/:id/user', function(req, res, next) { // S'HA DE MILLORAR
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { utilsErrors.handleNoParams(res); }
     else {
-      const attendanceRequest = req.body;
-      let level = -1,
-          total_experience = 0,
-          new_takes_event = 0,
-          new_takes_achievement = 0,
-          total_takes = -1,
-
-          number_attendances_category,
-          category_id,
-          earned_achievement = null;
       pool.getConnection().then(function(mysqlConnection) {
+        const attendanceRequest = req.body;
+        let level = -1,
+            total_experience = 0,
+            new_takes_event = 0,
+            new_takes_achievement = 0,
+            total_takes = -1,
+
+            number_attendances_category,
+            category_id,
+            earned_achievement = null,
+
+            start_time, stop_time, all_day;
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
           return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
@@ -185,11 +191,14 @@ router
           return utilsEventRelated.doRequest(paramsForEventful, "get");
         })
         .then((result) => { // Guarda la categoria de l'esdeveniment + Comença la transacció a la BD
+          start_time = result.start_time || null;
+          stop_time = result.stop_time || null;
+          all_day = result.all_day || null;
           category_id = utilsEventRelated.getFinalCategoryIdFromEventfulResponse(result);
           return mysqlConnection.query('START TRANSACTION');
         })
         .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment)
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true);
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true, start_time, stop_time, all_day);
         })
         .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
           const sql = `UPDATE attendances SET checkin_done=true WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;

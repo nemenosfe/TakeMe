@@ -88,36 +88,31 @@ module.exports = {
     if (params_query.date) { params = params + "&date=" + params_query.date; }
     return params;
   },
-  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, checkin_done = false) {
+  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, checkin_done = false, start = null, stop = null, all_day = null) {
     return new Promise((resolve, reject) => {
-      const sqlEventInDB = "SELECT takes FROM events WHERE id='"+event_id+"';";
+      const sqlEventInDB = `SELECT takes FROM events WHERE id='${event_id}';`;
       let takes = -1;
       let toBeSaved;
       mysqlConnection.query(sqlEventInDB)
       .then((result) => {
         // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
-        if (result.length != 0 && result[0].takes) {
-          return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+          if (result.length != 0 && result[0].takes) {
             takes = result[0].takes;
             toBeSaved = false;
             resolve(result);
-          });
-        }
-        else {
-          takes = this.getTakesToEarnInEvent();
-          toBeSaved = true;
-          const params = "id=" + event_id;
-          return this.doRequest(params, "get");
-        }
+          }
+          else {
+            takes = this.getTakesToEarnInEvent();
+            toBeSaved = true;
+            resolve(1);
+          }
+        });
       })
       .then((result) => {
         // Si no tenim l'esdeveniment a la nostra BD, el guardem
         if (toBeSaved) {
-          let start = null;
-          let stop = null;
-          if (result.start_time != null) { start = "'"+result.start_time+"'"; }
-          if (result.stop_time != null) { stop = "'"+result.stop_time+"'"; }
-          const sqlInsertEventInDB = "INSERT INTO events values ('"+event_id+"', "+result.all_day+", "+start+", "+stop+", 0, "+takes+");";
+          const sqlInsertEventInDB = `INSERT INTO events values ('${event_id}', ${all_day}, ${start}, ${stop}, 0, ${takes});`;
           return mysqlConnection.query(sqlInsertEventInDB);
         }
         else {
@@ -125,16 +120,16 @@ module.exports = {
         }
       })
       .then((result) => { // Inserta l'assitència
-        const sqlInsertAttendanceInDB = "INSERT IGNORE INTO attendances values ('"+event_id+"', '"+uid+"', '"+provider+"', "+checkin_done+");";
+        const sqlInsertAttendanceInDB = `INSERT IGNORE INTO attendances values ('${event_id}', '${uid}', '${provider}', ${checkin_done});`;
         return mysqlConnection.query(sqlInsertAttendanceInDB);
       })
       .then((result) => { // Retorna
         const attendanceResponse = {
-          'event_id' : event_id,
-          'uid' : uid,
-          'provider' : provider,
+          event_id,
+          uid,
+          provider,
           'checkin_done' : checkin_done ? "1" : "0",
-          'takes' : takes
+          takes
         };
         resolve(attendanceResponse);
       })
