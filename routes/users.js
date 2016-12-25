@@ -112,7 +112,7 @@ router
         .then(() => {
           const uid = req.params.id.split('-')[0];
           const provider = req.params.id.split('-')[1];
-          const singleUserQuery = "SELECT * FROM users WHERE uid = " + uid + " AND provider = '" + provider + "';";
+          const singleUserQuery = `SELECT * FROM users WHERE uid = ${uid} AND provider = '${provider}';`;
           return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
