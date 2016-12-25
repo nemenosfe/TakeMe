@@ -1,18 +1,10 @@
 "use strict"
 let request = require('supertest-as-promised');
-const api = require('../app');
+const api = require('../app'),
+      helperCommon = require('./helpers/common');
 request = request(api);
 
 let aux_id = "1";
-
-function buildGetParams(path, params) {
-  let str_params = path;
-  for (var key in params) {
-    str_params += (str_params == path) ? "?" : "&";
-    str_params += key + "=" + params[key];
-  }
-  return str_params;
-}
 
 describe('route of rewards', function() {
 
@@ -36,7 +28,7 @@ describe('route of rewards', function() {
         'appkey' : '123456'
       };
       request
-        .get(buildGetParams("/rewards/", params))
+        .get(helperCommon.buildGetParams("/rewards/", params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -51,7 +43,7 @@ describe('route of rewards', function() {
         'appkey' : '7384d85615237469c2f6022a154b7e2c'
       };
       request
-        .get(buildGetParams("/rewards/", params))
+        .get(helperCommon.buildGetParams("/rewards/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -83,7 +75,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/rewards/user/", params))
+        .get(helperCommon.buildGetParams("/rewards/user/", params))
         .set('Accept', 'application/json')
         .send(params)
         .expect(401)
@@ -102,7 +94,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/rewards/user/", params))
+        .get(helperCommon.buildGetParams("/rewards/user/", params))
         .set('Accept', 'application/json')
         .send(params)
         .expect(401)
@@ -121,7 +113,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/rewards/user/", params))
+        .get(helperCommon.buildGetParams("/rewards/user/", params))
         .set('Accept', 'application/json')
         .send(params)
         .expect(401)
@@ -141,7 +133,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/rewards/user/", params))
+        .get(helperCommon.buildGetParams("/rewards/user/", params))
         .set('Accept', 'application/json')
         .send(params)
         .expect(401)
@@ -161,7 +153,7 @@ describe('route of rewards', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/rewards/user/", params))
+        .get(helperCommon.buildGetParams("/rewards/user/", params))
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)

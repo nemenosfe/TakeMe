@@ -9,15 +9,6 @@ request = request(api);
 
 let aux_id = "E0-001-095173443-9";
 
-function buildGetParams(path, params) {
-  let str_params = path;
-  for (var key in params) {
-    str_params += (str_params == path) ? "?" : "&";
-    str_params += key + "=" + params[key];
-  }
-  return str_params;
-}
-
 function deleteAttendancesAndAcquisitionsFromTestsForUser3() {
   pool.getConnection().then(function(mysqlConnection) {
     const sql = "DELETE FROM attendances WHERE users_uid = 3 AND users_provider = 'provider';";
@@ -49,7 +40,7 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -68,7 +59,7 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -87,7 +78,7 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -139,7 +130,7 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -191,7 +182,7 @@ describe('route of events', function() {
         'category' : 'art'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -245,7 +236,7 @@ describe('route of events', function() {
         'page_number' : '2'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -300,7 +291,7 @@ describe('route of events', function() {
         'page_size' : '25'
       };
       request
-        .get(buildGetParams("/events/", params))
+        .get(helperCommon.buildGetParams("/events/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -365,7 +356,7 @@ describe('route of events', function() {
     it('should not get the event info with a wrong api key', function(done) {
       const params = { 'appkey' : '123456' };
       request
-        .get(buildGetParams("/events/"+aux_id, params))
+        .get(helperCommon.buildGetParams("/events/"+aux_id, params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -378,7 +369,7 @@ describe('route of events', function() {
     it('should obtain an event with all its info when that event was not created from our app', function(done) {
       const params = { 'appkey' : helperCommon.appkey };
       request
-        .get(buildGetParams("/events/"+aux_id, params))
+        .get(helperCommon.buildGetParams("/events/"+aux_id, params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -425,7 +416,7 @@ describe('route of events', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/events/user/", params))
+        .get(helperCommon.buildGetParams("/events/user/", params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -444,7 +435,7 @@ describe('route of events', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/events/user/", params))
+        .get(helperCommon.buildGetParams("/events/user/", params))
         .set('Accept', 'application/json')
         .expect(401)
         .expect('Content-Type', /application\/json/)
@@ -463,7 +454,7 @@ describe('route of events', function() {
         'page_size' : 20
       };
       request
-        .get(buildGetParams("/events/user/", params))
+        .get(helperCommon.buildGetParams("/events/user/", params))
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
