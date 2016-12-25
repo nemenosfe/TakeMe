@@ -349,8 +349,7 @@ router
               reject(eventResEventful.error);
             } else {
               eventEventful = eventResEventful;
-              let start = null;
-              let stop = null;
+              let start = null, stop = null;
               if (eventResEventful.start_time != null) { start = "'"+eventResEventful.start_time+"'"; }
               if (eventResEventful.stop_time != null) { stop = "'"+eventResEventful.stop_time+"'"; }
               const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventResEventful.id+"', "+eventResEventful.all_day+", "+start+", "+stop+", 0, "+utilsEventRelated.getTakesToEarnInEvent()+");";
