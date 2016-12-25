@@ -186,7 +186,14 @@ router
         .then((result) => {
           return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
-        .then((result) => { // Fa la request a Eventful de l'esdeveniment per saber la categoria
+        .then((result) => { // Select del nivell que té
+          const sql = `SELECT level, experience, takes FROM users WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
+          return mysqlConnection.query(sql);
+        })
+        .then((result) => { // Guarda les dades a partir del SELECT anterior + Fa la request a Eventful de l'esdeveniment per saber la categoria
+          total_takes = result[0].takes;
+          total_experience = result[0].experience;
+          level = utilsUserRelated.getNewLevel(result[0].level, result[0].experience);
           const paramsForEventful = `id=${req.params.id}`;
           return utilsEventRelated.doRequest(paramsForEventful, "get");
         })
@@ -208,15 +215,8 @@ router
           const sql = `SELECT takes FROM events WHERE id = '${req.params.id}';`;
           return mysqlConnection.query(sql);
         })
-        .then((result) => { // Select del nivell que té
+        .then((result) => { // Guarda els takes de l'esdeveniment en una variable + Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           new_takes_event = result[0].takes;
-          const sql = `SELECT level, experience, takes FROM users WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
-          return mysqlConnection.query(sql);
-        })
-        .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
-          total_takes = result[0].takes;
-          total_experience = result[0].experience;
-          level = utilsUserRelated.getNewLevel(result[0].level, result[0].experience);
           const sql = `SELECT number_attendances FROM userscategories WHERE users_uid='${req.body.uid}' AND users_provider='${req.body.provider}' AND category_id='${category_id}';`;
           return mysqlConnection.query(sql);
         })
