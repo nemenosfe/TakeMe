@@ -88,7 +88,7 @@ module.exports = {
     if (params_query.date) { params = params + "&date=" + params_query.date; }
     return params;
   },
-  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, checkin_done = false, start = null, stop = null, all_day = null) {
+  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, start, stop, all_day, checkin_done = false) {
     return new Promise((resolve, reject) => {
       const sqlEventInDB = `SELECT takes FROM events WHERE id='${event_id}';`;
       let takes = -1;
@@ -112,7 +112,10 @@ module.exports = {
       .then((result) => {
         // Si no tenim l'esdeveniment a la nostra BD, el guardem
         if (toBeSaved) {
-          const sqlInsertEventInDB = `INSERT INTO events values ('${event_id}', ${all_day}, ${start}, ${stop}, 0, ${takes});`;
+          const sqlInsertEventInDB = `INSERT INTO events values ('${event_id}', ${all_day},
+                                   ${start ? "'" + start + "'" : null},
+                                   ${stop ? "'" + stop + "'" : null},
+                                   0, ${takes});`;
           return mysqlConnection.query(sqlInsertEventInDB);
         }
         else {

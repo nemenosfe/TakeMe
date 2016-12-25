@@ -149,7 +149,7 @@ router
           return utilsEventRelated.doRequest(params, "get");
         })
         .then((result) => {
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, false, result.start_time, result.stop_time, result.all_day);
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, result.start_time, result.stop_time, result.all_day, false);
         })
         .then((attendanceResponse) => { // Fa el Response bo :)
           res
@@ -205,7 +205,7 @@ router
           return mysqlConnection.query('START TRANSACTION');
         })
         .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment)
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true, start_time, stop_time, all_day);
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, start_time, stop_time, all_day, true);
         })
         .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
           const sql = `UPDATE attendances SET checkin_done=true WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;
@@ -244,12 +244,11 @@ router
             } else { resolve(1); }
           });
         })
-        .then((result) => { // Guanya els takes de l'esdeveniment (i del logro si l'ha guanyat, si no aquest atribut val 0)
-          const sql = `UPDATE users SET takes=takes+${new_takes_event+new_takes_achievement} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
-          return mysqlConnection.query(sql);
-        })
-        .then((result) => { // Guanya l'experiencia de l'esdeveniment (i del logro si l'ha guanyat)
-          const sql = `UPDATE users SET experience=experience+${new_takes_event+new_takes_achievement} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
+        .then((result) => { // Guanya els takes i l'experiencia de l'esdeveniment (i del logro si l'ha guanyat, si no aquest atribut val 0)
+          const sql = `UPDATE users
+                      SET takes=takes+${new_takes_event+new_takes_achievement},
+                          experience=experience+${new_takes_event+new_takes_achievement}
+                      WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Potser puja de nivell
