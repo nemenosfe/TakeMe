@@ -166,22 +166,22 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { utilsErrors.handleNoParams(res); }
     else {
       const attendanceRequest = req.body;
-      let level = -1;
-      let total_experience = 0;
-      let new_takes_event = 0;
-      let new_takes_achievement = 0;
-      let total_takes = -1;
+      let level = -1,
+          total_experience = 0,
+          new_takes_event = 0,
+          new_takes_achievement = 0,
+          total_takes = -1,
 
-      let number_attendances_category;
-      let category_id;
-      let earned_achievement = null;
+          number_attendances_category,
+          category_id,
+          earned_achievement = null;
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
           return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then((result) => { // Fa la request a Eventful de l'esdeveniment per saber la categoria
-          const paramsForEventful = "id=" + req.params.id;
+          const paramsForEventful = `id=${req.params.id}`;
           return utilsEventRelated.doRequest(paramsForEventful, "get");
         })
         .then((result) => { // Guarda la categoria de l'esdeveniment + Comença la transacció a la BD
@@ -192,41 +192,41 @@ router
           return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, true);
         })
         .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
-          const sql = "UPDATE attendances SET checkin_done=true WHERE events_id='"+req.params.id+"' AND users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"';";
+          const sql = `UPDATE attendances SET checkin_done=true WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Select takes de l'esdeveniment
-          const sql = "SELECT takes FROM events WHERE id = '"+req.params.id+"';";
+          const sql = `SELECT takes FROM events WHERE id = '${req.params.id}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Select del nivell que té
           new_takes_event = result[0].takes;
-          const sql = "SELECT level, experience, takes FROM users WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          const sql = `SELECT level, experience, takes FROM users WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           total_takes = result[0].takes;
           total_experience = result[0].experience;
           level = utilsUserRelated.getNewLevel(result[0].level, result[0].experience);
-          const sql = "SELECT number_attendances FROM userscategories WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"';";
+          const sql = `SELECT number_attendances FROM userscategories WHERE users_uid='${req.body.uid}' AND users_provider='${req.body.provider}' AND category_id='${category_id}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => {
           number_attendances_category = utilsEventRelated.getNumberOfPreviousAttendancesOfCategoryByDBResult(result);
-          const sql = "SELECT * FROM achievements "
-                    + "WHERE category_id='" + category_id + "' "
-                    + "AND number_required_attendances = ("
-                    +   "SELECT MIN(number_required_attendances) FROM achievements "
-                    +   "WHERE category_id='" + category_id + "' "
-                    +   "AND number_required_attendances > " + number_attendances_category
-                    + ");";
+          const sql = `SELECT * FROM achievements
+                       WHERE category_id='${category_id}'
+                       AND number_required_attendances = (
+                        SELECT MIN(number_required_attendances) FROM achievements
+                        WHERE category_id='${category_id}'
+                        AND number_required_attendances > ${number_attendances_category}
+                       );`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Es guarda el nou logro com a guanyat a la BD si n'ha guanyat un nou.
           return new Promise(function(resolve, reject) {
             const next_achievement_info = result[0];
             if ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances) { // Ha de guanyar un nou 'logro'
-              const sqlInsertacquisitionInDB = "INSERT IGNORE INTO acquisitions values ('"+req.body.uid+"', '"+req.body.provider+"', '"+next_achievement_info.id+"');";
+              const sqlInsertacquisitionInDB = `INSERT IGNORE INTO acquisitions values ('${req.body.uid}', '${req.body.provider}', '${next_achievement_info.id}');`;
               earned_achievement = next_achievement_info;
               new_takes_achievement = earned_achievement.takes;
               total_experience += new_takes_achievement;
@@ -236,25 +236,25 @@ router
           });
         })
         .then((result) => { // Guanya els takes de l'esdeveniment (i del logro si l'ha guanyat, si no aquest atribut val 0)
-          const sql = "UPDATE users SET takes=takes+"+(new_takes_event+new_takes_achievement)+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          const sql = `UPDATE users SET takes=takes+${new_takes_event+new_takes_achievement} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Guanya l'experiencia de l'esdeveniment (i del logro si l'ha guanyat)
-          const sql = "UPDATE users SET experience=experience+"+(new_takes_event+new_takes_achievement)+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+          const sql = `UPDATE users SET experience=experience+${new_takes_event+new_takes_achievement} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Potser puja de nivell
           const new_level = utilsUserRelated.getNewLevel(level, total_experience);
           if (new_level > level) {
             level = new_level;
-            const sql = "UPDATE users SET level="+new_level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
+            const sql = `UPDATE users SET level=${new_level} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
             return mysqlConnection.query(sql);
           }
           else { return new Promise(function(resolve, reject) { resolve(1); }); }
         })
         .then((result) => { // Nova assitència d'aquesta categoria a la BD
-          const sql = (number_attendances_category == 0)  ? "INSERT INTO userscategories VALUES('"+req.body.uid+"', '"+req.body.provider+"', '"+category_id+"', 1)"
-                                                          : "UPDATE userscategories SET number_attendances = number_attendances + 1 WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"'";
+          const sql = (number_attendances_category == 0)  ? `INSERT INTO userscategories VALUES('${req.body.uid}', '${req.body.provider}', '${category_id}', 1)`
+                                                          : `UPDATE userscategories SET number_attendances = number_attendances + 1 WHERE users_uid='${req.body.uid}' AND users_provider='${req.body.provider}' AND category_id='${category_id}'`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Fa el commit de la transacció
