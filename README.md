@@ -273,7 +273,7 @@ GET d'una llista d'esdeveniments.
 }
 ```  
 
-  - En les dades d'un esdeveniment no ve ni la **categoria** ni el **preu**, però totes dues dades sí venen en el **GET /events/:id** pel GET d'un esdeveniment concret pel seu ID.  
+  - En les dades d'un esdeveniment no ve el **preu**, aquesta informació sí ve en el **GET /events/:id** pel GET d'un esdeveniment concret pel seu ID.   
 
 ### GET /events/:id
 GET d'un esdeveniment en particular pel seu ID.  
@@ -941,3 +941,97 @@ Un exemple de paràmetres de sortida seria el següent:
   ]
 }
 ```  
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+## Recommendations API (Peticions de recomanacions d'esdeveniments per un usuari durant un mes)
+
+Pàrametres d'entrada comunts per totes les peticions:
+	- API key (que sempre és el següent: **7384d85615237469c2f6022a154b7e2c**)
+
+### GET /recommendations/:id
+GET d'una llista d'esdeveniments amb data com a molt a un mes vista recomanats per un usuari segons les seves preferències.  
+Si no té preferències guardades, s'envien els esdeveniments sense importar la categoria ni la localització.   
+
+
+#### Paràmetres d'entrada
+  - l'id de l'usuari al paràmetre és uid-provider, per exemple: **GET /recommendations/123-facebook**  
+  - Els paràmetres d'entrada obligatoris per query són l'**appkey** i el **token** de l'usuari.  
+  - Els paràmetres d'entrada opcionals per query són el **page_size** i el **page_number**, si no s'envien, per defecte són *20* i *1* respectivament.  
+
+#### Paràmetres de sortida
+Igual que a *GET /events*.  
+
+  - Un exemple explicat en el següent JSON (els esdeveniments estan ordenats per data):  
+```javascript
+{  
+   "total_items":"1647", // Total d'esdeveniments que compleixen les condicions del paràmetres d'entrada.
+   "page_number":"1",
+   "page_size":"10", // Quants esdeveniments de total_items realment venen en el següent array
+   "events":{  
+      "event":[ // Array amb la llista dels 10 esdeveniments
+        {
+          // Informació de l'esdeveniment1
+          "id":"E0-001-095182625-3", // ID de l'esdeveniment
+          "title":"Títol de l'esdeveniment 1",
+          "description":"<strong>Descripció de l'esdeveniment en HTML</strong><p>i a més la descripció pot ser mooooooooolt llarga! (si voleu un exemple real el puc possar més endavant)</p>",
+          /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
+          però amb Android es pot mostrar sense que sigui un problema :) */
+          "number_attendances" : 0, // nombre d'usuaris de la nostra aplicació que volen van fer click a "assistiré" d'aquest esdeveniment
+          "takes" : 123, // takes que es guanyen assitint a aquest esdeveniment
+          "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
+          "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
+          "start_time":"2016-09-12 23:00:00",
+          "stop_time":"null", // Tot i que "all_day" valgui 0, aquest paràmetre pot tenir valor "null"
+          "venue_display":"1", // Si val 1, podem mostrar la informació del local sense cap problema, si val 0 vol dir que la informació del local no del tot fiable perquè a vegades en lloc del local només sabem amb total seguretat en quina ciutat serà.
+          "venue_id":"V0-001-009623999-6", // ID del local
+          "venue_name":"Jazzman Jazzclub", // Nom del local
+          "address":"Roger de Flor, 238", // Adreça del local
+          "city":"Barcelona",
+          "country":"Spain",
+          "region":null, // A vegades ve com a null i a vegades com "Cataluna", però si volem cercar per regió hem de cercar per "Catalonia" i ens trobarà els que no tenen valor null aquí.
+          "postal_code":null,
+          "latitude":"41.3833", // És un float amb signe
+          "longitude":"2.18333", // És un float amb signe
+          "images":{ // images a vegades val null però quan té contingut, sempre l'he vist així amb aquests 2 tamanys (però a l'especificació no diu que sigui així sempre, només m'ho he trobat així en tots els exemples que he vist)
+            "medium":{  
+              "width":"128",
+              "height":"128",
+              "url":"http://s1.evcdn.com/store/skin/no_image/categories/128x128/other.jpg"
+            },
+            "thumb":{  
+              "width":"48",
+              "height":"48",
+              "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
+            }
+          },
+          "categories":{ // Sempre he vist que ve 1 i només 1 categoria dins del següent array, i mai ho he vist com a null (però això ho trec dels exemples que he vist, no es que m'ho digui la especificació que he llegit)
+            "category":[  
+              {  
+                "name":"Other &amp; Miscellaneous",
+                "id":"other"
+              }
+            ]
+           },
+           "free": null, // Des d'aquí, sempre serà null
+           "price": null, // Des d'aquí, sempre serà null
+        },
+        {
+          // Informació de l'esdeveniment2
+          // ...
+        },
+        /*
+        Esdeveniments del 3 al 9 ...
+        */
+        {
+          // Informació de l'esdeveniment10
+          // ...
+        }
+      ]
+   }
+}
+```  
+
+  - En les dades d'un esdeveniment no ve el **preu**, aquesta informació sí ve en el **GET /events/:id** pel GET d'un esdeveniment concret pel seu ID.  
