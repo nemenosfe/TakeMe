@@ -285,8 +285,7 @@ router
               eventsEventful = eventsResEventful;
               let responses = [];
               for (let index = eventsResEventful.events.event.length - 1; index >=0; index--) {
-                let start = null;
-                let stop = null;
+                let start = null, stop = null;
                 if (eventsResEventful.events.event[index].start_time != null) { start = "'"+eventsResEventful.events.event[index].start_time+"'"; }
                 if (eventsResEventful.events.event[index].stop_time != null) { stop = "'"+eventsResEventful.events.event[index].stop_time+"'"; }
                 const takes = getTakesToEarnInEvent();
@@ -331,25 +330,23 @@ router
   .get('/user', function(req, res, next) {
     if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
     else {
-      let page_size = "20";
-      let page_number = "1";
-      if (req.query && req.query.page_size) { page_size = req.query.page_size; }
-      if (req.query && req.query.page_number) { page_number = req.query.page_number; }
-      const limit = page_size;
-      const offset = page_size*(page_number-1);
-      let eventsResponse = {
-        "total_items" : 0,
-        "past" : {
-          "events" : []
-        },
-        "present" : {
-          "events" : []
-        },
-        "future" : {
-          "events" : []
-        }
-      };
-      let database_result = null;
+      let page_size = req.query.page_size || "20",
+          page_number = req.query.page_number || "1",
+          eventsResponse = {
+            "total_items" : 0,
+            "past" : {
+              "events" : []
+            },
+            "present" : {
+              "events" : []
+            },
+            "future" : {
+              "events" : []
+            }
+          },
+          database_result = null;
+      const limit = page_size,
+            offset = page_size*(page_number-1);
 
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.query.appkey, mysqlConnection)
