@@ -2,6 +2,8 @@ const utilsCommon = require('../utils/common'),
       rp = require('request-promise'),
       Promise = require("bluebird"),
 
+      utilsUserRelated = require('../utils/userRelated'),
+
       urlEventfulApi = "http://api.eventful.com/json/events/",
       keyEventfulApi = "KxZvhSVN3f38ct54";
 
@@ -104,7 +106,7 @@ module.exports = {
           });
         }
         else {
-          takes = this.getTakesToEarnInEvent();
+          takes = utilsUserRelated.getTakesToEarnInEvent();
           toBeSaved = true;
           const params = "id=" + event_id;
           return this.doRequest(params, "get");
