@@ -12,7 +12,7 @@ describe('Recommendations route', function() {
 
   this.timeout(120000);
 
-  describe('GET /', function() {
+  describe('GET /recommendations', function() {
     const paramsWP = {
         uid: 2,
         provider: 'provider',
