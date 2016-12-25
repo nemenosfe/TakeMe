@@ -1,12 +1,12 @@
 "use strict"
-const express = require('express')
-const router = express.Router()
-const rp = require('request-promise');
-const mysql = require('promise-mysql');
-const Promise = require("bluebird");
-const crypto = require('crypto');
+const express = require('express'),
+      router = express.Router(),
+      rp = require('request-promise'),
+      mysql = require('promise-mysql'),
+      Promise = require("bluebird"),
 
-const utilsErrors = require('../utils/handleErrors');
+      utilsErrors = require('../utils/handleErrors'),
+      utilsSecurity = require('../utils/security');
 
 const urlEventfulApi = "http://api.eventful.com/json/events/";
 const keyEventfulApi = "KxZvhSVN3f38ct54";
@@ -17,43 +17,6 @@ const pool  = mysql.createPool({
   password : '12345678',
   database : 'takemelegends'
 });
-
-function authorize_appkey(appkey, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
-    if (!appkey) { reject(errorJSONresponse); }
-    const sqlGetAppKey = "SELECT appkey FROM appkeys;";
-    mysqlConnection.query(sqlGetAppKey)
-    .then((resultDB) => {
-      const real_hashed_appkey = resultDB[0].appkey;
-      const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
-      (requested_hashed_appkey == real_hashed_appkey) ? resolve(1) : reject(errorJSONresponse);
-    })
-    .catch((err) => {
-      reject(err);
-    })
-  });
-}
-
-function authorize_token(token, uid, provider, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
-    if (!token) { reject(errorJSONresponse); }
-    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
-    mysqlConnection.query(sqlGetToken)
-    .then((resultDB) => {
-      if (!resultDB[0]) { reject(errorJSONresponse); }
-      else {
-        const real_hashed_token = resultDB[0]["token"];
-        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
-        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
-      }
-    })
-    .catch((err) => {
-      reject(err);
-    })
-  });
-}
 
 function doRequest(params, type) {
   const finalURL = urlEventfulApi + type + "/" + "?app_key=" + keyEventfulApi + "&" + params;
@@ -252,13 +215,11 @@ router
     if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        let eventsEventful;
-        let page_size = "10";
-        let page_number = "1";
-        authorize_appkey(req.query.appkey, mysqlConnection)
+        let eventsEventful = null,
+            page_size = req.query.page_size || "10",
+            page_number = req.query.page_number || "1";
+        utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
-          if (req.query.page_size) { page_size = req.query.page_size; }
-          if (req.query.page_number) { page_number = req.query.page_number; }
           let params = buildSearchParams(req.query, page_size, page_number);
           return doRequest(params, "search")
         })
@@ -273,8 +234,8 @@ router
                 let start = null, stop = null;
                 if (eventsResEventful.events.event[index].start_time != null) { start = "'"+eventsResEventful.events.event[index].start_time+"'"; }
                 if (eventsResEventful.events.event[index].stop_time != null) { stop = "'"+eventsResEventful.events.event[index].stop_time+"'"; }
-                const takes = getTakesToEarnInEvent();
-                const sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventsResEventful.events.event[index].id+"', "+eventsResEventful.events.event[index].all_day+", "+start+", "+stop+", 0, "+takes+");";
+                const takes = getTakesToEarnInEvent(),
+                      sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventsResEventful.events.event[index].id+"', "+eventsResEventful.events.event[index].all_day+", "+start+", "+stop+", 0, "+takes+");";
                 responses.push( mysqlConnection.query(sqlInsertEventInDB) );
               }
               resolve(Promise.all(responses));
@@ -302,12 +263,8 @@ router
             .status(200)
             .json(eventsResponse)
         })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); })
       });
     }
   })
@@ -334,9 +291,9 @@ router
             offset = page_size*(page_number-1);
 
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.query.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
         })
         .then((result) => {
           const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances, ev.takes FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.query.uid + " AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
@@ -381,9 +338,9 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then((result) => {
           return createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, false);
@@ -417,9 +374,9 @@ router
       let category_id;
       let earned_achievement = null;
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then((result) => { // Fa la request a Eventful de l'esdeveniment per saber la categoria
           const paramsForEventful = "id=" + req.params.id;
@@ -532,9 +489,9 @@ router
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id) {  utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then(() => {
           const sql = "SELECT checkin_done FROM attendances WHERE events_id = '"+req.params.id+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
@@ -579,7 +536,7 @@ router
     else {
       pool.getConnection().then(function(mysqlConnection) {
         let eventEventful = null;
-        authorize_appkey(req.query.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
           const params = "id=" + req.params.id;
           return doRequest(params, "get");

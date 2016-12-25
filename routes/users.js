@@ -7,7 +7,8 @@ const Promise = require("bluebird");
 const crypto = require('crypto');
 const randomstring = require("randomstring");
 
-const utilsErrors = require('../utils/handleErrors');
+const utilsErrors = require('../utils/handleErrors'),
+      utilsSecurity = require('../utils/security');
 
 var pool = mysql.createPool({
   host: 'localhost',
@@ -15,50 +16,6 @@ var pool = mysql.createPool({
   password: '12345678',
   database: 'takemelegends'
 });
-
-function authorize_appkey(appkey, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {
-      error: {
-        status_code: 401,
-        error_description: "Unauthorized"
-      }
-    };
-    if (!appkey) {
-      reject(errorJSONresponse);
-    }
-    const sqlGetAppKey = "SELECT appkey FROM appkeys;";
-    mysqlConnection.query(sqlGetAppKey)
-      .then((resultDB) => {
-        const real_hashed_appkey = resultDB[0].appkey;
-        const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
-        (requested_hashed_appkey == real_hashed_appkey) ? resolve(1) : reject(errorJSONresponse);
-      })
-      .catch((err) => {
-        reject(err);
-      })
-  });
-}
-
-function authorize_token(token, uid, provider, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
-    if (!token) { reject(errorJSONresponse); }
-    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
-    mysqlConnection.query(sqlGetToken)
-    .then((resultDB) => {
-      if (!resultDB[0]) { reject(errorJSONresponse); }
-      else {
-        const real_hashed_token = resultDB[0]["token"];
-        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
-        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
-      }
-    })
-    .catch((err) => {
-      reject(err);
-    })
-  });
-}
 
 function generateRandomString(numCharacters) {
   numCharacters = numCharacters || 200;
@@ -83,7 +40,7 @@ router
       user.email = req.body.email || null;
 
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
           .then((result) => {
             const sql = "SELECT * FROM users u, tokens t WHERE u.uid = '"+user.uid+"' AND u.provider='"+user.provider+"';";
             return mysqlConnection.query(sql);
@@ -133,7 +90,7 @@ router
 .get('/', function(req, res, next) {
   const appkey = !(!req.query) ? req.query.appkey : null;
   pool.getConnection().then(function(mysqlConnection) {
-    authorize_appkey(appkey, mysqlConnection)
+    utilsSecurity.authorize_appkey(appkey, mysqlConnection)
       .then(() => {
         return mysqlConnection.query("SELECT * FROM users")
       })
@@ -164,7 +121,7 @@ router
       })
   } else {
     pool.getConnection().then(function(mysqlConnection) {
-      authorize_appkey(appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(appkey, mysqlConnection)
         .then(() => {
           const uid = req.params.id.split('-')[0];
           const provider = req.params.id.split('-')[1];
@@ -201,7 +158,7 @@ router
     user.uid = parseInt(req.params.id.split('-')[0]);
     user.provider = req.params.id.split('-')[1];
     pool.getConnection().then(function(mysqlConnection) {
-      authorize_appkey(req.body.appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
           const uid = req.params.id.split('-')[0];
           const provider = req.params.id.split('-')[1];
@@ -238,7 +195,7 @@ router
       })
   } else {
     pool.getConnection().then(function(mysqlConnection) {
-      authorize_appkey(appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(appkey, mysqlConnection)
         .then(() => {
           const deleteQuery = "DELETE FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
           return mysqlConnection.query(deleteQuery)
@@ -266,9 +223,9 @@ router
       const provider = req.params.id.split('-')[1];
       const categories = req.body.categories || null;
       const locations = req.body.locations || null;
-      authorize_appkey(req.body.appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
       .then((result) => {
-        return authorize_token(req.body.token, uid, provider, mysqlConnection);
+        return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
       })
       .then(() => {
         const insertQuery = `INSERT INTO userspreferences VALUES (${uid}, '${provider}', '${categories}', '${locations}');`;
@@ -297,9 +254,9 @@ router
     const uid = req.params.id.split('-')[0];
     const provider = req.params.id.split('-')[1];
     pool.getConnection().then(function(mysqlConnection) {
-      authorize_appkey(appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(appkey, mysqlConnection)
       .then((result) => {
-        return authorize_token(req.query.token, uid, provider, mysqlConnection);
+        return utilsSecurity.authorize_token(req.query.token, uid, provider, mysqlConnection);
       })
       .then(() => {
         const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
@@ -334,9 +291,9 @@ router
     let categories = req.body.categories || null;
     let locations = req.body.locations || null;
     pool.getConnection().then(function(mysqlConnection) {
-      authorize_appkey(req.body.appkey, mysqlConnection)
+      utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
       .then((result) => {
-        return authorize_token(req.body.token, uid, provider, mysqlConnection);
+        return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
       })
       .then(() => {
         let updateQuery = "UPDATE userspreferences SET ";
@@ -377,7 +334,7 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       const uid = req.params.id.split('-')[0];
       const provider = req.params.id.split('-')[1];
-      authorize_token(req.body.token, uid, provider, mysqlConnection)
+      utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection)
       .then((result) => {
         const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
         return mysqlConnection.query(deleteQuery);

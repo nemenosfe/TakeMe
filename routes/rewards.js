@@ -3,9 +3,9 @@ const express = require('express')
 const router = express.Router()
 const mysql = require('promise-mysql');
 const Promise = require("bluebird");
-const crypto = require('crypto');
 
-const utilsErrors = require('../utils/handleErrors');
+const utilsErrors = require('../utils/handleErrors'),
+      utilsSecurity = require('../utils/security');
 
 const pool  = mysql.createPool({
   host     : 'localhost',
@@ -13,44 +13,6 @@ const pool  = mysql.createPool({
   password : '12345678',
   database : 'takemelegends'
 });
-
-function authorize_appkey(appkey, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
-    if (!appkey) { reject(errorJSONresponse); }
-    const sqlGetAppKey = "SELECT appkey FROM appkeys;";
-    mysqlConnection.query(sqlGetAppKey)
-    .then((resultDB) => {
-      const real_hashed_appkey = resultDB[0].appkey;
-      const requested_hashed_appkey = crypto.createHash('md5').update(appkey).digest("hex");
-      (requested_hashed_appkey == real_hashed_appkey) ? resolve(1) : reject(errorJSONresponse);
-    })
-    .catch((err) => {
-      reject(err);
-    })
-  });
-}
-
-function authorize_token(token, uid, provider, mysqlConnection) {
-  return new Promise(function(resolve, reject) {
-    const errorJSONresponse = {error: {status_code: 401, error_description: "Unauthorized"}};
-    if (!token) { reject(errorJSONresponse); }
-    const sqlGetToken = "SELECT token FROM tokens WHERE users_uid = "+uid+" AND users_provider = '"+provider+"';";
-    mysqlConnection.query(sqlGetToken)
-    .then((resultDB) => {
-      if (!resultDB[0]) { reject(errorJSONresponse); }
-      else {
-        const real_hashed_token = resultDB[0]["token"];
-        const requested_hashed_token = crypto.createHash('md5').update(token).digest("hex");
-        (requested_hashed_token == real_hashed_token) ? resolve(1) : reject(errorJSONresponse);
-      }
-    })
-    .catch((err) => {
-      reject(err);
-    })
-  });
-}
-
 
 router
 
@@ -64,7 +26,7 @@ router
       const limit = page_size;
       const offset = page_size*(page_number-1);
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.query.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
           return mysqlConnection.query("SELECT * FROM rewards ORDER BY level ASC, takes ASC, name ASC LIMIT " + limit + " OFFSET " + offset + " ;");
         })
@@ -99,9 +61,9 @@ router
       };
 
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.query.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
         })
         .then((result) => {
           const sql = "SELECT * FROM rewards r, purchases p WHERE r.name = p.rewards_name AND p.users_uid = '"+req.query.uid+"' AND p.users_provider = '"+req.query.provider+"' ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;";
@@ -150,9 +112,9 @@ router
       if (req.body.amount) { amount = req.body.amount; }
 
       pool.getConnection().then(function(mysqlConnection) {
-        authorize_appkey(req.body.appkey, mysqlConnection)
+        utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
-          return authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then(() => {
           const sqlGetRewardData = "SELECT takes, level FROM rewards WHERE name ='"+req.body.reward_name+"';";
