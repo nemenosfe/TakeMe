@@ -166,7 +166,7 @@ router
     }
   })
 
-  .put('/:id/user', function(req, res, next) { // S'HA DE MILLORAR
+  .put('/:id/user', function(req, res, next) {
     if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
