@@ -2,8 +2,6 @@ const utilsCommon = require('../utils/common'),
       rp = require('request-promise'),
       Promise = require("bluebird"),
 
-      utilsUserRelated = require('../utils/userRelated'),
-
       urlEventfulApi = "http://api.eventful.com/json/events/",
       keyEventfulApi = "KxZvhSVN3f38ct54";
 
@@ -91,7 +89,7 @@ module.exports = {
     return params;
   },
   createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, checkin_done = false) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       const sqlEventInDB = "SELECT takes FROM events WHERE id='"+event_id+"';";
       let takes = -1;
       let toBeSaved;
@@ -99,14 +97,14 @@ module.exports = {
       .then((result) => {
         // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
         if (result.length != 0 && result[0].takes) {
-          return new Promise(function (resolve, reject){
+          return new Promise((resolve, reject) => {
             takes = result[0].takes;
             toBeSaved = false;
             resolve(result);
           });
         }
         else {
-          takes = utilsUserRelated.getTakesToEarnInEvent();
+          takes = this.getTakesToEarnInEvent();
           toBeSaved = true;
           const params = "id=" + event_id;
           return this.doRequest(params, "get");
