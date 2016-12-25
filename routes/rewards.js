@@ -5,29 +5,14 @@ const mysql = require('promise-mysql');
 const Promise = require("bluebird");
 const crypto = require('crypto');
 
+const utilsErrors = require('../utils/handleErrors');
+
 const pool  = mysql.createPool({
   host     : 'localhost',
   user     : 'root',
   password : '12345678',
   database : 'takemelegends'
 });
-
-function handleError(err, res) {
-  if (err.error && err.error.status_code) {
-    res
-      .status(err.error.status_code)
-      .json({error: true, message: err.error.error_description})
-  } else {
-    res
-      .status(500)
-      .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-  }
-}
-
-function handleNoParams(res) {
-  const errorJSONresponse = {error: {status_code: 403, error_description: 'Missing params'}}
-  handleError(errorJSONresponse, res);
-}
 
 function authorize_appkey(appkey, mysqlConnection) {
   return new Promise(function(resolve, reject) {
@@ -70,7 +55,7 @@ function authorize_token(token, uid, provider, mysqlConnection) {
 router
 
   .get('/', function(req, res, next) {
-    if(!req.query) { handleNoParams(res); }
+    if(!req.query) { utilsErrors.handleNoParams(res); }
     else {
       let page_size = "20";
       let page_number = "1";
@@ -89,7 +74,7 @@ router
             .json({rewards: result})
         })
         .catch((err) => {
-          handleError(err, res, "GET");
+          utilsErrors.handleError(err, res, "GET");
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -99,7 +84,7 @@ router
   })
 
   .get('/user', function(req, res, next) {
-    if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
+    if(!req.query || !req.query.uid || !req.query.provider) { utilsErrors.handleNoParams(res); }
     else {
       let page_size = "20";
       let page_number = "1";
@@ -145,7 +130,7 @@ router
             .json(rewardsResponse)
         })
         .catch((err) => {
-          handleError(err, res, "GET/user");
+          utilsErrors.handleError(err, res, "GET/user");
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -155,7 +140,7 @@ router
   })
 
   .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.reward_name) { handleNoParams(); }
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.reward_name) { utilsErrors.handleNoParams(); }
     else {
       const purchaseRequest = req.body;
       let infoReward = {};
@@ -232,7 +217,7 @@ router
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
-          handleError(err, res, "GET/user");
+          utilsErrors.handleError(err, res, "GET/user");
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);

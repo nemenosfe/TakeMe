@@ -6,6 +6,8 @@ const rp = require('request-promise');
 const Promise = require("bluebird");
 const crypto = require('crypto');
 
+const utilsErrors = require('../utils/handleErrors');
+
 const urlEventfulApi = "http://api.eventful.com/json/events/";
 const keyEventfulApi = "KxZvhSVN3f38ct54";
 
@@ -15,34 +17,6 @@ var pool = mysql.createPool({
   password: '12345678',
   database: 'takemelegends'
 });
-
-function handleError(err, res) {
-  if (err.error && err.error.status_code) {
-    res
-      .status(err.error.status_code)
-      .json({
-        error: true,
-        message: err.error.error_description
-      })
-  } else {
-    res
-      .status(500)
-      .json({
-        error: true,
-        message: 'Error: ' + JSON.stringify(err)
-      })
-  }
-}
-
-function handleNoParams(res) {
-  const errorJSONresponse = {
-    error: {
-      status_code: 403,
-      error_description: 'Missing params'
-    }
-  }
-  handleError(errorJSONresponse, res);
-}
 
 function authorize_appkey(appkey, mysqlConnection) {
   return new Promise(function(resolve, reject) {
@@ -175,7 +149,7 @@ function prepareFinalResponseOfAllEventsJSON(eventsEventful, resultDB) {
 
 router
 .get('/:id', function(req, res, next) {
-  if(!req.query || !req.params || !req.params.id) { handleNoParams(res); }
+  if(!req.query || !req.params || !req.params.id) { utilsErrors.handleNoParams(res); }
   else {
     pool.getConnection().then(function(mysqlConnection) {
       const uid = req.params.id.split('-')[0],
@@ -251,7 +225,7 @@ router
       })
       .catch((err) => {
         console.log("ERROR: " + JSON.stringify(err));
-        handleError(err, res);
+        utilsErrors.handleError(err, res);
       })
       .finally(() => {
         pool.releaseConnection(mysqlConnection);

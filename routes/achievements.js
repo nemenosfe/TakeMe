@@ -5,24 +5,14 @@ const mysql = require('promise-mysql');
 const Promise = require("bluebird");
 const crypto = require('crypto');
 
+const utilsErrors = require('../utils/handleErrors');
+
 const pool  = mysql.createPool({
   host     : 'localhost',
   user     : 'root',
   password : '12345678',
   database : 'takemelegends'
 });
-
-function handleError(err, res, requestVerb) {
-  res
-    .status(500)
-    .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-}
-
-function handleNoParams(res) {
-  res
-    .status(403)
-    .json({error: true, message: 'Missing params'})
-}
 
 function authorize_appkey(appkey, mysqlConnection) {
   return new Promise(function(resolve, reject) {
@@ -82,7 +72,7 @@ router
           .json({achievements: result})
       })
       .catch((err) => {
-        handleError(err, res, "GET");
+        utilsErrors.handleError(err, res, "GET");
       })
       .finally(() => {
         pool.releaseConnection(mysqlConnection);
@@ -91,7 +81,7 @@ router
   })
 
   .get('/user', function(req, res, next) {
-    if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
+    if(!req.query || !req.query.uid || !req.query.provider) { utilsErrors.handleNoParams(res); }
     else {
       let page_size = "20";
       let page_number = "1";
@@ -129,7 +119,7 @@ router
             .json(achievementsResponse)
         })
         .catch((err) => {
-          handleError(err, res, "GET/user");
+          utilsErrors.handleError(err, res, "GET/user");
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);

@@ -6,6 +6,8 @@ const mysql = require('promise-mysql');
 const Promise = require("bluebird");
 const crypto = require('crypto');
 
+const utilsErrors = require('../utils/handleErrors');
+
 const urlEventfulApi = "http://api.eventful.com/json/events/";
 const keyEventfulApi = "KxZvhSVN3f38ct54";
 
@@ -15,23 +17,6 @@ const pool  = mysql.createPool({
   password : '12345678',
   database : 'takemelegends'
 });
-
-function handleError(err, res) {
-  if (err.error && err.error.status_code) {
-    res
-      .status(err.error.status_code)
-      .json({error: true, message: err.error.error_description})
-  } else {
-    res
-      .status(500)
-      .json({error: true, message: 'Error: ' +  JSON.stringify(err)})
-  }
-}
-
-function handleNoParams(res) {
-  const errorJSONresponse = {error: {status_code: 403, error_description: 'Missing params'}}
-  handleError(errorJSONresponse, res);
-}
 
 function authorize_appkey(appkey, mysqlConnection) {
   return new Promise(function(resolve, reject) {
@@ -264,7 +249,7 @@ function createAndSaveAttendanceWithNeededData(mysqlConnection, event_id, uid, p
 router
 
   .get('/', function(req, res, next) {
-    if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { handleNoParams(res); }
+    if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         let eventsEventful;
@@ -318,7 +303,7 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          handleError(err, res);
+          utilsErrors.handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -328,7 +313,7 @@ router
   })
 
   .get('/user', function(req, res, next) {
-    if(!req.query || !req.query.uid || !req.query.provider) { handleNoParams(res); }
+    if(!req.query || !req.query.uid || !req.query.provider) { utilsErrors.handleNoParams(res); }
     else {
       let page_size = req.query.page_size || "20",
           page_number = req.query.page_number || "1",
@@ -383,7 +368,7 @@ router
             .json(eventsResponse)
         })
         .catch((err) => {
-          handleError(err, res);
+          utilsErrors.handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -393,7 +378,7 @@ router
   })
 
   .post('/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { handleNoParams(res); }
+    if(!req.body || !req.body.uid || !req.body.provider || !req.body.event_id) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
@@ -409,7 +394,7 @@ router
             .json({ attendance: attendanceResponse });
         })
         .catch((err) => {
-          handleError(err, res);
+          utilsErrors.handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -419,7 +404,7 @@ router
   })
 
   .put('/:id/user', function(req, res, next) { // S'HA DE MILLORAR
-    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { handleNoParams(res); }
+    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { utilsErrors.handleNoParams(res); }
     else {
       const attendanceRequest = req.body;
       let level = -1;
@@ -534,7 +519,7 @@ router
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
-          handleError(err, res);
+          utilsErrors.handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
@@ -544,7 +529,7 @@ router
   })
 
   .delete('/:id/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id) {  handleNoParams(res); }
+    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id) {  utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         authorize_appkey(req.body.appkey, mysqlConnection)
@@ -579,7 +564,7 @@ router
               .status(403)
               .json({'error' : err})
           } else {
-            handleError(err, res);
+            utilsErrors.handleError(err, res);
           }
         })
         .finally(() => {
@@ -590,7 +575,7 @@ router
   })
 
   .get('/:id', function(req, res, next) {
-    if(!req.query || !req.params.id) { handleNoParams(res); }
+    if(!req.query || !req.params.id) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         let eventEventful = null;
@@ -630,7 +615,7 @@ router
 
         })
         .catch((err) => {
-          handleError(err, res);
+          utilsErrors.handleError(err, res);
         })
         .finally(() => {
           pool.releaseConnection(mysqlConnection);
