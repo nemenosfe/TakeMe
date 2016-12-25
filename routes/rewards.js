@@ -1,18 +1,13 @@
 "use strict"
-const express = require('express')
-const router = express.Router()
-const mysql = require('promise-mysql');
-const Promise = require("bluebird");
+const express = require('express'),
+      router = express.Router(),
+      Promise = require("bluebird"),
 
-const utilsErrors = require('../utils/handleErrors'),
-      utilsSecurity = require('../utils/security');
+      utilsErrors = require('../utils/handleErrors'),
+      utilsSecurity = require('../utils/security'),
+      utilsDatabaseRelated = require('../utils/databaseRelated'),
 
-const pool  = mysql.createPool({
-  host     : 'localhost',
-  user     : 'root',
-  password : '12345678',
-  database : 'takemelegends'
-});
+      pool  = utilsDatabaseRelated.getPool();
 
 router
 

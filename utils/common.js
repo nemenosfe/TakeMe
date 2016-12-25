@@ -1,4 +1,5 @@
-const randomstring = require("randomstring");
+const randomstring = require("randomstring"),
+      crypto = require('crypto');
 
 module.exports = {
   generateRandomString: function(numCharacters = 200) {
@@ -12,6 +13,9 @@ module.exports = {
             addZero(currentdate.getHours()) + ":"   +
             addZero(currentdate.getMinutes()) + ":" +
             addZero(currentdate.getSeconds());
+  },
+  getEncryptedInMd5:  function(stringToBeEncrypted) {
+    return crypto.createHash('md5').update(stringToBeEncrypted).digest("hex");
   }
 };
 

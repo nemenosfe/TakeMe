@@ -73,14 +73,6 @@ module.exports = {
     }
     return myEventsResponse;
   },
-  getNewLevel: function (level, experience) {
-    const log10level = Math.log10(level);
-    if ( log10level == 0 ) return level;
-    else {
-      const new_level = experience / log10level;
-      return (new_level > level) ? new_level : level;
-    }
-  },
   buildSearchParams: function (params_query, page_size, page_number) {
     let params = `sort_order=date&page_size=${page_size}&page_number=${page_number}&include=categories`;
     if (params_query.location) {

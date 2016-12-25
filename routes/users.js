@@ -1,24 +1,17 @@
 "use strict"
-const express = require('express')
-const router = express.Router()
-const mysql = require('promise-mysql');
-const rp = require('request-promise');
-const Promise = require("bluebird");
-const crypto = require('crypto');
+const express = require('express'),
+      router = express.Router(),
+      Promise = require("bluebird"),
 
-
-const utilsErrors = require('../utils/handleErrors'),
+      utilsErrors = require('../utils/handleErrors'),
       utilsSecurity = require('../utils/security'),
-      utilsCommon = require('../utils/common');
+      utilsCommon = require('../utils/common'),
+      utilsDatabaseRelated = require('../utils/databaseRelated'),
+      utilsUserRelated = require('../utils/userRelated'),
 
-var pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '12345678',
-  database: 'takemelegends'
-});
+      pool  = utilsDatabaseRelated.getPool();
 
-function getNextLevelExperience(nextLevel) { return nextLevel * Math.log10(nextLevel); }
+
 
 router
   .post('/', function(req, res, next) {
@@ -51,13 +44,11 @@ router
           })
           .then((result) => {
             user.token = utilsCommon.generateRandomString(); // Tant si ja existia l'usuari com si no, creem un nou token de sessió
-            const encryptedToken = crypto.createHash('md5').update(user.token).digest("hex");
-
-            const sql =
-              (user.new_user)
-              ? "INSERT INTO tokens values ('"+encryptedToken+"', "+user.uid+", '"+user.provider+"');"
-              : "UPDATE tokens SET token = '" + encryptedToken + "' WHERE users_uid = '" + user.uid + "' AND users_provider = '" + user.provider + "';";
-
+            const encryptedToken = utilsCommon.getEncryptedInMd5(user.token),
+                  sql =
+                    (user.new_user)
+                    ? "INSERT INTO tokens values ('"+encryptedToken+"', "+user.uid+", '"+user.provider+"');"
+                    : "UPDATE tokens SET token = '" + encryptedToken + "' WHERE users_uid = '" + user.uid + "' AND users_provider = '" + user.provider + "';";
             return mysqlConnection.query(sql);
           })
           .then((result) => {
@@ -126,7 +117,7 @@ router
         })
         .then((result) => {
           const response = {user: result[0]};
-          response.user.experience_of_next_level = getNextLevelExperience(result[0].level + 1);
+          response.user.experience_of_next_level = utilsUserRelated.getNextLevelExperience(result[0].level + 1);
           res
             .status(200)
             .json(response)

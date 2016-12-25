@@ -1,21 +1,17 @@
 "use strict"
-const express = require('express')
-const router = express.Router()
-const mysql = require('promise-mysql');
-const Promise = require("bluebird");
+const express = require('express'),
+      router = express.Router(),
+      Promise = require("bluebird"),
 
-const utilsErrors = require('../utils/handleErrors'),
+      utilsErrors = require('../utils/handleErrors'),
       utilsSecurity = require('../utils/security'),
-      utilsEventRelated = require('../utils/eventRelated');
+      utilsEventRelated = require('../utils/eventRelated'),
+      utilsDatabaseRelated = require('../utils/databaseRelated'),
 
-var pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '12345678',
-  database: 'takemelegends'
-});
+      pool  = utilsDatabaseRelated.getPool();
 
 router
+
 .get('/:id', function(req, res, next) {
   if(!req.query || !req.params || !req.params.id) { utilsErrors.handleNoParams(res); }
   else {

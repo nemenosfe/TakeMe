@@ -1,19 +1,15 @@
 "use strict"
 const express = require('express'),
       router = express.Router(),
-      mysql = require('promise-mysql'),
       Promise = require("bluebird"),
 
       utilsErrors = require('../utils/handleErrors'),
       utilsSecurity = require('../utils/security'),
-      utilsEventRelated = require('../utils/eventRelated');
+      utilsEventRelated = require('../utils/eventRelated'),
+      utilsDatabaseRelated = require('../utils/databaseRelated'),
+      utilsUserRelated = require('../utils/userRelated'),
 
-const pool  = mysql.createPool({
-  host     : 'localhost',
-  user     : 'root',
-  password : '12345678',
-  database : 'takemelegends'
-});
+      pool  = utilsDatabaseRelated.getPool();
 
 router
 
@@ -211,7 +207,7 @@ router
         .then((result) => { // Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           total_takes = result[0].takes;
           total_experience = result[0].experience;
-          level = utilsEventRelated.getNewLevel(result[0].level, result[0].experience);
+          level = utilsUserRelated.getNewLevel(result[0].level, result[0].experience);
           const sql = "SELECT number_attendances FROM userscategories WHERE users_uid='"+req.body.uid+"' AND users_provider='"+req.body.provider+"' AND category_id='"+category_id+"';";
           return mysqlConnection.query(sql);
         })
@@ -248,7 +244,7 @@ router
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Potser puja de nivell
-          const new_level = utilsEventRelated.getNewLevel(level, total_experience);
+          const new_level = utilsUserRelated.getNewLevel(level, total_experience);
           if (new_level > level) {
             level = new_level;
             const sql = "UPDATE users SET level="+new_level+" WHERE uid='"+req.body.uid+"' AND provider='"+req.body.provider+"';";
