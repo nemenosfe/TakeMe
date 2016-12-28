@@ -76,16 +76,12 @@ module.exports = {
   buildSearchParams: function (params_query, page_size, page_number, sort_order = 'date') {
     let params = `sort_order=${sort_order}&page_size=${page_size}&page_number=${page_number}&include=categories`;
     if (params_query.location) {
-      params = params + "&location=" + params_query.location;
-      let within = 350;
-      if (params_query.within) {
-        within = params_query.within;
-      }
-      params = params + "&units=km&within=" + within;
+      const within = params_query.within || 350;
+      params += `&location=${params_query.location}&units=km&within=${within}`;
     }
-    if (params_query.keywords) { params = params + "&keywords=" + params_query.keywords; }
-    if (params_query.category) { params = params + "&category=" + params_query.category; }
-    if (params_query.date) { params = params + "&date=" + params_query.date; }
+    if (params_query.keywords) { params += `&keywords=${params_query.keywords}`; }
+    if (params_query.category) { params += `&category=${params_query.category}`; }
+    if (params_query.date) { params += `&date=${params_query.date}`; }
     return params;
   },
   createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, start, stop, all_day, checkin_done = false) {
@@ -138,9 +134,9 @@ module.exports = {
       })
     });
   },
-  getRangDates: function (firstDate = new Date()) {
+  getRangDates: function (firstDate = new Date(), months = 1) {
     const lastDate = new Date(firstDate.toString());
-    lastDate.setMonth(lastDate.getMonth() + 1);
+    lastDate.setMonth(lastDate.getMonth() + months);
     return `${firstDate.getFullYear()}${firstDate.getMonth() + 1}${firstDate.getDate()}00`
            + "-"
            + `${lastDate.getFullYear()}${lastDate.getMonth() + 1}${lastDate.getDate()}00`;

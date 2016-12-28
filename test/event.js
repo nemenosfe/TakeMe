@@ -2,10 +2,10 @@
 let request = require('supertest-as-promised');
 const api = require('../app'),
       utilsDatabaseRelated = require('../utils/databaseRelated'),
+      utilsEventRelated = require('../utils/eventRelated'),
       helperCommon = require('./helpers/common'),
       pool = utilsDatabaseRelated.getPool();
 request = request(api);
-
 
 let aux_id = "E0-001-095173443-9";
 
@@ -278,6 +278,35 @@ describe('route of events', function() {
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
+
+        done();
+      }, done)
+    });
+    it('should return future dates for "Future" in "Barcelona"', function(done) {
+      const params = {
+        'appkey' : helperCommon.appkey,
+        'date' : 'Future',
+        'page_size' : '50',
+        'location' : 'Barcelona'
+      };
+      request
+        .get(helperCommon.buildGetParams("/events/", params))
+        .set('Accept', 'application/json')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+      .then((res) => {
+
+        expect(res.body).not.to.have.property('first_item');
+        expect(res.body).to.have.property('events');
+        const events = res.body.events;
+
+        expect(events).to.be.an('array')
+          .and.to.have.length.of(params.page_size)
+
+        for (let i = events.length - 1; i >= 0; --i) {
+          const event = events[i].event;
+          expect(helperCommon.getMomentInTime(new Date(event.start_time))).to.eql(1); // 1 = Future, 0 = Present, -1 = Past
+        }
 
         done();
       }, done)
