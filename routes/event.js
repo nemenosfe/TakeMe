@@ -17,13 +17,14 @@ router
     if( !req.query || (!req.query.location && !req.query.keywords && !req.query.category && !req.query.date) ) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
-        let eventsEventful = null,
-            page_size = req.query.page_size || "10",
-            page_number = req.query.page_number || "1";
+        let eventsEventful = null;
+        const page_size = req.query.page_size || "10",
+              page_number = req.query.page_number || "1",
+              sort_order = req.query.sort_order || "relevance";
         utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
-          let params = utilsEventRelated.buildSearchParams(req.query, page_size, page_number);
-          return utilsEventRelated.doRequest(params, "search")
+          const params = utilsEventRelated.buildSearchParams(req.query, page_size, page_number, sort_order);
+          return utilsEventRelated.doRequest(params, "search");
         })
         .then((eventsResEventful) => {
           return new Promise(function(resolve, reject) {
@@ -34,10 +35,10 @@ router
               let responses = [];
               for (let index = eventsResEventful.events.event.length - 1; index >=0; index--) {
                 let start = null, stop = null;
-                if (eventsResEventful.events.event[index].start_time != null) { start = "'"+eventsResEventful.events.event[index].start_time+"'"; }
-                if (eventsResEventful.events.event[index].stop_time != null) { stop = "'"+eventsResEventful.events.event[index].stop_time+"'"; }
+                if (eventsResEventful.events.event[index].start_time != null) { start = `'${eventsResEventful.events.event[index].start_time}'`; }
+                if (eventsResEventful.events.event[index].stop_time != null) { stop = `'${eventsResEventful.events.event[index].stop_time}'`; }
                 const takes = utilsEventRelated.getTakesToEarnInEvent(),
-                      sqlInsertEventInDB = "INSERT IGNORE INTO events values ('"+eventsResEventful.events.event[index].id+"', "+eventsResEventful.events.event[index].all_day+", "+start+", "+stop+", 0, "+takes+");";
+                      sqlInsertEventInDB = `INSERT IGNORE INTO events values ('${eventsResEventful.events.event[index].id}', ${eventsResEventful.events.event[index].all_day}, ${start}, ${stop}, 0, ${takes})`;
                 responses.push( mysqlConnection.query(sqlInsertEventInDB) );
               }
               resolve(Promise.all(responses));

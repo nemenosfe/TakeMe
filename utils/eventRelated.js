@@ -73,8 +73,8 @@ module.exports = {
     }
     return myEventsResponse;
   },
-  buildSearchParams: function (params_query, page_size, page_number) {
-    let params = `sort_order=date&page_size=${page_size}&page_number=${page_number}&include=categories`;
+  buildSearchParams: function (params_query, page_size, page_number, sort_order = 'date') {
+    let params = `sort_order=${sort_order}&page_size=${page_size}&page_number=${page_number}&include=categories`;
     if (params_query.location) {
       params = params + "&location=" + params_query.location;
       let within = 350;
@@ -138,11 +138,10 @@ module.exports = {
       })
     });
   },
-  getRangDates: function () {
-    const today = new Date(),
-          lastDate = new Date();
+  getRangDates: function (firstDate = new Date()) {
+    const lastDate = new Date(firstDate.toString());
     lastDate.setMonth(lastDate.getMonth() + 1);
-    return `${today.getFullYear()}${today.getMonth() + 1}${today.getDate()}00`
+    return `${firstDate.getFullYear()}${firstDate.getMonth() + 1}${firstDate.getDate()}00`
            + "-"
            + `${lastDate.getFullYear()}${lastDate.getMonth() + 1}${lastDate.getDate()}00`;
   }
