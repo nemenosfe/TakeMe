@@ -15,18 +15,16 @@ const express = require('express'),
 
 router
   .post('/', function(req, res, next) {
-    if (!req.body) {
-      res
-        .status(403)
-        .json({
-          error: true,
-          message: 'Empty body'
-        })
-    } else {
-      let user = {uid: req.body.uid, provider: req.body.provider};
-      user.name = req.body.name || null;
-      user.surname = req.body.surname || null;
-      user.email = req.body.email || null;
+    if (!req.body || !req.body.uid || !req.body.provider) { utilsErrors.handleNoParams(res); }
+    else {
+      let user = {
+        uid: req.body.uid,
+        provider: req.body.provider,
+        name: req.body.name || null,
+        takes: 0,
+        experience: 0,
+        level: 1
+      }
 
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
@@ -39,7 +37,7 @@ router
             return mysqlConnection.query('START TRANSACTION');
           })
           .then((result) => {
-            const sqlInsertUserInDB = "INSERT IGNORE INTO users values (" + user.uid + ", '" + user.provider + "', '" + user.name + "', '" + user.surname + "', '" + user.email + "', 0, 0, 1);";
+            const sqlInsertUserInDB = `INSERT IGNORE INTO users values (${user.uid}, '${user.provider}', '${user.name}', 0, 0, 1);`;
             return mysqlConnection.query(sqlInsertUserInDB);
           })
           .then((result) => {
@@ -47,29 +45,22 @@ router
             const encryptedToken = utilsCommon.getEncryptedInMd5(user.token),
                   sql =
                     (user.new_user)
-                    ? "INSERT INTO tokens values ('"+encryptedToken+"', "+user.uid+", '"+user.provider+"');"
-                    : "UPDATE tokens SET token = '" + encryptedToken + "' WHERE users_uid = '" + user.uid + "' AND users_provider = '" + user.provider + "';";
+                    ? `INSERT INTO tokens values ('${encryptedToken}', ${user.uid}, '${user.provider}');`
+                    : `UPDATE tokens SET token = '${encryptedToken}' WHERE users_uid = ${user.uid} AND users_provider = '${user.provider}';`;
             return mysqlConnection.query(sql);
           })
           .then((result) => {
             return mysqlConnection.query('COMMIT');
           })
           .then((result) => {
-            user.takes = 0;
-            user.experience = 0;
-            user.level = 1;
             res
               .status(201)
               .json({
                 user: user
               })
           })
-          .catch((err) => {
-            utilsErrors.handleError(err, res);
-          })
-          .finally(() => {
-            pool.releaseConnection(mysqlConnection);
-          })
+          .catch((err) => { utilsErrors.handleError(err, res); })
+          .finally(() => { pool.releaseConnection(mysqlConnection); })
       });
     }
   })
@@ -99,20 +90,14 @@ router
 
 .get('/:id', function(req, res, next) {
   const appkey = !(!req.query) ? req.query.appkey : null;
-  if (!req.params.id) {
-    res
-      .status(403)
-      .json({
-        error: true,
-        message: 'Empty parameters'
-      })
-  } else {
+  if (!req.params.id) { utilsErrors.handleNoParams(res); }
+  else {
     pool.getConnection().then(function(mysqlConnection) {
       utilsSecurity.authorize_appkey(appkey, mysqlConnection)
         .then(() => {
-          const uid = req.params.id.split('-')[0];
-          const provider = req.params.id.split('-')[1];
-          const singleUserQuery = `SELECT * FROM users WHERE uid = ${uid} AND provider = '${provider}';`;
+          const uid = req.params.id.split('-')[0],
+                provider = req.params.id.split('-')[1],
+                singleUserQuery = `SELECT * FROM users WHERE uid = ${uid} AND provider = '${provider}';`;
           return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
@@ -122,82 +107,55 @@ router
             .status(200)
             .json(response)
         })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
   }
 })
 
 .put('/:id', function(req, res, next) {
-  if (!req.params.id || !req.body) {
-    res
-      .status(403)
-      .json({
-        error: true,
-        message: 'Empty params'
-      })
-  } else {
-    const user = req.body;
-    user.uid = parseInt(req.params.id.split('-')[0]);
-    user.provider = req.params.id.split('-')[1];
+  if (!req.params.id || !req.body || !req.body.name) { utilsErrors.handleNoParams(res); }
+  else {
+    const user = {
+      uid: parseInt(req.params.id.split('-')[0]),
+      provider: req.params.id.split('-')[1],
+      name: req.body.name
+    }
     pool.getConnection().then(function(mysqlConnection) {
       utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then(() => {
-          const uid = req.params.id.split('-')[0];
-          const provider = req.params.id.split('-')[1];
-          const updateQuery = "UPDATE users SET name='" + user.name + "', surname='" + user.surname + "', email='" + user.email + "' WHERE uid=" + uid + " AND provider = '" + provider + "'";
+          return utilsSecurity.authorize_token(req.body.token, user.uid, user.provider, mysqlConnection);
+        })
+        .then(() => {
+          const uid = req.params.id.split('-')[0],
+                provider = req.params.id.split('-')[1],
+                updateQuery = `UPDATE users SET name='${user.name}' WHERE uid=${user.uid} AND provider='${user.provider}';`;
           return mysqlConnection.query(updateQuery)
         })
-        .then((result) => {
-          res
-            .status(200)
-            .json({
-              user: user
-            })
-        })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+        .then((result) => { res.status(200).json({ user }); })
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
   }
 })
 
 .delete('/:id', function(req, res, next) {
-  const appkey = !(!req.body) ? req.body.appkey : null;
-  const uid = req.params.id.split('-')[0];
-  const provider = req.params.id.split('-')[1];
-  if (!req.params.id) {
-    res
-      .status(403)
-      .json({
-        error: true,
-        message: 'Empty params'
-      })
-  } else {
+  if (!req.params.id || !req.body) { utilsErrors.handleNoParams(res); }
+  else {
     pool.getConnection().then(function(mysqlConnection) {
-      utilsSecurity.authorize_appkey(appkey, mysqlConnection)
-        .then(() => {
-          const deleteQuery = "DELETE FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
-          return mysqlConnection.query(deleteQuery)
-        })
-        .then((result) => {
-          res
-            .status(200)
-            .json({})
-        })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        })
+      const uid = req.params.id.split('-')[0],
+            provider = req.params.id.split('-')[1];
+      utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
+      .then((result) => {
+        return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
+      })
+      .then(() => {
+        const deleteQuery = "DELETE FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
+        return mysqlConnection.query(deleteQuery)
+      })
+      .then((result) => { res.status(200).json({}) })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => {   pool.releaseConnection(mysqlConnection);   })
     });
   }
 })
@@ -223,13 +181,8 @@ router
           .status(201)
           .json({ preferences: {uid, provider, categories, locations} })
       })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        utilsErrors.handleError(err, res);
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
   }
 })
@@ -259,13 +212,8 @@ router
           .status(200)
           .json({ preferences: { uid, provider, categories, locations} })
       })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        utilsErrors.handleError(err, res);
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
   }
 })
@@ -304,13 +252,8 @@ router
           .status(200)
           .json({ preferences: { uid, provider, categories, locations} })
       })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        utilsErrors.handleError(err, res);
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
   }
 })
@@ -321,7 +264,10 @@ router
     pool.getConnection().then(function(mysqlConnection) {
       const uid = req.params.id.split('-')[0];
       const provider = req.params.id.split('-')[1];
-      utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection)
+      utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
+      .then((result) => {
+        return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
+      })
       .then((result) => {
         const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
         return mysqlConnection.query(deleteQuery);
@@ -331,13 +277,8 @@ router
           .status(200)
           .json({})
       })
-      .catch((err) => {
-        console.log("ERROR: " + JSON.stringify(err));
-        utilsErrors.handleError(err, res);
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); })
     })
   }
 })

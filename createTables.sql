@@ -56,13 +56,10 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`users` (
   `uid` INT NOT NULL,
   `provider` VARCHAR(30) NOT NULL,
   `name` VARCHAR(30) NULL,
-  `surname` VARCHAR(30) NULL,
-  `email` VARCHAR(50) NULL,
   `takes` INT NULL,
   `experience` INT NULL,
   `level` INT NULL,
-  PRIMARY KEY (`uid`, `provider`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
+  PRIMARY KEY (`uid`, `provider`))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------

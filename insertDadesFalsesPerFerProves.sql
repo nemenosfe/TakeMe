@@ -1,6 +1,6 @@
-INSERT INTO users VALUES (1, "provider", "Nom1", "Cognom1", "emailfals1@gmail.com", 2500, 3800, 2);
-INSERT INTO users VALUES (2, "provider", "Nom2", "Cognom2", "emailfals2@gmail.com", 200, 200, 1);
-INSERT INTO users VALUES (3, "provider", "Nom3", "Cognom3", "emailfals3@gmail.com", 60, 60, 1);
+INSERT INTO users VALUES (1, "provider", "Nom1", 2500, 3800, 2);
+INSERT INTO users VALUES (2, "provider", "Nom2", 200, 200, 1);
+INSERT INTO users VALUES (3, "provider", "Nom3", 60, 60, 1);
 
 INSERT INTO tokens VALUES("b903e0f0b987fc22588f517c9df0274f", 1, "provider");
 INSERT INTO tokens VALUES("526b0e737e7ad6e3344da44e56559ce5", 2, "provider");

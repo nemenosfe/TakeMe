@@ -147,12 +147,12 @@ Sobre la línia de comandes de linux feu: `node scriptDatabase.js` i ja ho farà
 | GET    | /users/                            | appkey           | Veure la llista d'usuaris |
 | GET    | /users/:uid-provider               | appkey           | Veure un usuari |
 | POST   | /users/                            | appkey           | Crear un usuari nou o canviar el token si ja existia l'usuari |
-| PUT    | /users/:uid-provider               | appkey           | Canviar la informació d'un usuari |
-| DELETE | /users/:uid-provider               | appkey           | Eliminar un usuari |
-| GET    | /users/:uid-provider/preferences   | appkey           | Veure les preferences d'un usuari |
-| POST   | /users/preferences                 | appkey           | Crear les preferences d'un usuari |
-| PUT    | /users/:uid-provider/preferences   | appkey           | Modificar les preferences d'un usuari |
-| DELETE | /users/:uid-provider/preferences   | appkey           | Eliminar les preferences d'un usuari |
+| PUT    | /users/:uid-provider               | appkey + token   | Canviar la informació d'un usuari |
+| DELETE | /users/:uid-provider               | appkey + token   | Eliminar un usuari |
+| GET    | /users/:uid-provider/preferences   | appkey + token   | Veure les preferences d'un usuari |
+| POST   | /users/preferences                 | appkey + token   | Crear les preferences d'un usuari |
+| PUT    | /users/:uid-provider/preferences   | appkey + token   | Modificar les preferences d'un usuari |
+| DELETE | /users/:uid-provider/preferences   | appkey + token   | Eliminar les preferences d'un usuari |
 | GET    | /achievements/                     | appkey           | Veure la llista de 'logros' |
 | GET    | /achievements/user/                | appkey + token   | Veure els 'logros' d'un usuari |
 | GET    | /recommendations/:uid-provider     | appkey + token   | Veure els esdeveniments recomenats per un usuari segons les seves preferències |

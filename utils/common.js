@@ -2,7 +2,7 @@ const randomstring = require("randomstring"),
       crypto = require('crypto');
 
 module.exports = {
-  generateRandomString: function(numCharacters = 200) {
+  generateRandomString: function(numCharacters = 50) {
     return randomstring.generate(numCharacters);
   },
   getFormattedDateTimeNow: function () {
