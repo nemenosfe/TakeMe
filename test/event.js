@@ -831,7 +831,7 @@ describe('route of events', function() {
   });
 
   describe('DELETE /events/:id/user/', function() {
-    after(function() {
+    after(function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
         'appkey' : helperCommon.appkey,
@@ -844,6 +844,7 @@ describe('route of events', function() {
         .set('Accept', 'application/json')
         .send(params)
         .expect(201)
+        .then(() => {done();})
     });
     it('should not delete an event without an appkey', function(done) {
       aux_id = 'E0-001-096844204-0@2016102500';
