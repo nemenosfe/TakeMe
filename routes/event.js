@@ -114,15 +114,15 @@ router
         })
         .then((eventResEventful) => {
           let moment = "past";
+          let indexesByMoment = {past: 0, present: 0, future: 0};
           for (let index = 0; index < eventResEventful.length; ++index) {
             if (moment != "future") { moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
             let elementArray = utilsEventRelated.getFinalJSONOfAnEvent(eventResEventful[index], null);
             elementArray.event.checkin_done = database_result[index].checkin_done;
             elementArray.event.number_attendances = database_result[index].number_attendances;
             elementArray.event.takes = database_result[index].takes;
-            console.log(`index: ${index} - length: ${eventResEventful.length}`);
-            console.log(`elementArray: ${JSON.stringify(elementArray)}`);
-            eventsResponse[moment]["events"][index] = elementArray;
+            eventsResponse[moment]["events"][indexesByMoment[moment]] = elementArray;
+            ++indexesByMoment[moment];
           }
 
           res
