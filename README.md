@@ -665,27 +665,23 @@ No cal cap paràmetre d'entrada excepte l'**appkey**.
 Un exemple de sortida seria el següent:
 ```javascript
 [
-    {
-        "uid":1,
-        "provider":"provider",
-        "name":"Nom1",
-        "surname":"Cognom1",
-        "email":"emailfals1@gmail.com",
-        "takes":2320,
-        "experience":3800,
-        "level":2
-    },
-    (...)
-    {
-        "uid":31,
-        "provider":"providerTest",
-        "name":"nameTest",
-        "surname":"surnameTest",
-        "email":"email31@test.com",
-        "takes":0,
-        "experience":0,
-        "level":1
-    }
+  {
+    "uid":1,
+    "provider":"provider",
+    "name":"Nom1",
+    "takes":2320,
+    "experience":3800,
+    "level":2
+  },
+  (...)
+  {
+    "uid":31,
+    "provider":"providerTest",
+    "name":"nameTest",
+    "takes":0,
+    "experience":0,
+    "level":1
+  }
 ]
 ```
 
@@ -703,15 +699,13 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**)
 Un exemple de sortida seria el següent:
 ```javascript
 {
-    "uid":31,
-    "provider":"providerTest",
-    "name":"nameTest",
-    "surname":"surnameTest",
-    "email":"email31@test.com",
-    "takes":0,
-    "experience":0,
-    "level":1,
-    "experience_of_next_level":0.6
+  "uid":31,
+  "provider":"providerTest",
+  "name":"nameTest",
+  "takes":0,
+  "experience":0,
+  "level":1,
+  "experience_of_next_level":0.6
 }
 ```
 
@@ -719,27 +713,23 @@ Un exemple de sortida seria el següent:
 POST utilitzat per tal d'afegir un nou usuari a la base de dades.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** i del **token**):
  - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
  - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
  - **name**: Paràmetre que correspon al nom de l'usuari.
- - **surname**: Paràmetre que correspon al cognom de l'usuari.
- - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
 
 #### Paràmetres de sortida
 Un exemple seria:
 ```javascript
 {
-    'uid' : 4,
-    'provider' : 'providerTest',
-    'name' : 'nameTest',
-    'surname' : 'surnameTest',
-    'email' : 'email31@test.com',
-    'takes' : 0,
-    'experience' : 0,
-    'level' : 1,
-    'new_user' : true, // Si es un nou usuari o si ja existia
-    'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
+  'uid' : 4,
+  'provider' : 'providerTest',
+  'name' : 'nameTest',
+  'takes' : 0,
+  'experience' : 0,
+  'level' : 1,
+  'new_user' : true, // Si es un nou usuari o si ja existia
+  'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
 }
 ```  
 Si no existia, el crea i retorna tota la seva informació (amb el token inclòs), si existia, renova el token i el retorna.  
@@ -748,25 +738,21 @@ Si no existia, el crea i retorna tota la seva informació (amb el token inclòs)
 PUT utilitzat per tal d'actualitzar informació de l'usuari identificat per uid i provider.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** i del **token**):
  - **uid**: Paràmetre que correspon a part de l'identificador únic dels usuaris.
  - **provider**: Paràmetre que correspon a l'altra part de l'identificador únic dels usuaris.
  - **name**: Paràmetre que correspon al nom de l'usuari.
- - **surname**: Paràmetre que correspon al cognom de l'usuari.
- - **email**: Paràmetre que correspon al correu electrònic de l'usuari.
 
 #### Paràmetres de sortida
 Un exemple seria:
 ```javascript
 {
-    'uid' : 4,
-    'provider' : 'providerTest',
-    'name' : 'nameTest',
-    'surname' : 'surnameTest',
-    'email' : 'email31@test.com',
-    'takes' : 0,
-    'experience' : 0,
-    'level' : 1,
+  'uid' : 4,
+  'provider' : 'providerTest',
+  'name' : 'nameTest',
+  'takes' : 0,
+  'experience' : 0,
+  'level' : 1,
 }
 ```
 
@@ -774,7 +760,7 @@ Un exemple seria:
 DELETE utilitzat per tal d'esborrar de la base de dades l'usuari identificat per uid i el seu provider.
 
 #### Paràmetres d'entrada
-Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**):
+Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** i del **token**):
  - **uid**: Paràmetre que correspon a l'identificador únic dels usuaris per a aquell proveïdor.
  - **provider**: Paràmetre que indica de quin proveïdor és aquell uid.
  **uid** i **provider** conjuntament són l'identificador de l'usuari, i un exemple d'aquest request seria:
