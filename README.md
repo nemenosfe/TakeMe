@@ -155,6 +155,7 @@ Sobre la línia de comandes de linux feu: `node scriptDatabase.js` i ja ho farà
 | DELETE | /users/:uid-provider/preferences   | appkey           | Eliminar les preferences d'un usuari |
 | GET    | /achievements/                     | appkey           | Veure la llista de 'logros' |
 | GET    | /achievements/user/                | appkey + token   | Veure els 'logros' d'un usuari |
+| GET    | /recommendations/:uid-provider     | appkey + token   | Veure els esdeveniments recomenats per un usuari segons les seves preferències |
 
 
 ## Events API (Peticions d'esdeveniments)
