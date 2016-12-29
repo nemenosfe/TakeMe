@@ -1,6 +1,7 @@
 "use strict"
 let request = require('supertest-as-promised');
-const api = require('../app');
+const api = require('../app'),
+      helperCommon = require('./helpers/common');
 request = request(api);
 
 let aux_id = "1";
@@ -12,7 +13,7 @@ describe('route of achievements', function() {
   describe('GET /achievements', function() {
     it('should get the whole list of achievements', function(done) {
       request
-        .get('/achievements/?appkey=7384d85615237469c2f6022a154b7e2c')
+        .get(`/achievements/?appkey=${helperCommon.appkey}`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -44,7 +45,7 @@ describe('route of achievements', function() {
         'page_size' : 20
       };
       request
-        .get('/achievements/user/?appkey=7384d85615237469c2f6022a154b7e2c&uid='+params.uid+"&provider="+params.provider+"&page_size="+params.page_size)
+        .get(`/achievements/user/?appkey=${helperCommon.appkey}&uid=${params.uid}&provider=${params.provider}&page_size=${params.page_size}`)
         .set('Accept', 'application/json')
         .send(params)
         .expect(200)

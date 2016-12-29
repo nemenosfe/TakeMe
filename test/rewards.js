@@ -40,7 +40,7 @@ describe('route of rewards', function() {
     });
     it('should get the whole list of rewards', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c'
+        'appkey' : helperCommon.appkey
       };
       request
         .get(helperCommon.buildGetParams("/rewards/", params))
@@ -107,7 +107,7 @@ describe('route of rewards', function() {
     });
     it('should not obtain all rewards without the session token', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
         'page_size' : 20
@@ -126,7 +126,7 @@ describe('route of rewards', function() {
     });
     it('should not obtain all rewards with a wrong session token', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'token' : '123456',
         'uid' : 1,
         'provider' : 'provider',
@@ -146,7 +146,7 @@ describe('route of rewards', function() {
     });
     it('should obtain all rewards from a user', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
@@ -225,7 +225,7 @@ describe('route of rewards', function() {
     });
     it('should create a purchase from a user of a reward', function(done) {
       const params = {
-        'appkey' : '7384d85615237469c2f6022a154b7e2c',
+        'appkey' : helperCommon.appkey,
         'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
