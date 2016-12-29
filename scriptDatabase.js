@@ -8,7 +8,7 @@ const fs = require('fs'),
 
 (() => { // Funció anònima que es crida a ella mateixa
   pool.getConnection().then(function(mysqlConnection) {
-    console.log("Creant les taules de la base de dades...");
+    console.log("Creant les taules a la base de dades...");
     const sqlCreateTables = fs.readFileSync('createTables.sql', 'utf8');
     mysqlConnection.query(sqlCreateTables)
     .then(() => {
