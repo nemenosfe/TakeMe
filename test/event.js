@@ -282,7 +282,7 @@ describe('route of events', function() {
         done();
       }, done)
     });
-    it('should return future dates for "Future" in "Barcelona"', function(done) {
+    it.skip('should return future dates for "Future" in "Barcelona"', function(done) {
       const params = {
         'appkey' : helperCommon.appkey,
         'date' : 'Future',
