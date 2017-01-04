@@ -84,11 +84,10 @@ module.exports = {
     if (params_query.date) { params += `&date=${params_query.date}`; }
     return params;
   },
-  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, start, stop, all_day, checkin_done = false) {
+  createAndSaveAttendanceWithNeededData: function (mysqlConnection, event_id, uid, provider, start, stop, all_day, checkin_done = false, time_checkin = null) {
     return new Promise((resolve, reject) => {
       const sqlEventInDB = `SELECT takes FROM events WHERE id='${event_id}';`;
-      let takes = -1;
-      let toBeSaved;
+      let takes = -1, toBeSaved;
       mysqlConnection.query(sqlEventInDB)
       .then((result) => {
         // Si no tenim l'esdeveniment a la nostra BD, el demanem a Eventful
@@ -119,7 +118,7 @@ module.exports = {
         }
       })
       .then((result) => { // Inserta l'assitència
-        const sqlInsertAttendanceInDB = `INSERT IGNORE INTO attendances values ('${event_id}', '${uid}', '${provider}', ${checkin_done});`;
+        const sqlInsertAttendanceInDB = `INSERT IGNORE INTO attendances values ('${event_id}', '${uid}', '${provider}', ${checkin_done}, ${time_checkin});`;
         return mysqlConnection.query(sqlInsertAttendanceInDB);
       })
       .then((result) => { // Retorna
@@ -128,6 +127,7 @@ module.exports = {
           uid,
           provider,
           'checkin_done' : checkin_done ? "1" : "0",
+          time_checkin,
           takes
         };
         resolve(attendanceResponse);

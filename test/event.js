@@ -530,6 +530,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('checkin_done', 1)
+        expect(eventResponse).to.have.property('time_checkin', '13:32')
+        console.log("time_checkin: " + eventResponse.time_checkin);
         expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
@@ -602,6 +604,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('checkin_done', '0');
+        expect(attendanceResponse).to.have.property('time_checkin', null);
         done();
       }, done)
     });
@@ -613,7 +616,8 @@ describe('route of events', function() {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
         'uid' : 1,
         'provider' : 'provider',
-        'checkin_done' : '1'
+        'checkin_done' : '1',
+        'time_checkin' : '09:36'
       };
       request
         .put('/events/'+aux_id+'/user')
@@ -633,7 +637,8 @@ describe('route of events', function() {
         'appkey' : '123456',
         'uid' : 1,
         'provider' : 'provider',
-        'checkin_done' : '1'
+        'checkin_done' : '1',
+        'time_checkin' : '09:36'
       };
       request
         .put('/events/'+aux_id+'/user')
@@ -654,7 +659,8 @@ describe('route of events', function() {
         'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
-        'checkin_done' : '1'
+        'checkin_done' : '1',
+        'time_checkin' : '09:36'
       };
       request
         .put('/events/'+aux_id+'/user')
@@ -669,6 +675,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
         expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        expect(attendanceResponse).to.have.property('time_checkin', params.time_checkin);
         expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
@@ -684,7 +691,8 @@ describe('route of events', function() {
         'appkey' : helperCommon.appkey,
         'uid' : 1,
         'provider' : 'provider',
-        'checkin_done' : '1'
+        'checkin_done' : '1',
+        'time_checkin' : '09:36'
       };
       request
         .put('/events/E0-001-096784716-9/user')
@@ -699,6 +707,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('uid', params.uid);
         expect(attendanceResponse).to.have.property('provider', params.provider);
         expect(attendanceResponse).to.have.property('checkin_done', params.checkin_done);
+        expect(attendanceResponse).to.have.property('time_checkin', params.time_checkin);
         expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
@@ -720,7 +729,8 @@ describe('route of events', function() {
       'appkey' : helperCommon.appkey,
       'uid' : 3,
       'provider' : 'provider',
-      'checkin_done' : '1'
+      'checkin_done' : '1',
+      'time_checkin' : '23:50'
     };
 
     before(function(done) {
@@ -813,6 +823,7 @@ describe('route of events', function() {
         const attendanceResponse = res.body.attendance;
         expect(attendanceResponse).to.have.property('event_id', event_id);
         expect(attendanceResponse).to.have.property('checkin_done', '1');
+        expect(attendanceResponse).to.have.property('time_checkin', params.time_checkin);
         expect(attendanceResponse).to.have.property('new_takes').and.to.be.at.least(1 + 100);
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(10 + 100);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(10 + 100);

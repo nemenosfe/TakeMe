@@ -360,6 +360,7 @@ Un exemple seria el següent:
         "event": {
           "id": "E0-001-000278174-6",
           "checkin_done": 1,
+          "time_checkin": '17:32',
           "title": "Martini Tasting",
           "description": "Sample drinks made with featured vodkas.",
           "number_attendances": 2,
@@ -403,6 +404,7 @@ Un exemple seria el següent:
         "event": {
           "id": "E0-001-093720767-4",
           "checkin_done": 0,
+          "time_checkin": null,
           "title": "GSMA Mobile World Congress",
           "description": null,
           "number_attendances": 1,
@@ -462,7 +464,8 @@ Si tot ha anat bé, retorna el següent:
   'event_id' : 'E0-001-093875660-9',
   'uid' : 1234,
   'provider' : 'facebook',
-  'checkin_done' : '0'
+  'checkin_done' : '0',
+  "time_checkin": null,
   'takes' : '80' // Takes que es guanyaran quan assiteixi a l'esdeveniment
 }
 ```
@@ -480,7 +483,8 @@ Exemple de paràmetre d'entrada (Tots els paràmetres són obligatoris):
   'appkey' : '7384d85615237469c2f6022a154b7e2c',
   'uid' : 3,
   'provider' : 'provider',
-  'checkin_done' : '1' // Cal que sigui un 1 !!!
+  'checkin_done' : '1', // Cal que sigui un 1 !!!
+  'time_checkin': '17:32' // Paràmetre obligatori! (Em guardo i retorno exactament el que em passeu, com a String)
 }
 ```
 
@@ -492,6 +496,7 @@ Si tot ha anat bé, retorna el següent:
   "uid": 3,
   "provider": "provider",
   "checkin_done": "1",
+  "time_checkin": "17:32",
   "new_takes": 886,
   "total_takes": 16355,
   "experience": 15569,

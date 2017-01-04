@@ -99,28 +99,30 @@ router
           return utilsSecurity.authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
         })
         .then((result) => {
-          const sql = "SELECT at.events_id, at.checkin_done, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances, ev.takes FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.query.uid + " AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
+          const sql = "SELECT at.events_id, at.checkin_done, at.time_checkin, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances, ev.takes FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = " + req.query.uid + " AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
           return mysqlConnection.query(sql)
         })
         .then((DBresult) => {
           database_result = DBresult;
-          eventsResponse.total_items = DBresult.length;
+          const total_items = eventsResponse.total_items = DBresult.length;
           let responses = [];
-          for (let index = 0; index < DBresult.length; index++) {
+          for (let index = 0; index < total_items; ++index) {
             const params = "id=" + DBresult[index].events_id;
             responses.push(utilsEventRelated.doRequest(params, "get"));
           }
           return Promise.all(responses);
         })
         .then((eventResEventful) => {
-          let moment = "past";
-          let indexesByMoment = {past: 0, present: 0, future: 0};
-          for (let index = 0; index < eventResEventful.length; ++index) {
+          const lengthEventEventful = eventResEventful.length;
+          let moment = "past",
+              indexesByMoment = {past: 0, present: 0, future: 0};
+          for (let index = 0; index < lengthEventEventful; ++index) {
             if (moment != "future") { moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
             let elementArray = utilsEventRelated.getFinalJSONOfAnEvent(eventResEventful[index], null);
-            elementArray.event.checkin_done = database_result[index].checkin_done;
-            elementArray.event.number_attendances = database_result[index].number_attendances;
-            elementArray.event.takes = database_result[index].takes;
+            const extraDataFromDatabase = ['checkin_done', 'time_checkin', 'number_attendances', 'takes'];
+            for (let indexAttribute = extraDataFromDatabase.length - 1; indexAttribute >= 0; --indexAttribute) {
+              elementArray.event[ extraDataFromDatabase[indexAttribute] ] = database_result[index][ extraDataFromDatabase[indexAttribute] ];
+            }
             eventsResponse[moment]["events"][indexesByMoment[moment]] = elementArray;
             ++indexesByMoment[moment];
           }
@@ -152,7 +154,9 @@ router
           return utilsEventRelated.doRequest(params, "get");
         })
         .then((result) => {
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, result.start_time, result.stop_time, result.all_day, false);
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.body.event_id, req.body.uid, req.body.provider, result.start_time, result.stop_time, result.all_day, false, null);
+          /* Els 2 últims paràmetres no cal passar-los perquè prenen els valors per defecte,
+          però els passem per no oblidar que hi són allà */
         })
         .then((attendanceResponse) => { // Fa el Response bo :)
           res
@@ -170,7 +174,7 @@ router
   })
 
   .put('/:id/user', function(req, res, next) {
-    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done) { utilsErrors.handleNoParams(res); }
+    if(!req.body || !req.body.uid || !req.body.provider || !req.params.id || !req.body.checkin_done || !req.body.time_checkin) { utilsErrors.handleNoParams(res); }
     else {
       pool.getConnection().then(function(mysqlConnection) {
         const attendanceRequest = req.body;
@@ -211,7 +215,7 @@ router
           return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, start_time, stop_time, all_day, true);
         })
         .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
-          const sql = `UPDATE attendances SET checkin_done=true WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;
+          const sql = `UPDATE attendances SET checkin_done=true, time_checkin='${attendanceRequest.time_checkin}' WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Select takes de l'esdeveniment
@@ -274,9 +278,10 @@ router
         .then((result) => { // Fa el Response bo :)
           const attendanceResponse = {
             'event_id' : req.params.id,
-            'uid' : req.body.uid,
-            'provider' : req.body.provider,
+            'uid' : attendanceRequest.uid,
+            'provider' : attendanceRequest.provider,
             'checkin_done' : '1',
+            'time_checkin' : attendanceRequest.time_checkin,
             'new_takes' : new_takes_event,
             'total_takes' : total_takes,
             'experience' : total_experience,
