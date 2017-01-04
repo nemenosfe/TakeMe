@@ -531,7 +531,6 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('checkin_done', 1)
         expect(eventResponse).to.have.property('time_checkin', '13:32')
-        console.log("time_checkin: " + eventResponse.time_checkin);
         expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')

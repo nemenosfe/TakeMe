@@ -113,13 +113,18 @@ module.exports = {
                                    0, ${takes});`;
           return mysqlConnection.query(sqlInsertEventInDB);
         }
-        else {
-          return new Promise(function (resolve, reject){ resolve(1); });
-        }
+        else { return new Promise(function (resolve, reject){ resolve(1); }); }
       })
       .then((result) => { // Inserta l'assitència
-        const sqlInsertAttendanceInDB = `INSERT IGNORE INTO attendances values ('${event_id}', '${uid}', '${provider}', ${checkin_done}, ${time_checkin});`;
+        const sqlInsertAttendanceInDB = `INSERT IGNORE INTO attendances values ('${event_id}', '${uid}', '${provider}', ${checkin_done}, '${time_checkin}');`;
         return mysqlConnection.query(sqlInsertAttendanceInDB);
+      })
+      .then((result) => { // Fa el check-in si ja estava l'asstiència guardada sense check-in
+        if (result.affectedRows == 0 && checkin_done) {
+          const sql = `UPDATE attendances SET checkin_done=true, time_checkin='${time_checkin}' WHERE events_id='${event_id}' AND users_uid='${uid}' AND users_provider='${provider}';`;
+          return mysqlConnection.query(sql);
+        }
+        else { return new Promise(function (resolve, reject){ resolve(1); }); }
       })
       .then((result) => { // Retorna
         const attendanceResponse = {

@@ -191,10 +191,10 @@ router
             start_time, stop_time, all_day;
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
         .then((result) => {
-          return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
+          return utilsSecurity.authorize_token(req.body.token, attendanceRequest.uid, attendanceRequest.provider, mysqlConnection);
         })
         .then((result) => { // Select del nivell que té
-          const sql = `SELECT level, experience, takes FROM users WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
+          const sql = `SELECT level, experience, takes FROM users WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Guarda les dades a partir del SELECT anterior + Fa la request a Eventful de l'esdeveniment per saber la categoria
@@ -211,12 +211,8 @@ router
           category_id = utilsEventRelated.getFinalCategoryIdFromEventfulResponse(result);
           return mysqlConnection.query('START TRANSACTION');
         })
-        .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment)
-          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, req.body.uid, req.body.provider, start_time, stop_time, all_day, true);
-        })
-        .then((result) => { // Fa el check-in (no el puc treure ENCARA perquè la anterior funció s'ha de refactoritzar)
-          const sql = `UPDATE attendances SET checkin_done=true, time_checkin='${attendanceRequest.time_checkin}' WHERE events_id='${req.params.id}' AND users_uid='${req.body.uid}' AND users_provider='${req.body.provider}';`;
-          return mysqlConnection.query(sql);
+        .then((result) => { // Inserta l'assitència si no existeix (i l'esdeveniment) i si ja existeix fa check-in
+          return utilsEventRelated.createAndSaveAttendanceWithNeededData(mysqlConnection, req.params.id, attendanceRequest.uid, attendanceRequest.provider, start_time, stop_time, all_day, true, attendanceRequest.time_checkin);
         })
         .then((result) => { // Select takes de l'esdeveniment
           const sql = `SELECT takes FROM events WHERE id = '${req.params.id}';`;
@@ -224,7 +220,7 @@ router
         })
         .then((result) => { // Guarda els takes de l'esdeveniment en una variable + Select quantes vegades havia assistit a un esdeveniment d'aquesta categoria
           new_takes_event = result[0].takes;
-          const sql = `SELECT number_attendances FROM userscategories WHERE users_uid='${req.body.uid}' AND users_provider='${req.body.provider}' AND category_id='${category_id}';`;
+          const sql = `SELECT number_attendances FROM userscategories WHERE users_uid='${attendanceRequest.uid}' AND users_provider='${attendanceRequest.provider}' AND category_id='${category_id}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => {
@@ -242,7 +238,7 @@ router
           return new Promise(function(resolve, reject) {
             const next_achievement_info = result[0];
             if ( (number_attendances_category + 1) == next_achievement_info.number_required_attendances) { // Ha de guanyar un nou 'logro'
-              const sqlInsertacquisitionInDB = `INSERT IGNORE INTO acquisitions values ('${req.body.uid}', '${req.body.provider}', '${next_achievement_info.id}');`;
+              const sqlInsertacquisitionInDB = `INSERT IGNORE INTO acquisitions values ('${attendanceRequest.uid}', '${attendanceRequest.provider}', '${next_achievement_info.id}');`;
               earned_achievement = next_achievement_info;
               new_takes_achievement = earned_achievement.takes;
               total_experience += new_takes_achievement;
@@ -255,21 +251,21 @@ router
           const sql = `UPDATE users
                       SET takes=takes+${new_takes_event+new_takes_achievement},
                           experience=experience+${new_takes_event+new_takes_achievement}
-                      WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
+                      WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Potser puja de nivell
           const new_level = utilsUserRelated.getNewLevel(level, total_experience);
           if (new_level > level) {
             level = new_level;
-            const sql = `UPDATE users SET level=${new_level} WHERE uid='${req.body.uid}' AND provider='${req.body.provider}';`;
+            const sql = `UPDATE users SET level=${new_level} WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
             return mysqlConnection.query(sql);
           }
           else { return new Promise(function(resolve, reject) { resolve(1); }); }
         })
         .then((result) => { // Nova assitència d'aquesta categoria a la BD
-          const sql = (number_attendances_category == 0)  ? `INSERT INTO userscategories VALUES('${req.body.uid}', '${req.body.provider}', '${category_id}', 1)`
-                                                          : `UPDATE userscategories SET number_attendances = number_attendances + 1 WHERE users_uid='${req.body.uid}' AND users_provider='${req.body.provider}' AND category_id='${category_id}'`;
+          const sql = (number_attendances_category == 0)  ? `INSERT INTO userscategories VALUES('${attendanceRequest.uid}', '${attendanceRequest.provider}', '${category_id}', 1)`
+                                                          : `UPDATE userscategories SET number_attendances = number_attendances + 1 WHERE users_uid='${attendanceRequest.uid}' AND users_provider='${attendanceRequest.provider}' AND category_id='${category_id}'`;
           return mysqlConnection.query(sql);
         })
         .then((result) => { // Fa el commit de la transacció
@@ -386,7 +382,6 @@ router
           res
             .status(200)
             .json(eventEventful)
-
         })
         .catch((err) => {
           utilsErrors.handleError(err, res);
