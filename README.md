@@ -938,10 +938,6 @@ Un exemple de paràmetres de sortida seria el següent:
 }
 ```  
 
------------------------------------------------------------------------------
------------------------------------------------------------------------------
------------------------------------------------------------------------------
-
 ## Recommendations API (Peticions de recomanacions d'esdeveniments per un usuari durant un mes)
 
 Pàrametres d'entrada comunts per totes les peticions:
