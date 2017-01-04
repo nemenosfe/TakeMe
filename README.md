@@ -214,6 +214,8 @@ GET d'una llista d'esdeveniments.
           /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
           però amb Android es pot mostrar sense que sigui un problema :) */
           "number_attendances" : 0, // nombre d'usuaris de la nostra aplicació que volen van fer click a "assistiré" d'aquest esdeveniment
+          "checkin_done" : 0, // si l'usuari ha fet check-in a aquest esdeveniment
+          "wanted_attendance" : 1, // si l'usuari ha marcat 'assistiré' per aquest esdeveniment
           "takes" : 123, // takes que es guanyen assitint a aquest esdeveniment
           "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
           "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
@@ -286,6 +288,8 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
   /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
   però amb Android es pot mostrar sense que sigui un problema :) */
   "number_attendances" : 0, // nombre d'usuaris de la nostra aplicació que volen van fer click a "assistiré" d'aquest esdeveniment
+  "checkin_done" : 0, // si l'usuari ha fet check-in a aquest esdeveniment
+  "wanted_attendance" : 1, // si l'usuari ha marcat 'assistiré' per aquest esdeveniment
   "takes" : 123, // takes que es guanyen assitint a aquest esdeveniment
   "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
   "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
@@ -364,6 +368,8 @@ Un exemple seria el següent:
           "title": "Martini Tasting",
           "description": "Sample drinks made with featured vodkas.",
           "number_attendances": 2,
+          "checkin_done" : 0,
+          "wanted_attendance" : 1,
           "takes" : 123,
           "url": "http://cincinnati.eventful.com/events/martini-tasting-/E0-001-000278174-6?utm_source=apis&utm_medium=apim&utm_campaign=apic",
           "all_day": "0",
@@ -408,6 +414,8 @@ Un exemple seria el següent:
           "title": "GSMA Mobile World Congress",
           "description": null,
           "number_attendances": 1,
+          "checkin_done" : 0,
+          "wanted_attendance" : 1,
           "takes" : 123,
           "url": "http://barcelona.eventful.com/events/gsma-mobile-world-congress-/E0-001-093720767-4?utm_source=apis&utm_medium=apim&utm_campaign=apic",
           "all_day": "2",
@@ -464,7 +472,8 @@ Si tot ha anat bé, retorna el següent:
   'event_id' : 'E0-001-093875660-9',
   'uid' : 1234,
   'provider' : 'facebook',
-  'checkin_done' : '0',
+  "checkin_done" : 0,
+  "wanted_attendance" : 1,
   "time_checkin": null,
   'takes' : '80' // Takes que es guanyaran quan assiteixi a l'esdeveniment
 }
@@ -495,7 +504,8 @@ Si tot ha anat bé, retorna el següent:
   "event_id": "E0-001-096784716-9",
   "uid": 3,
   "provider": "provider",
-  "checkin_done": "1",
+  "checkin_done" : 1,
+  "wanted_attendance" : 1,
   "time_checkin": "17:32",
   "new_takes": 886,
   "total_takes": 16355,
@@ -966,6 +976,8 @@ Igual que a *GET /events*.
           /* Sí, ve totalment en HTML, fins el punt que he vist això dins d'una descripció: gran selecció d&#39;estàndards<br>
           però amb Android es pot mostrar sense que sigui un problema :) */
           "number_attendances" : 0, // nombre d'usuaris de la nostra aplicació que volen van fer click a "assistiré" d'aquest esdeveniment
+          "checkin_done" : 0, // si l'usuari ha fet check-in a aquest esdeveniment
+          "wanted_attendance" : 1, // si l'usuari ha marcat 'assistiré' per aquest esdeveniment
           "takes" : 123, // takes que es guanyen assitint a aquest esdeveniment
           "url":"http://barcelona.eventful.com/events/jazzman-trio-/E0-001-088579321-8@2016091200?utm_source=apis&utm_medium=apim&utm_campaign=apic", // URL de l'esdeveniment a Eventful
           "all_day":"0", // 0 vol dir que l'horari queda específicat per l'start_time i l'stop_time, 1 vol dir tot el dia i 2 vol dir "no time specified"
