@@ -28,14 +28,16 @@ module.exports = {
   getNumberOfPreviousAttendancesOfCategoryByDBResult: function (DBresult) { return DBresult.length ? DBresult[0].number_attendances : 0; },
   getFinalJSONOfAnEvent: function (eventEventful, resultDB) {
     const event_id = eventEventful["id"],
-          number_attendances_and_takes = getNumberOfAssitancesAndTakesFromDBResultByID(resultDB, event_id);
+          info_from_db = getDesiredInfoFromDBResultByID(resultDB, event_id);
     return {
       event : {
         id : event_id,
         title : eventEventful["title"],
         description : eventEventful["description"] || null,
-        number_attendances : number_attendances_and_takes.number_attendances,
-        takes : number_attendances_and_takes.takes,
+        number_attendances : info_from_db.number_attendances,
+        takes : info_from_db.takes,
+        wanted_attendance : info_from_db.wanted_attendance,
+        checkin_done : info_from_db.checkin_done,
         url : eventEventful["url"] || null,
         all_day :  eventEventful["all_day"] || null,
         start_time :  eventEventful["start_time"] || null,
@@ -131,7 +133,7 @@ module.exports = {
           event_id,
           uid,
           provider,
-          'checkin_done' : checkin_done ? "1" : "0",
+          'checkin_done' : checkin_done ? 1 : 0,
           time_checkin,
           takes
         };
@@ -148,12 +150,19 @@ module.exports = {
   }
 };
 
-function getNumberOfAssitancesAndTakesFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
+function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
   if (DBresult) {
     const pos = findEventInDatabaseResponseByID(DBresult, id);
-    if (pos > -1) { return { number_attendances : DBresult[pos].number_attendances, takes : DBresult[pos].takes }; }
+    if (pos > -1) {
+      return {
+        number_attendances : DBresult[pos].number_attendances,
+        takes : DBresult[pos].takes,
+        wanted_attendance : (DBresult[pos].checkin_done != null) ? 1 : 0,
+        checkin_done : DBresult[pos].checkin_done ? 1 : 0,
+      };
+    }
   }
-  return { number_attendances : 0, takes : -1 };
+  return { number_attendances : 0, takes : -1, wanted_attendance: 0, checkin_done: 1 };
 }
 
 function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.

@@ -51,7 +51,7 @@ router
             for (let index = eventsEventful.events.event.length - 1; index >=0; index--) {
               ids.push("'" + eventsEventful.events.event[index].id + "'");
             }
-            const sql = "SELECT id, number_attendances, takes FROM events WHERE id IN ("+ids+") ORDER BY id;"; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
+            const sql = `SELECT e.id, e.number_attendances, e.takes, a.checkin_done FROM events e LEFT OUTER JOIN attendances a ON e.id = a.events_id WHERE e.id IN (${ids}) ORDER BY e.id;`; // No ho puc ordernar per data per fer més fàcil la cerca després perquè moltíssimes vegades venen dades que faríen que no funcionés.
             resolve(mysqlConnection.query(sql));
           });
         })
@@ -370,7 +370,7 @@ router
           });
         })
         .then((result) => {
-          const sql = "SELECT id, number_attendances, takes FROM events WHERE id = '"+req.params.id+"' ;";
+          const sql = `SELECT e.id, e.number_attendances, e.takes, a.checkin_done FROM events e LEFT OUTER JOIN attendances a ON e.id = a.events_id WHERE e.id = '${req.params.id}' ORDER BY e.id;`;
           return mysqlConnection.query(sql);
         })
         .then((resultDB) => {
@@ -378,17 +378,9 @@ router
             resolve(utilsEventRelated.getFinalJSONOfAnEvent(eventEventful, resultDB));
           });
         })
-        .then((eventEventful) => {
-          res
-            .status(200)
-            .json(eventEventful)
-        })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .then((eventEventful) => { res.status(200).json(eventEventful); })
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
 
     }

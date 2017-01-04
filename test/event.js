@@ -116,6 +116,9 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -169,6 +172,9 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -221,6 +227,9 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -275,6 +284,9 @@ describe('route of events', function() {
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -357,9 +369,11 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
         expect(eventResponse).to.have.property('images')
-        //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -428,6 +442,9 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances', 0)
+        expect(eventResponse).to.have.property('wanted_attendance')
+        expect(eventResponse).to.have.property('checkin_done')
+          .and.to.not.be.null;
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
 
@@ -529,6 +546,7 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('images')
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
+        //expect(eventResponse).to.have.property('wanted_attendance', 1)
         expect(eventResponse).to.have.property('checkin_done', 1)
         expect(eventResponse).to.have.property('time_checkin', '13:32')
         expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
@@ -602,7 +620,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('provider', params.provider);
         expect(attendanceResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(attendanceResponse).to.have.property('checkin_done', '0');
+        expect(attendanceResponse).to.have.property('checkin_done', 0);
         expect(attendanceResponse).to.have.property('time_checkin', null);
         done();
       }, done)
