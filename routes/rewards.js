@@ -75,9 +75,7 @@ router
               'level' : DBresult[index].level,
               'amount' : DBresult[index].amount
             };
-            rewardsResponse["rewards"][index] = {
-              'reward' : elementArray
-            };
+            rewardsResponse["rewards"][index] = { 'reward' : elementArray };
             total_rewards += parseInt(DBresult[index].amount);
           }
           rewardsResponse["total_rewards"] = total_rewards;
@@ -86,12 +84,8 @@ router
             .status(200)
             .json(rewardsResponse)
         })
-        .catch((err) => {
-          utilsErrors.handleError(err, res, "GET/user");
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .catch((err) => { utilsErrors.handleError(err, res, "GET/user"); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
@@ -108,7 +102,7 @@ router
 
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
-        .then((result) => {
+        .then(() => {
           return utilsSecurity.authorize_token(req.body.token, req.body.uid, req.body.provider, mysqlConnection);
         })
         .then(() => {
@@ -125,11 +119,9 @@ router
           infoUser.takes = result[0].takes;
           infoUser.level = result[0].level;
           return new Promise(function(resolve, reject) {
-            if ( infoUser.level < infoReward.level ) {
-              reject("This user's level is not enough to get this reward");
-            } else if ( infoUser.takes < (infoReward.takes*amount) ) {
-              reject("This user doesn't have enough takes to get this reward");
-            } else {
+            if ( infoUser.level < infoReward.level ) { reject("This user's level is not enough to get this reward"); }
+            else if ( infoUser.takes < (infoReward.takes*amount) ) { reject("This user doesn't have enough takes to get this reward"); }
+            else {
               const sql = "SELECT COUNT(1) AS purchase_exists FROM purchases WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
               const result = mysqlConnection.query(sql);
               resolve(result);
@@ -141,11 +133,10 @@ router
           return mysqlConnection.query('START TRANSACTION');
         })
         .then((result) => {
-          if (purchase_exists) {
-            var sqlRegisterPurchase = "UPDATE purchases SET amount = amount + "+amount+" WHERE rewards_name='"+req.body.reward_name+"' AND users_uid = '"+req.body.uid+"' AND users_provider = '"+req.body.provider+"' ;";
-          } else {
-            var sqlRegisterPurchase = "INSERT INTO purchases VALUES ("+req.body.uid+", '"+req.body.provider+"', '"+req.body.reward_name+"', 1);";
-          }
+          const sqlRegisterPurchase = (purchase_exists
+                                      ? `UPDATE purchases SET amount = amount + ${amount} WHERE rewards_name='${req.body.reward_name}' AND users_uid = ${req.body.uid} AND users_provider = '${req.body.provider}' ;"`
+                                      : `INSERT INTO purchases VALUES (${req.body.uid}, '${req.body.provider}', '${req.body.reward_name}', 1);`
+          );
           return mysqlConnection.query(sqlRegisterPurchase);
         })
         .then((result) => {
@@ -176,9 +167,7 @@ router
           mysqlConnection.query('ROLLBACK');
           utilsErrors.handleError(err, res, "GET/user");
         })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
