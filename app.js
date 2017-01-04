@@ -40,8 +40,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
 });
 
-app.listen(8000, function() {
-  console.log("Node server running on http://localhost:8000");
+app.listen(8888, function() {
+  console.log("Node server running on http://localhost:8888");
 });
 
 module.exports = app;
