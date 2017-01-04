@@ -49,17 +49,12 @@ router
                     : `UPDATE tokens SET token = '${encryptedToken}' WHERE users_uid = ${user.uid} AND users_provider = '${user.provider}';`;
             return mysqlConnection.query(sql);
           })
-          .then((result) => {
-            return mysqlConnection.query('COMMIT');
+          .then((result) => { return mysqlConnection.query('COMMIT'); })
+          .then((result) => { res.status(201).json({ user: user }) })
+          .catch((err) => {
+            mysqlConnection.query('ROLLBACK');
+            utilsErrors.handleError(err, res);
           })
-          .then((result) => {
-            res
-              .status(201)
-              .json({
-                user: user
-              })
-          })
-          .catch((err) => { utilsErrors.handleError(err, res); })
           .finally(() => { pool.releaseConnection(mysqlConnection); })
       });
     }
