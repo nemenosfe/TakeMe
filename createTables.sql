@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `takemelegends`.`attendances` (
   `users_uid` INT NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `checkin_done` TINYINT(1) NOT NULL DEFAULT 0,
+  `time_checkin` VARCHAR(30) NULL,
   PRIMARY KEY (`events_id`, `users_uid`, `users_provider`),
   INDEX `fk_events_has_users_users1_idx` (`users_uid` ASC, `users_provider` ASC),
   INDEX `fk_events_has_users_events_idx` (`events_id` ASC),
