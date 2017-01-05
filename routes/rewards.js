@@ -134,7 +134,7 @@ router
         })
         .then((result) => {
           const sqlRegisterPurchase = (purchase_exists
-                                      ? `UPDATE purchases SET amount = amount + ${amount} WHERE rewards_name='${req.body.reward_name}' AND users_uid = '${req.body.uid}' AND users_provider = '${req.body.provider}' ;"`
+                                      ? `UPDATE purchases SET amount = amount + ${amount} WHERE rewards_name='${req.body.reward_name}' AND users_uid = '${req.body.uid}' AND users_provider = '${req.body.provider}' ;`
                                       : `INSERT INTO purchases VALUES ('${req.body.uid}', '${req.body.provider}', '${req.body.reward_name}', 1);`
           );
           return mysqlConnection.query(sqlRegisterPurchase);
