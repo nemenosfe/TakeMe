@@ -151,8 +151,8 @@ module.exports = {
 };
 
 function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
-  if (DBresult) {
-    const pos = findEventInDatabaseResponseByID(DBresult, id);
+  if (DBresult && DBresult.length > 0) {
+    const pos = findEventInDatabaseResponseByID(DBresult, id, 0, DBresult.length - 1);
     if (pos > -1) {
       return {
         number_attendances : DBresult[pos].number_attendances,
@@ -165,13 +165,12 @@ function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresul
   return { number_attendances : 0, takes : -1, wanted_attendance: 0, checkin_done: 1 };
 }
 
-function findEventInDatabaseResponseByID(DBresult, id) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
-  if (DBresult.length === 0) { return -1; } // No trobat
+function findEventInDatabaseResponseByID(DBresult, id, start_pos, end_pos) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
+  const middle_pos = Math.floor((end_pos + start_pos) / 2),
+        id_db = DBresult[middle_pos].id;
 
-  const mid = Math.floor(DBresult.length / 2),
-        id_db = DBresult[mid].id;
-
-  if (id_db.toString() === id.toString()) { return mid; } // Trobat
-  else if (id.toString() > id_db.toString()) { return findEventInDatabaseResponseByID(DBresult.slice(mid, DBresult.length), id); }
-  else { return findEventInDatabaseResponseByID(DBresult.slice(0, mid), id); }
+  if (id_db == id) { return middle_pos; } // Trobat
+  else if (start_pos === end_pos) { return -1; } // No trobat
+  else if (id.toString() > id_db.toString()) { return findEventInDatabaseResponseByID(DBresult, id, middle_pos + 1, end_pos); }
+  else { return findEventInDatabaseResponseByID(DBresult, id, start_pos, middle_pos); }
 }

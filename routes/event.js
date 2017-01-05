@@ -61,11 +61,7 @@ router
             resolve(eventsResponse);
           });
         })
-        .then((eventsResponse) => {
-          res
-            .status(200)
-            .json(eventsResponse)
-        })
+        .then((eventsResponse) => { res.status(200).json(eventsResponse) })
         .catch((err) => { utilsErrors.handleError(err, res); })
         .finally(() => { pool.releaseConnection(mysqlConnection); })
       });
