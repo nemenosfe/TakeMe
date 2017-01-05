@@ -37,7 +37,8 @@ router
             return mysqlConnection.query('START TRANSACTION');
           })
           .then((result) => {
-            const sqlInsertUserInDB = `INSERT IGNORE INTO users values (${user.uid}, '${user.provider}', '${user.name}', 0, 0, 1);`;
+            const sqlInsertUserInDB = `INSERT IGNORE INTO users values ('${user.uid}', '${user.provider}', '${user.name}', 0, 0, 1);`;
+            console.log(sqlInsertUserInDB);
             return mysqlConnection.query(sqlInsertUserInDB);
           })
           .then((result) => {
@@ -45,13 +46,15 @@ router
             const encryptedToken = utilsCommon.getEncryptedInMd5(user.token),
                   sql =
                     (user.new_user)
-                    ? `INSERT INTO tokens values ('${encryptedToken}', ${user.uid}, '${user.provider}');`
-                    : `UPDATE tokens SET token = '${encryptedToken}' WHERE users_uid = ${user.uid} AND users_provider = '${user.provider}';`;
+                    ? `INSERT INTO tokens values ('${encryptedToken}', '${user.uid}', '${user.provider}');`
+                    : `UPDATE tokens SET token = '${encryptedToken}' WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}';`;
+            console.log(sql);
             return mysqlConnection.query(sql);
           })
           .then((result) => { return mysqlConnection.query('COMMIT'); })
           .then((result) => { res.status(201).json({ user: user }) })
           .catch((err) => {
+            console.log("ERR: " + err);
             mysqlConnection.query('ROLLBACK');
             utilsErrors.handleError(err, res);
           })
@@ -92,7 +95,7 @@ router
         .then(() => {
           const uid = req.params.id.split('-')[0],
                 provider = req.params.id.split('-')[1],
-                singleUserQuery = `SELECT * FROM users WHERE uid = ${uid} AND provider = '${provider}';`;
+                singleUserQuery = `SELECT * FROM users WHERE uid = '${uid}' AND provider = '${provider}';`;
           return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
@@ -124,7 +127,7 @@ router
         .then(() => {
           const uid = req.params.id.split('-')[0],
                 provider = req.params.id.split('-')[1],
-                updateQuery = `UPDATE users SET name='${user.name}' WHERE uid=${user.uid} AND provider='${user.provider}';`;
+                updateQuery = `UPDATE users SET name='${user.name}' WHERE uid='${user.uid}' AND provider='${user.provider}';`;
           return mysqlConnection.query(updateQuery)
         })
         .then((result) => { res.status(200).json({ user }); })
@@ -145,7 +148,7 @@ router
         return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
       })
       .then(() => {
-        const deleteQuery = "DELETE FROM users WHERE uid = " + uid + " AND provider = '" + provider + "'";
+        const deleteQuery = "DELETE FROM users WHERE uid = '" + uid + "' AND provider = '" + provider + "'";
         return mysqlConnection.query(deleteQuery)
       })
       .then((result) => { res.status(200).json({}) })
@@ -168,7 +171,7 @@ router
         return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
       })
       .then(() => {
-        const insertQuery = `INSERT INTO userspreferences VALUES (${uid}, '${provider}', '${categories}', '${locations}');`;
+        const insertQuery = `INSERT INTO userspreferences VALUES ('${uid}', '${provider}', '${categories}', '${locations}');`;
         return mysqlConnection.query(insertQuery);
       })
       .then((result) => {
@@ -194,7 +197,7 @@ router
         return utilsSecurity.authorize_token(req.query.token, uid, provider, mysqlConnection);
       })
       .then(() => {
-        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
+        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = '" + uid + "' AND users_provider = '" + provider + "';";
         return mysqlConnection.query(getQuery);
       })
       .then((result) => {
@@ -231,11 +234,11 @@ router
           updateQuery += `categories='${categories}'`;
           if (locations) { updateQuery += `, locations='${locations}'`; }
         } else { updateQuery += `locations='${locations}'`; }
-        updateQuery += ` WHERE users_uid = ${uid} AND users_provider = '${provider}'`;
+        updateQuery += ` WHERE users_uid = '${uid}' AND users_provider = '${provider}'`;
         return mysqlConnection.query(updateQuery)
       })
       .then(() => {
-        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = " + uid + " AND users_provider = '" + provider + "';";
+        const getQuery = "SELECT categories, locations FROM userspreferences WHERE users_uid = '" + uid + "' AND users_provider = '" + provider + "';";
         return mysqlConnection.query(getQuery);
       })
       .then((result) => {
@@ -264,7 +267,7 @@ router
         return utilsSecurity.authorize_token(req.body.token, uid, provider, mysqlConnection);
       })
       .then((result) => {
-        const deleteQuery = "DELETE FROM userspreferences WHERE users_uid=" + uid + " AND users_provider = '" + provider + "'";
+        const deleteQuery = "DELETE FROM userspreferences WHERE users_uid='" + uid + "' AND users_provider = '" + provider + "'";
         return mysqlConnection.query(deleteQuery);
       })
       .then((result) => {

@@ -53,7 +53,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`users` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`users` (
-  `uid` INT NOT NULL,
+  `uid` VARCHAR(50) NOT NULL,
   `provider` VARCHAR(30) NOT NULL,
   `name` VARCHAR(30) NULL,
   `takes` INT NULL,
@@ -69,7 +69,7 @@ DROP TABLE IF EXISTS `takemelegends`.`tokens` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`tokens` (
   `token` VARCHAR(255) NOT NULL,
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`token`),
   INDEX `fk_tokens_has_users_users1_idx` (`users_uid` ASC, `users_provider` ASC),
@@ -87,7 +87,7 @@ DROP TABLE IF EXISTS `takemelegends`.`attendances` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`attendances` (
   `events_id` VARCHAR(255) NOT NULL,
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `checkin_done` TINYINT(1) NOT NULL DEFAULT 0,
   `time_checkin` VARCHAR(30) NULL,
@@ -127,7 +127,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`purchases` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`purchases` (
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `rewards_name` VARCHAR(100) NOT NULL,
   `amount` INT NOT NULL,
@@ -175,7 +175,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`acquisitions` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`acquisitions` (
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `achievements_id` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`users_uid`, `users_provider`, `achievements_id`),
@@ -199,7 +199,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`userscategories` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`userscategories` (
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `category_id` VARCHAR(100) NOT NULL,
   `number_attendances` INT NOT NULL,
@@ -224,7 +224,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `takemelegends`.`userspreferences` ;
 
 CREATE TABLE IF NOT EXISTS `takemelegends`.`userspreferences` (
-  `users_uid` INT NOT NULL,
+  `users_uid` VARCHAR(50) NOT NULL,
   `users_provider` VARCHAR(30) NOT NULL,
   `categories` MEDIUMTEXT,
   `locations` MEDIUMTEXT,

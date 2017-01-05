@@ -30,7 +30,7 @@ router
       })
       .then(() => {
         const sqlQuery = "SELECT categories, locations FROM userspreferences"
-                       + ` WHERE users_uid = ${uid} AND users_provider = '${provider}';`;
+                       + ` WHERE users_uid = '${uid}' AND users_provider = '${provider}';`;
         return mysqlConnection.query(sqlQuery);
       })
       .then((result) => {
