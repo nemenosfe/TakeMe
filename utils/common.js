@@ -7,18 +7,18 @@ module.exports = {
   },
   getFormattedDateTimeNow: function () {
     const currentdate = new Date();
-    return  addZero(currentdate.getFullYear()) + "-" +
-            addZero(currentdate.getMonth()+1)  + "-"+
-            addZero(currentdate.getDate()) + " "  +
-            addZero(currentdate.getHours()) + ":"   +
-            addZero(currentdate.getMinutes()) + ":" +
-            addZero(currentdate.getSeconds());
+    return  _addZero(currentdate.getFullYear()) + "-" +
+            _addZero(currentdate.getMonth()+1)  + "-"+
+            _addZero(currentdate.getDate()) + " "  +
+            _addZero(currentdate.getHours()) + ":"   +
+            _addZero(currentdate.getMinutes()) + ":" +
+            _addZero(currentdate.getSeconds());
   },
   getEncryptedInMd5:  function(stringToBeEncrypted) {
     return crypto.createHash('md5').update(stringToBeEncrypted).digest("hex");
   }
 };
 
-function addZero(str) {
+function _addZero(str) {
   return str < 10 ? ('0' + str) : str;
 }

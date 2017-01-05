@@ -28,7 +28,7 @@ module.exports = {
   getNumberOfPreviousAttendancesOfCategoryByDBResult: function (DBresult) { return DBresult.length ? DBresult[0].number_attendances : 0; },
   getFinalJSONOfAnEvent: function (eventEventful, resultDB) {
     const event_id = eventEventful["id"],
-          info_from_db = getDesiredInfoFromDBResultByID(resultDB, event_id);
+          info_from_db = _getDesiredInfoFromDBResultByID(resultDB, event_id);
     return {
       event : {
         id : event_id,
@@ -150,9 +150,9 @@ module.exports = {
   }
 };
 
-function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
+function _getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresult estan ordenats per ID
   if (DBresult && DBresult.length > 0) {
-    const pos = findEventInDatabaseResponseByID(DBresult, id, 0, DBresult.length - 1);
+    const pos = _findEventInDatabaseResponseByID(DBresult, id, 0, DBresult.length - 1);
     if (pos > -1) {
       return {
         number_attendances : DBresult[pos].number_attendances,
@@ -165,12 +165,12 @@ function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresul
   return { number_attendances : 0, takes : -1, wanted_attendance: 0, checkin_done: 1 };
 }
 
-function findEventInDatabaseResponseByID(DBresult, id, start_pos, end_pos) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
+function _findEventInDatabaseResponseByID(DBresult, id, start_pos, end_pos) { // Cerca binaria, PREcondició: DBresult estan ordenats per ID.
   const middle_pos = Math.floor((end_pos + start_pos) / 2),
         id_db = DBresult[middle_pos].id;
 
   if (id_db == id) { return middle_pos; } // Trobat
   else if (start_pos === end_pos) { return -1; } // No trobat
-  else if (id.toString() > id_db.toString()) { return findEventInDatabaseResponseByID(DBresult, id, middle_pos + 1, end_pos); }
-  else { return findEventInDatabaseResponseByID(DBresult, id, start_pos, middle_pos); }
+  else if (id.toString() > id_db.toString()) { return _findEventInDatabaseResponseByID(DBresult, id, middle_pos + 1, end_pos); }
+  else { return _findEventInDatabaseResponseByID(DBresult, id, start_pos, middle_pos); }
 }
