@@ -158,7 +158,7 @@ function getDesiredInfoFromDBResultByID(DBresult, id) { // PREcondició: DBresul
         number_attendances : DBresult[pos].number_attendances,
         takes : DBresult[pos].takes,
         wanted_attendance : (DBresult[pos].checkin_done != null) ? 1 : 0,
-        checkin_done : DBresult[pos].checkin_done ? 1 : 0,
+        checkin_done : DBresult[pos].checkin_done ? 1 : 0
       };
     }
   }
