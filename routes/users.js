@@ -67,19 +67,9 @@ router
       .then(() => {
         return mysqlConnection.query("SELECT * FROM users")
       })
-      .then((result) => {
-        res
-          .status(200)
-          .json({
-            users: result
-          })
-      })
-      .catch((err) => {
-        utilsErrors.handleError(err, res);
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      })
+      .then((result) => { res.status(200).json({ users: result }) })
+      .catch((err) => { utilsErrors.handleError(err, res); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); })
   });
 })
 
@@ -98,9 +88,7 @@ router
         .then((result) => {
           const response = {user: result[0]};
           response.user.experience_of_next_level = utilsUserRelated.getNextLevelExperience(result[0].level + 1);
-          res
-            .status(200)
-            .json(response)
+          res.status(200).json(response)
         })
         .catch((err) => { utilsErrors.handleError(err, res); })
         .finally(() => { pool.releaseConnection(mysqlConnection); })
@@ -171,11 +159,7 @@ router
         const insertQuery = `INSERT INTO userspreferences VALUES ('${uid}', '${provider}', '${categories}', '${locations}');`;
         return mysqlConnection.query(insertQuery);
       })
-      .then((result) => {
-        res
-          .status(201)
-          .json({ preferences: {uid, provider, categories, locations} })
-      })
+      .then((result) => { res.status(201).json({ preferences: {uid, provider, categories, locations} }) })
       .catch((err) => { utilsErrors.handleError(err, res); })
       .finally(() => { pool.releaseConnection(mysqlConnection); })
     });
@@ -203,9 +187,7 @@ router
           categories = result[0].categories;
           locations = result[0].locations;
         }
-        res
-          .status(200)
-          .json({ preferences: { uid, provider, categories, locations} })
+        res.status(200).json({ preferences: { uid, provider, categories, locations} })
       })
       .catch((err) => { utilsErrors.handleError(err, res); })
       .finally(() => { pool.releaseConnection(mysqlConnection); })
@@ -243,9 +225,7 @@ router
           categories = result[0].categories;
           locations = result[0].locations;
         }
-        res
-          .status(200)
-          .json({ preferences: { uid, provider, categories, locations} })
+        res.status(200).json({ preferences: { uid, provider, categories, locations} })
       })
       .catch((err) => { utilsErrors.handleError(err, res); })
       .finally(() => { pool.releaseConnection(mysqlConnection); })
@@ -267,11 +247,7 @@ router
         const deleteQuery = "DELETE FROM userspreferences WHERE users_uid='" + uid + "' AND users_provider = '" + provider + "'";
         return mysqlConnection.query(deleteQuery);
       })
-      .then((result) => {
-        res
-          .status(200)
-          .json({})
-      })
+      .then((result) => { res.status(200).json({}) })
       .catch((err) => { utilsErrors.handleError(err, res); })
       .finally(() => { pool.releaseConnection(mysqlConnection); })
     })

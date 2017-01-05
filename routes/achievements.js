@@ -22,17 +22,9 @@ router
       .then((result) => {
         return mysqlConnection.query("SELECT * FROM achievements ORDER BY name ASC LIMIT " + limit + " OFFSET " + offset + " ;");
       })
-      .then((result) => {
-        res
-          .status(200)
-          .json({achievements: result})
-      })
-      .catch((err) => {
-        utilsErrors.handleError(err, res, "GET");
-      })
-      .finally(() => {
-        pool.releaseConnection(mysqlConnection);
-      });
+      .then((result) => { res.status(200).json({achievements: result}) })
+      .catch((err) => { utilsErrors.handleError(err, res, "GET"); })
+      .finally(() => { pool.releaseConnection(mysqlConnection); });
     });
   })
 
@@ -45,10 +37,7 @@ router
       if (req.query && req.query.page_number) { page_number = req.query.page_number; }
       const limit = page_size;
       const offset = page_size*(page_number-1);
-      let achievementsResponse = {
-        "total_items" : 0,
-        "achievements" : []
-      };
+      let achievementsResponse = { "total_items" : 0, "achievements" : [] };
 
       pool.getConnection().then(function(mysqlConnection) {
       utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
@@ -65,21 +54,13 @@ router
               'description' : DBresult[index].description,
               'takes' : DBresult[index].takes
             };
-            achievementsResponse["achievements"][index] = {
-              'achievement' : elementArray
-            };
+            achievementsResponse["achievements"][index] = { 'achievement' : elementArray };
           }
 
-          res
-            .status(200)
-            .json(achievementsResponse)
+          res.status(200).json(achievementsResponse)
         })
-        .catch((err) => {
-          utilsErrors.handleError(err, res, "GET/user");
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .catch((err) => { utilsErrors.handleError(err, res, "GET/user"); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })

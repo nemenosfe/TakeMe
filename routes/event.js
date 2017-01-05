@@ -123,16 +123,10 @@ router
             ++indexesByMoment[moment];
           }
 
-          res
-            .status(200)
-            .json(eventsResponse)
+          res.status(200).json(eventsResponse)
         })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
@@ -154,17 +148,9 @@ router
           /* Els 2 últims paràmetres no cal passar-los perquè prenen els valors per defecte,
           però els passem per no oblidar que hi són allà */
         })
-        .then((attendanceResponse) => { // Fa el Response bo :)
-          res
-            .status(201)
-            .json({ attendance: attendanceResponse });
-        })
-        .catch((err) => {
-          utilsErrors.handleError(err, res);
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .then((attendanceResponse) => { res.status(201).json({ attendance: attendanceResponse }); })
+        .catch((err) => { utilsErrors.handleError(err, res); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
@@ -280,17 +266,13 @@ router
             'level' : level,
             'achievement' : earned_achievement
           };
-          res
-            .status(200)
-            .json({ attendance: attendanceResponse });
+          res.status(200).json({ attendance: attendanceResponse });
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
           utilsErrors.handleError(err, res);
         })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
@@ -320,23 +302,15 @@ router
             }
           });
         })
-        .then((result) => { // Fa el Response bo :)
-          res
-            .status(200)
-            .json({})
-        })
+        .then((result) => { res.status(200).json({}) })
         .catch((err) => {
           if (err == "No es pot desmarcar l'assitència si ja s'ha fet el check-in") {
-            res
-              .status(403)
-              .json({'error' : err})
+            res.status(403).json({'error' : err});
           } else {
             utilsErrors.handleError(err, res);
           }
         })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })

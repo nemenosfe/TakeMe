@@ -25,17 +25,9 @@ router
         .then((result) => {
           return mysqlConnection.query("SELECT * FROM rewards ORDER BY level ASC, takes ASC, name ASC LIMIT " + limit + " OFFSET " + offset + " ;");
         })
-        .then((result) => {
-          res
-            .status(200)
-            .json({rewards: result})
-        })
-        .catch((err) => {
-          utilsErrors.handleError(err, res, "GET");
-        })
-        .finally(() => {
-          pool.releaseConnection(mysqlConnection);
-        });
+        .then((result) => { res.status(200).json({rewards: result}) })
+        .catch((err) => { utilsErrors.handleError(err, res, "GET"); })
+        .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
   })
@@ -80,9 +72,7 @@ router
           }
           rewardsResponse["total_rewards"] = total_rewards;
 
-          res
-            .status(200)
-            .json(rewardsResponse)
+          res.status(200).json(rewardsResponse)
         })
         .catch((err) => { utilsErrors.handleError(err, res, "GET/user"); })
         .finally(() => { pool.releaseConnection(mysqlConnection); });
@@ -159,9 +149,7 @@ router
               'takes_left' : result[0].takes
             }
           };
-          res
-            .status(201)
-            .json(purchaseResponse)
+          res.status(201).json(purchaseResponse)
         })
         .catch((err) => {
           mysqlConnection.query('ROLLBACK');
