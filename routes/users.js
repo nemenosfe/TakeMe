@@ -18,7 +18,7 @@ router
     if (!req.body || !req.body.uid || !req.body.provider) { utilsErrors.handleNoParams(res); }
     else {
       let user = {
-        uid: req.body.uid,
+        uid: req.body.uid.toString(),
         provider: req.body.provider,
         name: req.body.name || null,
         takes: 0,
@@ -38,7 +38,6 @@ router
           })
           .then((result) => {
             const sqlInsertUserInDB = `INSERT IGNORE INTO users values ('${user.uid}', '${user.provider}', '${user.name}', 0, 0, 1);`;
-            console.log(sqlInsertUserInDB);
             return mysqlConnection.query(sqlInsertUserInDB);
           })
           .then((result) => {
@@ -48,13 +47,11 @@ router
                     (user.new_user)
                     ? `INSERT INTO tokens values ('${encryptedToken}', '${user.uid}', '${user.provider}');`
                     : `UPDATE tokens SET token = '${encryptedToken}' WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}';`;
-            console.log(sql);
             return mysqlConnection.query(sql);
           })
           .then((result) => { return mysqlConnection.query('COMMIT'); })
           .then((result) => { res.status(201).json({ user: user }) })
           .catch((err) => {
-            console.log("ERR: " + err);
             mysqlConnection.query('ROLLBACK');
             utilsErrors.handleError(err, res);
           })
@@ -115,7 +112,7 @@ router
   if (!req.params.id || !req.body || !req.body.name) { utilsErrors.handleNoParams(res); }
   else {
     const user = {
-      uid: parseInt(req.params.id.split('-')[0]),
+      uid: req.params.id.split('-')[0],
       provider: req.params.id.split('-')[1],
       name: req.body.name
     }

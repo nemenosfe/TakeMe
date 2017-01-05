@@ -36,7 +36,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('user');
           const userResponse = res.body.user;
-          expect(userResponse).to.have.property('uid', params.uid);
+          expect(userResponse).to.have.property('uid', params.uid.toString());
           expect(userResponse).to.have.property('provider', params.provider);
           expect(userResponse).to.have.property('name', params.name);
           expect(userResponse).to.have.property('takes', 0);
@@ -64,7 +64,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('user');
           const userResponse = res.body.user;
-          expect(userResponse).to.have.property('uid', params.uid);
+          expect(userResponse).to.have.property('uid', params.uid.toString());
           expect(userResponse).to.have.property('provider', params.provider);
           expect(userResponse).to.have.property('name', params.name);
           expect(userResponse).to.have.property('takes', 0);
@@ -119,7 +119,7 @@ describe('Users route', function() {
           expect(res.body).to.have.property('user');
           const userResponse = res.body.user;
           token = userResponse.token;
-          expect(userResponse).to.have.property('uid', params.uid);
+          expect(userResponse).to.have.property('uid', params.uid.toString());
           expect(userResponse).to.have.property('provider', params.provider);
           expect(userResponse).to.have.property('new_user');
           done();
@@ -144,7 +144,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('user');
           const user = res.body.user;
-          expect(user).to.have.property('uid', 33);
+          expect(user).to.have.property('uid', '33');
           expect(user).to.have.property('provider', 'providerTest2');
           expect(user).to.have.property('name', 'nameTest3');
           expect(user).to.have.property('takes', 0);
@@ -199,7 +199,7 @@ describe('Users route', function() {
         .then((res) => {
           expect(res.body).to.have.property('user');
           const user = res.body.user;
-          expect(user).to.have.property('uid', 31);
+          expect(user).to.have.property('uid', '31');
           expect(user).to.have.property('provider', 'providerTest');
           expect(user).to.have.property('name', params.name);
           done();
