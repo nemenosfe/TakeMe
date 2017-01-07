@@ -29,18 +29,29 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
           .then((result) => {
-            const sql = `SELECT *, EXISTS(
-                          SELECT DISTINCT 1
-                          FROM userspreferences
-                          WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}'
-                        ) AS has_preferences
-                        FROM users
-                        WHERE uid = '${user.uid}' AND provider = '${user.provider}';`;
+            const sql = `SELECT u.*,
+                          EXISTS (
+                            SELECT DISTINCT 1
+                            FROM userspreferences
+                            WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}'
+                          ) AS has_preferences,
+                          (
+                            SELECT COUNT(DISTINCT 1)
+                            FROM attendances
+                            WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}'
+                              AND checkin_done = 1
+                          ) AS number_checkins
+                        FROM users u
+                        WHERE u.uid = '${user.uid}' AND u.provider = '${user.provider}';`;
             return mysqlConnection.query(sql);
           })
           .then((result) => {
-            if (result.length == 0) { user.new_user = true; user.has_preferences = false; }
-            else { user.new_user = false; user.has_preferences = !(!result[0].has_preferences); }
+            if (result.length == 0) { user.new_user = true; user.has_preferences = false; user.number_checkins = 0; }
+            else {
+              user.new_user = false;
+              user.has_preferences = !(!result[0].has_preferences);
+              user.number_checkins = result[0].number_checkins;
+            }
             return mysqlConnection.query('START TRANSACTION');
           })
           .then((result) => {
