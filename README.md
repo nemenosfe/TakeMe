@@ -342,7 +342,7 @@ Exemple de paràmetre d'entrada (en forma de JSON, però s'envien a la URL):
 {
   'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
+  'uid' : '1234abc', // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
   'page_size' : 20, // paràmetre opcional
   'page_number' : 1 // paràmetre opcional
@@ -460,7 +460,7 @@ Exemple de paràmetre d'entrada:
   'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
   'event_id' : 'E0-001-093875660-9', // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
+  'uid' : '1234abc', // paràmetre obligatori
   'provider' : 'facebook' // paràmetre obligatori
 }
 ```
@@ -470,7 +470,7 @@ Si tot ha anat bé, retorna el següent:
 ```javascript
 'attendance' : {
   'event_id' : 'E0-001-093875660-9',
-  'uid' : 1234,
+  'uid' : '1234abc',
   'provider' : 'facebook',
   "checkin_done" : 0,
   "wanted_attendance" : 1,
@@ -490,7 +490,7 @@ Exemple de paràmetre d'entrada (Tots els paràmetres són obligatoris):
 {
   'token' : '364b99c40b84b5207e89a207a606720a',
   'appkey' : '7384d85615237469c2f6022a154b7e2c',
-  'uid' : 3,
+  'uid' : '3a',
   'provider' : 'provider',
   'checkin_done' : '1', // Cal que sigui un 1 !!!
   'time_checkin': '17:32' // Paràmetre obligatori! (Em guardo i retorno exactament el que em passeu, com a String)
@@ -502,7 +502,7 @@ Si tot ha anat bé, retorna el següent:
 ```javascript
 "attendance": {
   "event_id": "E0-001-096784716-9",
-  "uid": 3,
+  "uid": '3a',
   "provider": "provider",
   "checkin_done" : 1,
   "wanted_attendance" : 1,
@@ -533,7 +533,7 @@ Exemple de paràmetre d'entrada:
 {
   'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // paràmetre obligatori
-  'uid' : 1234, // paràmetre obligatori
+  'uid' : '1234abc', // paràmetre obligatori
   'provider' : 'facebook', // paràmetre obligatori
 }
 ```
@@ -591,7 +591,7 @@ Un exemple de paràmetres d'entrada:
 {
   'appkey' : '7384d85615237469c2f6022a154b7e2c',
   'token' : '5ba039ba572efb08d6442074d7d478d5',
-  'uid' : 1,
+  'uid' : '1a',
   'provider' : 'provider',
   'page_size' : 20
 }
@@ -645,7 +645,7 @@ Exemple de paràmetre d'entrada:
 {
   'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
   'token' : '5ba039ba572efb08d6442074d7d478d5', // Paràmetre obligatori
-  'uid' : 1, // Paràmetre obligatori
+  'uid' : '1a', // Paràmetre obligatori
   'provider' : 'provider', // Paràmetre obligatori
   'reward_name' : 'recompensa 04', // Paràmetre obligatori
   'amount' : 3 // Paràmetre opcional, si no s'envia val 1
@@ -659,7 +659,7 @@ Si tot ha anat bé, retorna el següent:
 {
   "purchase": {
     "reward_name": "recompensa 04",
-    "uid": 1,
+    "uid": "1a",
     "provider": "provider",
     "amount" : 3, // La quantitat de recompenses d'aquest tipus que ha comprar aquest usuari aquesta vegada
     "total_amount": 5, // El total de recompenses d'aquest tipus que ha comprat aquest usuari (entre totes les peticions a l'API)
@@ -681,7 +681,7 @@ Un exemple de sortida seria el següent:
 ```javascript
 [
   {
-    "uid":1,
+    "uid":"1a",
     "provider":"provider",
     "name":"Nom1",
     "takes":2320,
@@ -690,7 +690,7 @@ Un exemple de sortida seria el següent:
   },
   (...)
   {
-    "uid":31,
+    "uid":"31cb",
     "provider":"providerTest",
     "name":"nameTest",
     "takes":0,
@@ -714,7 +714,7 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**)
 Un exemple de sortida seria el següent:
 ```javascript
 {
-  "uid":31,
+  "uid":"31cb",
   "provider":"providerTest",
   "name":"nameTest",
   "takes":0,
@@ -737,7 +737,7 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** 
 Un exemple seria:
 ```javascript
 {
-  'uid' : 4,
+  'uid' : "4b",
   'provider' : 'providerTest',
   'name' : 'nameTest',
   'takes' : 0,
@@ -763,7 +763,7 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** 
 Un exemple seria:
 ```javascript
 {
-  'uid' : 4,
+  'uid' : '4b',
   'provider' : 'providerTest',
   'name' : 'nameTest',
   'takes' : 0,
@@ -911,7 +911,7 @@ Un exemple de paràmetres d'entrada:
 ```javascript
 {
   'appkey' : '7384d85615237469c2f6022a154b7e2c', // paràmetre obligatori per totes les peticions a l'API
-  'uid' : 1,
+  'uid' : '1a',
   'provider' : 'provider',
   'page_size' : 20
 }
