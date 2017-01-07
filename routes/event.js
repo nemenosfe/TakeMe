@@ -88,14 +88,25 @@ router
               }
             },
             database_result = null;
-
+      
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
           return utilsSecurity.authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection);
         })
         .then((result) => {
-          const sql = "SELECT at.events_id, at.checkin_done, at.time_checkin, DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start, DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop, ev.all_day, ev.number_attendances, ev.takes FROM attendances at, events ev WHERE ev.id = at.events_id AND at.users_uid = '" + req.query.uid + "' AND at.users_provider='" + req.query.provider + "' ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC LIMIT " + limit + " OFFSET  " + offset + " ;";
+          const sql = `
+          SELECT at.events_id, at.checkin_done, at.time_checkin,
+            DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start,
+            DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop,
+            ev.all_day, ev.number_attendances, ev.takes
+          FROM attendances at
+          INNER JOIN events ev
+          ON ev.id = at.events_id
+          WHERE at.users_uid ='${req.query.uid}' AND at.users_provider='${req.query.provider}'
+          AND stop_time >= NOW() OR at.checkin_done = 1 OR (stop_time IS NULL AND start_time >= NOW())
+          ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC
+          LIMIT ${limit} OFFSET ${offset};`;
           return mysqlConnection.query(sql)
         })
         .then((DBresult) => {
