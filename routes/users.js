@@ -29,11 +29,18 @@ router
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.body.appkey, mysqlConnection)
           .then((result) => {
-            const sql = "SELECT * FROM users u, tokens t WHERE u.uid = '"+user.uid+"' AND u.provider='"+user.provider+"';";
+            const sql = `SELECT *, EXISTS(
+                          SELECT DISTINCT 1
+                          FROM userspreferences
+                          WHERE users_uid = '${user.uid}' AND users_provider = '${user.provider}'
+                        ) AS has_preferences
+                        FROM users
+                        WHERE uid = '${user.uid}' AND provider = '${user.provider}';`;
             return mysqlConnection.query(sql);
           })
           .then((result) => {
-            user.new_user = !result[0];
+            if (result.length == 0) { user.new_user = true; user.has_preferences = false; }
+            else { user.new_user = false; user.has_preferences = !(!result[0].has_preferences); }
             return mysqlConnection.query('START TRANSACTION');
           })
           .then((result) => {

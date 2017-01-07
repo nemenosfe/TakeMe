@@ -43,6 +43,7 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('experience', 0);
           expect(userResponse).to.have.property('level', 1);
           expect(userResponse).to.have.property('new_user', true); // És un nou usuari
+          expect(userResponse).to.have.property('has_preferences', false); // Com es un nou usuari, no té preferences
           expect(userResponse).to.have.property('token');
           token = userResponse.token;
           done();
@@ -71,6 +72,7 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('experience', 0);
           expect(userResponse).to.have.property('level', 1);
           expect(userResponse).to.have.property('new_user', false); // No és un nou usuari
+          expect(userResponse).to.have.property('has_preferences', false); // No és un nou usuari però no té preferències
           expect(userResponse).to.have.property('token').and.not.to.eql(token);
           token = userResponse.token;
           done();

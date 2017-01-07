@@ -744,6 +744,7 @@ Un exemple seria:
   'experience' : 0,
   'level' : 1,
   'new_user' : true, // Si es un nou usuari o si ja existia
+  'has_preferences' : false, // Si té preferències o no
   'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
 }
 ```  
