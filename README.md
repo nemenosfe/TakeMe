@@ -962,7 +962,7 @@ Si no té preferències guardades, s'envien els esdeveniments sense importar la 
 #### Paràmetres d'entrada
   - l'id de l'usuari al paràmetre és uid-provider, per exemple: **GET /recommendations/123-facebook**  
   - Els paràmetres d'entrada obligatoris per query són l'**appkey** i el **token** de l'usuari.  
-  - Els paràmetres d'entrada opcionals per query són el **page_size** i el **page_number**, si no s'envien, per defecte són *20* i *1* respectivament.  
+  - Els paràmetres d'entrada opcionals per query són el **page_size**, el **page_number**, i **sort_order**, si no s'envien, per defecte són *20*, *1* i *date* respectivament.  
 
 #### Paràmetres de sortida
 Igual que a *GET /events*.  

@@ -75,9 +75,9 @@ module.exports = {
     }
     return myEventsResponse;
   },
-  buildSearchParams: function (params_query, page_size, page_number, sort_order = 'date') {
+  buildSearchParams: function (params_query, page_size, page_number, sort_order) {
     let params = `sort_order=${sort_order}&page_size=${page_size}&page_number=${page_number}&include=categories`;
-    if (params_query.location) {
+    if (params_query.location && !params_query.location.includes("||")) {
       const within = params_query.within || 350;
       params += `&location=${params_query.location}&units=km&within=${within}`;
     }

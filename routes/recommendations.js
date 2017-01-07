@@ -20,7 +20,8 @@ router
             provider = req.params.id.split('-')[1],
             rangDates = utilsEventRelated.getRangDates(),
             page_size = req.query.page_size || "20",
-            page_number = req.query.page_number || "1";
+            page_number = req.query.page_number || "1",
+            sort_order = req.query.sort_order || "date";
       let categories = null,
           locations = null,
           eventsEventful = null;
@@ -34,14 +35,12 @@ router
         return mysqlConnection.query(sqlQuery);
       })
       .then((result) => {
+        let params = {date: rangDates};
         if (result.length > 0) {
-          categories = result[0].categories;
-          locations = result[0].locations;
+          if (result[0].categories) { params.category = result[0].categories; }
+          if (result[0].locations) { params.location = result[0].locations; }
         }
-        let params = `sort_order=date&page_size=${page_size}&page_number=${page_number}&include=categories`
-                   + `&date=${rangDates}`;
-        if (categories) { params += `&categories=${categories}`; }
-        if (locations) { params += `&locations=${locations}`; }
+        params = utilsEventRelated.buildSearchParams(params, page_size, page_number, sort_order);
         return utilsEventRelated.doRequest(params, "search");
       })
       .then((eventsResEventful) => {
