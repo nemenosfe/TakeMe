@@ -141,7 +141,7 @@ router
 
           res.status(200).json(eventsResponse)
         })
-        .catch((err) => { console.log("ERROR: " + JSON.stringify(err)); utilsErrors.handleError(err, res); })
+        .catch((err) => { utilsErrors.handleError(err, res); })
         .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
