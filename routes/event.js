@@ -320,7 +320,13 @@ router
     else {
       pool.getConnection().then(function(mysqlConnection) {
         let eventEventful = null;
+        const uid = req.query.uid || null,
+              provider = req.query.provider || null;
         utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
+        .then((result) => {
+          if (uid && provider) { return utilsSecurity.authorize_token(req.query.token, req.query.uid, req.query.provider, mysqlConnection); }
+          else { return new Promise(function(resolve, reject) { resolve(1); }); }
+        })
         .then((result) => {
           const params = "id=" + req.params.id;
           return utilsEventRelated.doRequest(params, "get");
@@ -340,7 +346,7 @@ router
           });
         })
         .then((result) => {
-          const sql = `SELECT e.id, e.number_attendances, e.takes, a.checkin_done FROM events e LEFT OUTER JOIN attendances a ON e.id = a.events_id WHERE e.id = '${req.params.id}' ORDER BY e.id;`;
+          const sql = `SELECT e.id, e.number_attendances, e.takes, a.checkin_done FROM events e LEFT OUTER JOIN attendances a ON e.id = a.events_id AND a.users_uid = '${uid}' AND a.users_provider = '${provider}' WHERE e.id = '${req.params.id}' ORDER BY e.id;`;
           return mysqlConnection.query(sql);
         })
         .then((resultDB) => {
