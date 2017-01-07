@@ -88,7 +88,7 @@ router
               }
             },
             database_result = null;
-      
+
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
         .then((result) => {
@@ -104,7 +104,7 @@ router
           INNER JOIN events ev
           ON ev.id = at.events_id
           WHERE at.users_uid ='${req.query.uid}' AND at.users_provider='${req.query.provider}'
-          AND stop_time >= NOW() OR at.checkin_done = 1 OR (stop_time IS NULL AND start_time >= NOW())
+          AND stop_time >= NOW() OR at.checkin_done = 1 OR (stop_time IS NULL AND start_time >= NOW() - INTERVAL 1 DAY)
           ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC
           LIMIT ${limit} OFFSET ${offset};`;
           return mysqlConnection.query(sql)
@@ -122,9 +122,13 @@ router
         .then((eventResEventful) => {
           const lengthEventEventful = eventResEventful.length;
           let moment = "past",
-              indexesByMoment = {past: 0, present: 0, future: 0};
+              indexesByMoment = {past: 0, present: 0, future: 0},
+              numberCheckins = 0;
           for (let index = 0; index < lengthEventEventful; ++index) {
-            if (moment != "future") { moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop); }
+            if (moment != "future") {
+              moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop);
+              if (moment == "past") { ++numberCheckins; }
+            }
             let elementArray = utilsEventRelated.getFinalJSONOfAnEvent(eventResEventful[index], null);
             const extraDataFromDatabase = ['checkin_done', 'time_checkin', 'number_attendances', 'takes'];
             for (let indexAttribute = extraDataFromDatabase.length - 1; indexAttribute >= 0; --indexAttribute) {
@@ -133,10 +137,11 @@ router
             eventsResponse[moment]["events"][indexesByMoment[moment]] = elementArray;
             ++indexesByMoment[moment];
           }
+          eventsResponse.number_checkins = numberCheckins;
 
           res.status(200).json(eventsResponse)
         })
-        .catch((err) => { utilsErrors.handleError(err, res); })
+        .catch((err) => { console.log("ERROR: " + JSON.stringify(err)); utilsErrors.handleError(err, res); })
         .finally(() => { pool.releaseConnection(mysqlConnection); });
       });
     }
