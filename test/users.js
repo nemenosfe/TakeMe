@@ -44,7 +44,10 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('level', 1);
           expect(userResponse).to.have.property('new_user', true); // És un nou usuari
           expect(userResponse).to.have.property('has_preferences', false); // Com es un nou usuari, no té preferences
+          expect(userResponse).to.have.property('number_checkins', 0); // Té 0 check-ins perquè s'acaba de registrar
           expect(userResponse).to.have.property('token');
+          expect(userResponse).to.have.property('experience_of_next_level')
+            .and.to.be.at.least(0.60);
           token = userResponse.token;
           done();
         }, done)
@@ -73,7 +76,10 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('level', 1);
           expect(userResponse).to.have.property('new_user', false); // No és un nou usuari
           expect(userResponse).to.have.property('has_preferences', false); // No és un nou usuari però no té preferències
+          expect(userResponse).to.have.property('number_checkins', 0); // No és un nou usuari però no té check-ins
           expect(userResponse).to.have.property('token').and.not.to.eql(token);
+          expect(userResponse).to.have.property('experience_of_next_level')
+            .and.to.be.at.least(0.60);
           token = userResponse.token;
           done();
         }, done)
@@ -152,6 +158,8 @@ describe('Users route', function() {
           expect(user).to.have.property('takes', 0);
           expect(user).to.have.property('experience', 0);
           expect(user).to.have.property('level', 1);
+          expect(user).to.have.property('has_preferences', false); // No és un nou usuari però no té preferències
+          expect(user).to.have.property('number_checkins', 0); // No és un nou usuari però no té check-ins
           expect(user).to.have.property('experience_of_next_level')
             .and.to.be.at.least(0.60);
           done();

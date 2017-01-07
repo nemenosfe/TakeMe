@@ -48,10 +48,14 @@ router
           .then((result) => {
             if (result.length == 0) { user.new_user = true; user.has_preferences = false; user.number_checkins = 0; }
             else {
+              user.level = result[0].level;
+              user.takes = result[0].takes;
+              user.experience = result[0].experience;
               user.new_user = false;
               user.has_preferences = !(!result[0].has_preferences);
               user.number_checkins = result[0].number_checkins;
             }
+            user.experience_of_next_level = utilsUserRelated.getNextLevelExperience(user.level + 1);
             return mysqlConnection.query('START TRANSACTION');
           })
           .then((result) => {
@@ -100,12 +104,27 @@ router
         .then(() => {
           const uid = req.params.id.split('-')[0],
                 provider = req.params.id.split('-')[1],
-                singleUserQuery = `SELECT * FROM users WHERE uid = '${uid}' AND provider = '${provider}';`;
+                singleUserQuery =
+                            `SELECT u.*,
+                              EXISTS (
+                                SELECT DISTINCT 1
+                                FROM userspreferences
+                                WHERE users_uid = '${uid}' AND users_provider = '${provider}'
+                              ) AS has_preferences,
+                              (
+                                SELECT COUNT(DISTINCT 1)
+                                FROM attendances
+                                WHERE users_uid = '${uid}' AND users_provider = '${provider}'
+                                  AND checkin_done = 1
+                              ) AS number_checkins
+                            FROM users u
+                            WHERE u.uid = '${uid}' AND u.provider = '${provider}';`;
           return mysqlConnection.query(singleUserQuery);
         })
         .then((result) => {
-          const response = {user: result[0]};
+          let response = {user: result[0]};
           response.user.experience_of_next_level = utilsUserRelated.getNextLevelExperience(result[0].level + 1);
+          response.user.has_preferences = (response.user.has_preferences == 1) ? true : false;
           res.status(200).json(response)
         })
         .catch((err) => { utilsErrors.handleError(err, res); })
