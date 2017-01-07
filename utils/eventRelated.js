@@ -16,7 +16,7 @@ module.exports = {
     return "future"; // Si no es compleix cap dels anteriors vol dir que start_time és futur
   },
   doRequest: function (params, type) {
-    const finalURL = urlEventfulApi + type + "/" + "?app_key=" + keyEventfulApi + "&" + params;
+    const finalURL = urlEventfulApi + type + "/" + "?app_key=" + keyEventfulApi + "&" + params + "&image_sizes=thumb,medium,large";
     let optionsRequest = {
       url: finalURL,
       method: "GET",

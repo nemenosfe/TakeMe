@@ -231,7 +231,7 @@ GET d'una llista d'esdeveniments.
           "postal_code":null,
           "latitude":"41.3833", // És un float amb signe
           "longitude":"2.18333", // És un float amb signe
-          "images":{ // images a vegades val null però quan té contingut, sempre l'he vist així amb aquests 2 tamanys (però a l'especificació no diu que sigui així sempre, només m'ho he trobat així en tots els exemples que he vist)
+          "images":{ // images a vegades val null però quan té contingut, tindrà (o gairebé sempre) thumb (48x48), medium (128x128) i large (480x480)
             "medium":{  
               "width":"128",
               "height":"128",
@@ -306,7 +306,7 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
   "postal_code":null,
   "latitude":"41.3833", // És un float amb signe
   "longitude":"2.18333", // És un float amb signe
-  "images":{ // images a vegades val null però quan té contingut, sempre l'he vist així amb aquests 2 tamanys (però a l'especificació no diu que sigui així sempre, només m'ho he trobat així en tots els exemples que he vist)
+  "images":{ // images a vegades val null però quan té contingut, tindrà (o gairebé sempre) thumb (48x48), medium (128x128) i large (480x480)
     "medium":{  
       "width":"128",
       "height":"128",
@@ -997,7 +997,7 @@ Igual que a *GET /events*.
           "postal_code":null,
           "latitude":"41.3833", // És un float amb signe
           "longitude":"2.18333", // És un float amb signe
-          "images":{ // images a vegades val null però quan té contingut, sempre l'he vist així amb aquests 2 tamanys (però a l'especificació no diu que sigui així sempre, només m'ho he trobat així en tots els exemples que he vist)
+          "images":{ // images a vegades val null però quan té contingut, tindrà (o gairebé sempre) thumb (48x48), medium (128x128) i large (480x480)
             "medium":{  
               "width":"128",
               "height":"128",
