@@ -71,23 +71,23 @@ router
   .get('/user', function(req, res, next) {
     if(!req.query || !req.query.uid || !req.query.provider) { utilsErrors.handleNoParams(res); }
     else {
-      let page_size = req.query.page_size || "20",
-          page_number = req.query.page_number || "1",
-          eventsResponse = {
-            "total_items" : 0,
-            "past" : {
-              "events" : []
-            },
-            "present" : {
-              "events" : []
-            },
-            "future" : {
-              "events" : []
-            }
-          },
-          database_result = null;
-      const limit = page_size,
+      const page_size = req.query.page_size || "20",
+            page_number = req.query.page_number || "1",
+            limit = page_size,
             offset = page_size*(page_number-1);
+      let   eventsResponse = {
+              "total_items" : 0,
+              "past" : {
+                "events" : []
+              },
+              "present" : {
+                "events" : []
+              },
+              "future" : {
+                "events" : []
+              }
+            },
+            database_result = null;
 
       pool.getConnection().then(function(mysqlConnection) {
         utilsSecurity.authorize_appkey(req.query.appkey, mysqlConnection)
