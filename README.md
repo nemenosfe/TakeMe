@@ -679,7 +679,7 @@ No cal cap paràmetre d'entrada excepte l'**appkey**.
 #### Paràmetres de sortida
 Un exemple de sortida seria el següent:
 ```javascript
-[
+'users' : [
   {
     "uid":"1a",
     "provider":"provider",
@@ -714,13 +714,15 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey**)
 Un exemple de sortida seria el següent:
 ```javascript
 {
-  "uid":"31cb",
-  "provider":"providerTest",
-  "name":"nameTest",
-  "takes":0,
-  "experience":0,
-  "level":1,
-  "experience_of_next_level":0.6
+  'user' : {
+    "uid":"31cb",
+    "provider":"providerTest",
+    "name":"nameTest",
+    "takes":0,
+    "experience":0,
+    "level":1,
+    "experience_of_next_level":0.6
+  }
 }
 ```
 
@@ -737,15 +739,17 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** 
 Un exemple seria:
 ```javascript
 {
-  'uid' : "4b",
-  'provider' : 'providerTest',
-  'name' : 'nameTest',
-  'takes' : 0,
-  'experience' : 0,
-  'level' : 1,
-  'new_user' : true, // Si es un nou usuari o si ja existia
-  'has_preferences' : false, // Si té preferències o no
-  'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
+  'user' : {
+    'uid' : "4b",
+    'provider' : 'providerTest',
+    'name' : 'nameTest',
+    'takes' : 0,
+    'experience' : 0,
+    'level' : 1,
+    'new_user' : true, // Si es un nou usuari o si ja existia
+    'has_preferences' : false, // Si té preferències o no
+    'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
+  }
 }
 ```  
 Si no existia, el crea i retorna tota la seva informació (amb el token inclòs), si existia, renova el token i el retorna.  
@@ -763,12 +767,14 @@ Els paràmetres d'entrada necessaris són els següents (a més de l'**appkey** 
 Un exemple seria:
 ```javascript
 {
-  'uid' : '4b',
-  'provider' : 'providerTest',
-  'name' : 'nameTest',
-  'takes' : 0,
-  'experience' : 0,
-  'level' : 1,
+  'user' : {
+    'uid' : '4b',
+    'provider' : 'providerTest',
+    'name' : 'nameTest',
+    'takes' : 0,
+    'experience' : 0,
+    'level' : 1,
+  }
 }
 ```
 
