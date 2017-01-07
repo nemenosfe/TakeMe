@@ -276,7 +276,8 @@ GET d'una llista d'esdeveniments.
 GET d'un esdeveniment en particular pel seu ID.  
 
 #### Paràmetres d'entrada
-Cap paràmetre d'entrada, però un exemple d'aquest GET seria (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9?appkey=7384d85615237469c2f6022a154b7e2c`  
+Cap paràmetre d'entrada obligatori, però un exemple d'aquest GET seria (sent l'ID de l'esdeveniment: *E0-001-095173443-9*):  `urlDelServidor/events/E0-001-095173443-9?appkey=7384d85615237469c2f6022a154b7e2c`  
+Si passeu **uid**, **provider** i **token**, us retornarà el *wanted_attendance* dient si vol assitir o no, però si no envieu la info de l'usuari, simplement retorna 0 al *wanted_attendance*.  
 
 #### Paràmetres de sortida
 Un exemple resumit al següent JSON (explico els canvis respecte a la informació de **GET /events/** després del JSON):  
