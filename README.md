@@ -307,15 +307,17 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
   "latitude":"41.3833", // És un float amb signe
   "longitude":"2.18333", // És un float amb signe
   "images":{ // images a vegades val null però quan té contingut, tindrà (o gairebé sempre) thumb (48x48), medium (128x128) i large (480x480)
-    "medium":{  
-      "width":"128",
-      "height":"128",
-      "url":"http://s1.evcdn.com/store/skin/no_image/categories/128x128/other.jpg"
-    },
-    "thumb":{  
-      "width":"48",
-      "height":"48",
-      "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
+    "image": {
+      "medium":{  
+        "width":"128",
+        "height":"128",
+        "url":"http://s1.evcdn.com/store/skin/no_image/categories/128x128/other.jpg"
+      },
+      "thumb":{  
+        "width":"48",
+        "height":"48",
+        "url":"http://s1.evcdn.com/store/skin/no_image/categories/48x48/other.jpg"
+      }
     }
   },
   "categories":{ // Sempre he vist que ve 1 i només 1 categoria dins del següent array, i mai ho he vist com a null (però això ho trec dels exemples que he vist, no es que m'ho digui la especificació que he llegit)
@@ -333,6 +335,7 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 
 Les diferències respecte a **GET /events/** són les següents:  
   - Ara els atribus **categories**, **free** i **price** poden no ser *null*.
+  - Les images ara venen dins de: images.image.  
 
 ### GET /events/user/
 GET de tots els esdeveniments d'un usuari.  

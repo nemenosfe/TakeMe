@@ -112,7 +112,15 @@ describe('route of events', function() {
         expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
@@ -168,7 +176,15 @@ describe('route of events', function() {
         expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
@@ -223,7 +239,15 @@ describe('route of events', function() {
         expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
@@ -280,7 +304,15 @@ describe('route of events', function() {
         expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         //expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
@@ -368,7 +400,15 @@ describe('route of events', function() {
         expect(eventResponse.categories.category[0]).to.have.property('id');
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         expect(eventResponse).to.have.property('number_attendances')
           .and.to.be.an.integer;
         expect(eventResponse).to.have.property('wanted_attendance')
@@ -438,7 +478,15 @@ describe('route of events', function() {
         expect(eventResponse.categories).to.have.property('category')
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images.image;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         expect(eventResponse).to.have.property('number_attendances', 0)
@@ -543,7 +591,15 @@ describe('route of events', function() {
         expect(eventResponse.categories).to.have.property('category')
         expect(eventResponse).to.have.property('takes')
           .and.to.be.at.least(1);
-        expect(eventResponse).to.have.property('images')
+
+        expect(eventResponse).to.have.property('images');
+        const eventResponseImage = eventResponse.images;
+        if(eventResponseImage) {
+          expect(eventResponseImage).to.have.property('large');
+          expect(eventResponseImage).to.have.property('medium');
+          expect(eventResponseImage).to.have.property('thumb');
+        }
+
         expect(eventResponse).to.have.property('free')
         expect(eventResponse).to.have.property('price')
         //expect(eventResponse).to.have.property('wanted_attendance', 1)
