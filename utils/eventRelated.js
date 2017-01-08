@@ -144,9 +144,9 @@ module.exports = {
   getRangDates: function (firstDate = new Date(), months = 1) {
     const lastDate = new Date(firstDate.toString());
     lastDate.setMonth(lastDate.getMonth() + months);
-    return `${firstDate.getFullYear()}${firstDate.getMonth() + 1}${firstDate.getDate()}00`
+    return `${firstDate.getFullYear()}${utilsCommon.addZero(firstDate.getMonth() + 1)}${utilsCommon.addZero(firstDate.getDate())}00`
            + "-"
-           + `${lastDate.getFullYear()}${lastDate.getMonth() + 1}${lastDate.getDate()}00`;
+           + `${lastDate.getFullYear()}${utilsCommon.addZero(lastDate.getMonth() + 1)}${utilsCommon.addZero(lastDate.getDate())}00`;
   }
 };
 
