@@ -180,7 +180,7 @@ GET d'una llista d'esdeveniments.
       - L'ID del local.
   - Tots aquests paràmetres d'entrada són opcionals, però com a mínim ha de rebre un d'ells (qualsevol), i també funciona si s'envia més d'un d'aquells paràmetres d'entrada, amb qualsevol combinació.  
   - Si s'envia el paràmetre *location*, també es pot enviar el paràmetre **within** amb un *int* que s'ignifica la quantitat de quilòmetres de radi des d'aquest location (per defecte, si no s'envia res, són 350 ara per ara).  
-  - Ara també es pot enviar un **sort_order**, que si no s'envia, per defecte és *relevance* per aquesta petició (per qualsevol altre tipus de petició que no sigui a */events/*, aquet valor és *date* sempre i no es pot enviar el paràmetre per canviar-ho).  
+  - Ara també es pot enviar un **sort_order**, que si no s'envia, per defecte és *relevance*.  
   - També es possible enviar un **page_size** que vol dir quants esdeveniments màxim volem rebre de tots els que hi ha amb aquestes condicions. Per defecte, si no s'envia res, és *10*.
   - I per últim també es pot enviar un **page_number** amb quina pàgina volem rebre amb *page_size* esdeveniments de la llista total d'esdeveniments estem, tenint en compte que cada pàgina té *page_size* esdeveniments. Per exemple, si *page_size* val 10 i *page_number* val 2, tindrem la llista d'esdeveniments de l'11 al 20. *page_number* és opcional i per defecte val 1.    
   - Un exemple de paràmetres d'entrada (en forma de JSON, però s'envien a la URL):  
@@ -969,7 +969,7 @@ Si no té preferències guardades, s'envien els esdeveniments sense importar la 
 #### Paràmetres d'entrada
   - l'id de l'usuari al paràmetre és uid-provider, per exemple: **GET /recommendations/123-facebook**  
   - Els paràmetres d'entrada obligatoris per query són l'**appkey** i el **token** de l'usuari.  
-  - Els paràmetres d'entrada opcionals per query són el **page_size**, el **page_number**, i **sort_order**, si no s'envien, per defecte són *20*, *1* i *date* respectivament.  
+  - Els paràmetres d'entrada opcionals per query són el **page_size**, el **page_number**, i **sort_order**, si no s'envien, per defecte són *20*, *1* i *relevance* respectivament.  
 
 #### Paràmetres de sortida
 Igual que a *GET /events*.  
