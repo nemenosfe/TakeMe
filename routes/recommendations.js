@@ -21,7 +21,7 @@ router
             rangDates = utilsEventRelated.getRangDates(),
             page_size = req.query.page_size || "20",
             page_number = req.query.page_number || "1",
-            sort_order = req.query.sort_order || "date";
+            sort_order = req.query.sort_order || "relevance";
       let categories = null,
           locations = null,
           eventsEventful = null;
