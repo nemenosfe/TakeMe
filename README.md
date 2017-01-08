@@ -334,7 +334,7 @@ Un exemple resumit al següent JSON (explico els canvis respecte a la informaci�
 ```  
 
 Les diferències respecte a **GET /events/** són les següents:  
-  - Ara els atribus **categories**, **free** i **price** poden no ser *null*.
+  - Ara els atribus **free** i **price** poden no ser *null*.
   - Les images ara venen dins de: *images.image*.  
 
 ### GET /events/user/
