@@ -141,8 +141,6 @@ describe('Recommendations route', function() {
             .and.to.be.an.integer;
           expect(eventResponse).not.to.have.property('links')
           expect(eventResponse).not.to.have.property('performers')
-
-          expect(categories).to.include(eventResponse.categories.category[0].id);
           done();
         }, done)
     });

@@ -357,11 +357,13 @@ Exemple de paràmetre d'entrada (en forma de JSON, però s'envien a la URL):
 
 
 #### Paràmetres de sortida
-  - Esdeveniments ordenats per data. Categoritzats per **past**, **present** i **future**.  
+  - Els esdeveniments que estan passant ara o passaran al futur els quals l'usuari ha marcat *assitiré* + esdeveniments passants els quals l'usuari va fer check-in.  
+  - Els esdeveniments estan *ordenats* per data i *categoritzats* per **past**, **present** i **future**.  
 Un exemple seria el següent:
 ```javascript
 {
   "total_items": 2,
+  "number_checkins": 1,
   "past": {
     "events": [
       {
@@ -452,7 +454,8 @@ Un exemple seria el següent:
   }
 }
 ```  
-  - Exactament les mateixes dades per cada esdeveniment que a **GET /events/:id/** però amb un atribut més per a aquest usuari: **checkin_done**, que pot ser *1* si l'ha fet i *0* si no.  
+  - **number_checkins** és el nombre de vegades que l'usuari ha fet check-in, ja sigui en esdeveniments passats o passant en el mateix moment (present).  
+  - Per cada esdeveniment conté exactament les mateixes dades per cada esdeveniment que a **GET /events/:id** però també conté *time_checkin* que és la data i l'hora en que va fer check-in o null si no l'ha fet.   
 
 ### POST /events/user/
 POST per un "assistiré" d'un usuari a un esdeveniment.
@@ -725,7 +728,9 @@ Un exemple de sortida seria el següent:
     "takes":0,
     "experience":0,
     "level":1,
-    "experience_of_next_level":0.6
+    "experience_of_next_level":0.6,
+    'has_preferences' : false, // Si té preferències o no
+    'number_checkins' : 0
   }
 }
 ```
@@ -752,6 +757,8 @@ Un exemple seria:
     'level' : 1,
     'new_user' : true, // Si es un nou usuari o si ja existia
     'has_preferences' : false, // Si té preferències o no
+    'number_checkins' : 0,
+    'experience_of_next_level': 0.6,
     'token' : '364b99c40b84b5207e89a207a606720a' // El token per identificar la sessió
   }
 }

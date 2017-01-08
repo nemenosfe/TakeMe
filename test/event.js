@@ -553,8 +553,8 @@ describe('route of events', function() {
         .expect(200)
         .expect('Content-Type', /application\/json/)
       .then((res) => {
-
         expect(res.body).to.have.property('total_items');
+        expect(res.body).to.have.property('number_checkins').and.to.be.at.least(0);
         expect(res.body).to.have.property('past');
         const eventsPast = res.body.past.events;
         const eventsFuture = res.body.future.events;
@@ -604,7 +604,8 @@ describe('route of events', function() {
         expect(eventResponse).to.have.property('price')
         //expect(eventResponse).to.have.property('wanted_attendance', 1)
         expect(eventResponse).to.have.property('checkin_done', 1)
-        expect(eventResponse).to.have.property('time_checkin', '13:32')
+        expect(eventResponse).to.have.property('time_checkin');
+        expect(['08:04', '13:32']).to.include(eventResponse.time_checkin);
         expect(eventResponse).to.have.property('number_attendances').and.to.be.at.least(1);
         expect(eventResponse).not.to.have.property('links')
         expect(eventResponse).not.to.have.property('performers')
