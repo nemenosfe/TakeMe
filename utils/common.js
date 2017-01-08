@@ -17,7 +17,7 @@ module.exports = {
   getEncryptedInMd5:  function(stringToBeEncrypted) {
     return crypto.createHash('md5').update(stringToBeEncrypted).digest("hex");
   },
-  addZero(str): function() {
+  addZero: function(str) {
     return str < 10 ? ('0' + str) : str;
   }
 };
