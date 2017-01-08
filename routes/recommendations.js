@@ -36,7 +36,6 @@ router
       })
       .then((result) => {
         let params = {date: rangDates};
-        console.log("dates: --> " + JSON.stringify(params));
         if (result.length > 0) {
           if (result[0].categories) { params.category = result[0].categories; }
           if (result[0].locations) { params.location = result[0].locations; }
