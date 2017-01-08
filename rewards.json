@@ -2,12 +2,12 @@
 "rewards": [
      {
        "name": "Llavero RCDE",
-       "description": "Obtén un llavero del mayor rival del Barça.",
+       "description": "Obtén un llavero del mayor rival del FCBarcelona.",
        "takes": 100,
        "level": 1
      },
      {
-       "name": "Llavero Barça",
+       "name": "Llavero FCBarcelona",
        "description": "Obtén el llavero del FCBarcelona",
        "takes": 100,
        "level": 1
@@ -25,7 +25,7 @@
        "level": 1
      },
      {
-       "name": "Pegatina Barça",
+       "name": "Pegatina FCBarcelona",
        "description": "Recibe un sticker del FCBarcelona",
        "takes": 100,
        "level": 1
@@ -61,7 +61,7 @@
        "level": 3
      },
      {
-       "name": "Pack Pegatinas Barça",
+       "name": "Pack Pegatinas FCBarcelona",
        "description": "Recibe pack 15 stickers diferentes.",
        "takes": 300,
        "level": 3
