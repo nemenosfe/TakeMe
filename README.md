@@ -896,19 +896,26 @@ Els logros estan ordenats per alfabèticament pel nom.
 #### Paràmetres de sortida
 Un exemple de paràmetres de sortida seria el següent:
 ```javascript
+```javascript
 {  
   "achievements":[  
     {  
+      "id":"animals_10",
       "name":"logro 01",
-      "description":"random description 01"
+      "description":"random description 01",
+      "takes": 100
     },
     {  
+      "id":"unAltreId",
       "name":"logro 02",
-      "description":"random description 02"
+      "description":"random description 02",
+      "takes": 100
     },
-    {  
+    {
+      "id":"unIdMes",
       "name":"logro 03",
-      "description":"random description 03"
+      "description":"random description 03",
+      "takes": 100
     }
   ]
 }
@@ -941,16 +948,22 @@ Un exemple de paràmetres de sortida seria el següent:
 {  
   "achievements":[  
     {  
+      "id":"animals_10",
       "name":"logro 01",
-      "description":"random description 01"
+      "description":"random description 01",
+      "takes": 100
     },
     {  
+      "id":"unAltreId",
       "name":"logro 02",
-      "description":"random description 02"
+      "description":"random description 02",
+      "takes": 100
     },
-    {  
+    {
+      "id":"unIdMes",
       "name":"logro 03",
-      "description":"random description 03"
+      "description":"random description 03",
+      "takes": 100
     }
   ]
 }
