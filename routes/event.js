@@ -100,10 +100,8 @@ router
             DATE_FORMAT(ev.start_time, '%Y-%l-%d %H:%m:%s') AS start,
             DATE_FORMAT(ev.stop_time, '%Y-%l-%d %H:%m:%s') AS stop,
             ev.all_day, ev.number_attendances, ev.takes
-          FROM attendances at
-          INNER JOIN events ev
-          ON ev.id = at.events_id
-          WHERE at.users_uid ='${req.query.uid}' AND at.users_provider='${req.query.provider}'
+          FROM attendances at, events ev
+          WHERE ev.id = at.events_id AND at.users_uid ='${req.query.uid}' AND at.users_provider='${req.query.provider}'
           AND stop_time >= NOW() OR at.checkin_done = 1 OR (stop_time IS NULL AND start_time >= NOW() - INTERVAL 1 DAY)
           ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC
           LIMIT ${limit} OFFSET ${offset};`;
