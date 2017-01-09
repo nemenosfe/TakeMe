@@ -754,7 +754,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
-        expect(attendanceResponse).to.have.property('achievement', null);
+        expect(attendanceResponse).to.have.property('achievement');
         done();
       }, done)
     })
@@ -786,7 +786,7 @@ describe('route of events', function() {
         expect(attendanceResponse).to.have.property('total_takes').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('experience').and.to.be.at.least(1);
         expect(attendanceResponse).to.have.property('level').and.to.be.at.least(1);
-        expect(attendanceResponse).to.have.property('achievement', null);
+        expect(attendanceResponse).to.have.property('achievement');
         done();
       }, done)
     })
