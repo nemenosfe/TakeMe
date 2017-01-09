@@ -223,7 +223,6 @@ router
         })
         .then((result) => {
           number_attendances_category = utilsEventRelated.getNumberOfPreviousAttendancesOfCategoryByDBResult(result);
-          console.log("number_attendances_category: " + number_attendances_category);
           const sql = `SELECT * FROM achievements
                        WHERE category_id='${category_id}'
                        AND number_required_attendances = (
