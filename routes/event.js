@@ -107,6 +107,7 @@ router
           AND stop_time >= NOW() OR at.checkin_done = 1 OR (stop_time IS NULL AND start_time >= NOW() - INTERVAL 1 DAY)
           ORDER BY ISNULL(ev.start_time), ev.start_time ASC, ev.all_day ASC, ISNULL(ev.stop_time), ev.stop_time ASC, at.events_id ASC
           LIMIT ${limit} OFFSET ${offset};`;
+          console.log(sql);
           return mysqlConnection.query(sql)
         })
         .then((DBresult) => {
