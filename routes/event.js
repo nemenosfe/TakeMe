@@ -129,8 +129,8 @@ router
           for (let index = 0; index < lengthEventEventful; ++index) {
             if (moment != "future") {
               moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop);
-              if (database_result[index].checkin_done == 1) { ++numberCheckins; }
             }
+            if (database_result[index].checkin_done == 1) { ++numberCheckins; }
             let elementArray = utilsEventRelated.getFinalJSONOfAnEvent(eventResEventful[index], null);
             const extraDataFromDatabase = ['checkin_done', 'time_checkin', 'number_attendances', 'takes'];
             for (let indexAttribute = extraDataFromDatabase.length - 1; indexAttribute >= 0; --indexAttribute) {
