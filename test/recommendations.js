@@ -14,7 +14,8 @@ describe('Recommendations route', function() {
     const paramsWP = {
         uid: 2,
         provider: 'provider',
-        token: 'randomToken'
+        token: 'randomToken',
+        page_size: 50
       },
       categories = 'music||comedy||art||sports',
       locations = 'Barcelona||Madrid||Bilbao';
@@ -51,9 +52,9 @@ describe('Recommendations route', function() {
         })
     });
 
-    it(`returns ${default_page_size} events with the selected preferences`, function(done) {
+    it(`returns ${paramsWP.page_size} events with the selected preferences`, function(done) {
       request
-        .get(`/recommendations/${paramsWP.uid}-${paramsWP.provider}?appkey=${helperCommon.appkey}&token=${paramsWP.token}`)
+        .get(`/recommendations/${paramsWP.uid}-${paramsWP.provider}?appkey=${helperCommon.appkey}&token=${paramsWP.token}&page_size=${paramsWP.page_size}`)
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -62,35 +63,13 @@ describe('Recommendations route', function() {
           const events = res.body.events;
 
           expect(events).to.be.an('array')
-            .and.to.have.length.of(default_page_size);
+            .and.to.have.length.of(paramsWP.page_size);
 
-          const eventResponse = events[0].event;
+          for (let i = paramsWP.page_size - 1; i >= 0; --i) {
+            const category = events[i].event.categories.category[0].id;
+            expect(categories).to.contain(category);
+          }
 
-          expect(eventResponse).to.have.property('id')
-          expect(eventResponse).to.have.property('title')
-          expect(eventResponse).to.have.property('description')
-          expect(eventResponse).to.have.property('url')
-          expect(eventResponse).to.have.property('start_time')
-          expect(eventResponse).to.have.property('stop_time')
-          expect(eventResponse).to.have.property('venue_id')
-          expect(eventResponse).to.have.property('venue_name')
-          expect(eventResponse).to.have.property('address')
-          expect(eventResponse).to.have.property('city')
-          expect(eventResponse).to.have.property('region')
-          expect(eventResponse).to.have.property('country')
-          expect(eventResponse).to.have.property('postal_code')
-          expect(eventResponse).to.have.property('latitude')
-          expect(eventResponse).to.have.property('longitude')
-          expect(eventResponse).to.have.property('all_day')
-          expect(eventResponse).to.have.property('categories');
-          expect(eventResponse).to.have.property('takes')
-            .and.to.be.at.least(1);
-          expect(eventResponse).to.have.property('images')
-          //expect(eventResponse).to.have.property('price')
-          expect(eventResponse).to.have.property('number_attendances')
-            .and.to.be.an.integer;
-          expect(eventResponse).not.to.have.property('links')
-          expect(eventResponse).not.to.have.property('performers')
           done();
         }, done)
     });

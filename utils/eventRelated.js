@@ -77,12 +77,15 @@ module.exports = {
   },
   buildSearchParams: function (params_query, page_size, page_number, sort_order) {
     let params = `sort_order=${sort_order}&page_size=${page_size}&page_number=${page_number}&include=categories`;
-    if (params_query.location && !params_query.location.includes("||")) {
+    if (params_query.location) {
       const within = params_query.within || 350;
       params += `&location=${params_query.location}&units=km&within=${within}`;
     }
     if (params_query.keywords) { params += `&keywords=${params_query.keywords}`; }
-    if (params_query.category) { params += `&category=${params_query.category}`; }
+    if (params_query.category) {
+      const category = params_query.category.replace(/\|\|/g, ',');
+      params += `&category=${category}`;
+    }
     if (params_query.date) { params += `&date=${params_query.date}`; }
     return params;
   },
