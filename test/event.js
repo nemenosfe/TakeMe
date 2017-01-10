@@ -423,7 +423,7 @@ describe('route of events', function() {
     });
   });
 
-  describe.only('GET /events/:id', function() {
+  describe('GET /events/:id', function() {
     it('should not the event info without the api key', function(done) {
       request
         .get("/events/"+aux_id)
