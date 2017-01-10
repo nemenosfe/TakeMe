@@ -241,16 +241,16 @@ router
               const sqlInsertacquisitionInDB = `INSERT IGNORE INTO acquisitions values ('${attendanceRequest.uid}', '${attendanceRequest.provider}', '${next_achievement_info.id}');`;
               earned_achievement = next_achievement_info;
               new_takes_achievement = earned_achievement.takes;
-              total_experience += new_takes_achievement;
-              total_takes += new_takes_event;
+              total_experience += new_takes_event + new_takes_achievement;
+              total_takes += new_takes_event + new_takes_achievement;
               resolve( mysqlConnection.query(sqlInsertacquisitionInDB) );
             } else { resolve(1); }
           });
         })
         .then((result) => { // Guanya els takes i l'experiencia de l'esdeveniment (i del logro si l'ha guanyat, si no aquest atribut val 0)
           const sql = `UPDATE users
-                      SET takes=takes+${new_takes_event+new_takes_achievement},
-                          experience=experience+${new_takes_event+new_takes_achievement}
+                      SET takes=${total_takes},
+                          experience=${total_experience}
                       WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
           return mysqlConnection.query(sql);
         })
@@ -276,7 +276,7 @@ router
             'provider' : attendanceRequest.provider,
             'checkin_done' : '1',
             'time_checkin' : attendanceRequest.time_checkin,
-            'new_takes' : new_takes_event,
+            'new_takes' : new_takes_event+new_takes_achievement,
             'total_takes' : total_takes,
             'experience' : total_experience,
             'level' : level,
