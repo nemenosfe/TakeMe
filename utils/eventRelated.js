@@ -59,7 +59,7 @@ module.exports = {
       } // Per ara no retornem "Performers" ni "Tags" ni "Links"
     };
   },
-  getTakesToEarnInEvent: function() { return Math.floor(Math.random() * 1000 + 1); }, // Retorna un número aleatori del rang [1, 1000)
+  getTakesToEarnInEvent: function() { return Math.floor(Math.random() * 100 + 1); }, // Retorna un número aleatori del rang [1, 100)
   prepareFinalResponseOfAllEventsJSON: function (eventsEventful, resultDB) {
     // Prepara les dades generals:
     let myEventsResponse = {
