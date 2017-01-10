@@ -684,7 +684,7 @@ describe('route of events', function() {
     });
   });
 
-  describe('PUT /events/:id/user/ for the check-ins', function() {
+  describe.only('PUT /events/:id/user/ for the check-ins', function() {
     it('should not mark the check-in without the api key', function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
