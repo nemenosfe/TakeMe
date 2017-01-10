@@ -256,14 +256,9 @@ router
         })
         .then((result) => { // Potser puja de nivell
           const new_level = utilsUserRelated.getNewLevel(level, total_experience);
-          console.log("new_level: " + new_level);
-          if (new_level > level) {
-            console.log("level: " + level + " new_level: " + new_level);
-            level = new_level;
-            const sql = `UPDATE users SET level=${new_level} WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
-            return mysqlConnection.query(sql);
-          }
-          else { return new Promise(function(resolve, reject) { resolve(1); }); }
+          level = new_level;
+          const sql = `UPDATE users SET level=${new_level} WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
+          return mysqlConnection.query(sql);
         })
         .then((result) => { // Nova assitència d'aquesta categoria a la BD
           const sql = (number_attendances_category == 0)  ? `INSERT INTO userscategories VALUES('${attendanceRequest.uid}', '${attendanceRequest.provider}', '${category_id}', 1)`
