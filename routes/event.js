@@ -256,6 +256,7 @@ router
         })
         .then((result) => { // Potser puja de nivell
           const new_level = utilsUserRelated.getNewLevel(level, total_experience);
+          console.log("new_level: " + new_level);
           if (new_level > level) {
             console.log("level: " + level + " new_level: " + new_level);
             level = new_level;
