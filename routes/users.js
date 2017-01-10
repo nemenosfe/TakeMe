@@ -123,6 +123,7 @@ router
         })
         .then((result) => {
           let response = {user: result[0]};
+          console.log("RESPONSE: " + JSON.stringify(response));
           response.user.experience_of_next_level = utilsUserRelated.getNextLevelExperience(result[0].level + 1);
           response.user.has_preferences = (response.user.has_preferences == 1) ? true : false;
           res.status(200).json(response)

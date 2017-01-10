@@ -130,7 +130,6 @@ router
             if (moment != "future") {
               moment = utilsEventRelated.getMoment(database_result[index].start, database_result[index].all_day, database_result[index].stop);
             }
-            console.log("index: " + index + " - checkin_done: " + database_result[index].checkin_done);
             if (database_result[index].checkin_done == 1) { ++numberCheckins; }
             let elementArray = utilsEventRelated.getFinalJSONOfAnEvent(eventResEventful[index], null);
             const extraDataFromDatabase = ['checkin_done', 'time_checkin', 'number_attendances', 'takes'];
@@ -140,7 +139,6 @@ router
             eventsResponse[moment]["events"][indexesByMoment[moment]] = elementArray;
             ++indexesByMoment[moment];
           }
-          console.log("numberCheckins: " + numberCheckins);
           eventsResponse.number_checkins = numberCheckins;
 
           res.status(200).json(eventsResponse)
