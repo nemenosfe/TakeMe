@@ -257,7 +257,6 @@ router
         .then((result) => { // Potser puja de nivell
           const new_level = utilsUserRelated.getNewLevel(level, total_experience);
           level = new_level;
-          console.log("NOU NIVELL: " + new_level + " - total_experience: " + total_experience);
           const sql = `UPDATE users SET level=${new_level} WHERE uid='${attendanceRequest.uid}' AND provider='${attendanceRequest.provider}';`;
           return mysqlConnection.query(sql);
         })
