@@ -6,5 +6,5 @@ module.exports = {
     while (experience >= this.getNextLevelExperience(new_level+1)) { ++new_level; }
     return new_level;
   },
-  getNextLevelExperience: function (nextLevel) { return nextLevel * Math.log10(nextLevel) * 250; }
+  getNextLevelExperience: function (nextLevel) { return Math.ceil(nextLevel * Math.log10(nextLevel) * 250); }
 };
