@@ -1,7 +1,8 @@
 "use strict"
 let request = require('supertest-as-promised');
 const api = require('../app'),
-      helperCommon = require('./helpers/common');
+      helperCommon = require('./helpers/common'),
+      utilsUserRelated = require('../utils/userRelated');
 request = request(api);
 
 describe('Users route', function() {
@@ -47,7 +48,7 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('number_checkins', 0); // Té 0 check-ins perquè s'acaba de registrar
           expect(userResponse).to.have.property('token');
           expect(userResponse).to.have.property('experience_of_next_level')
-            .and.to.be.at.least(0.60);
+            .and.to.be.at.least(utilsUserRelated.getNextLevelExperience(2));
           token = userResponse.token;
           done();
         }, done)
@@ -79,7 +80,7 @@ describe('Users route', function() {
           expect(userResponse).to.have.property('number_checkins', 0); // No és un nou usuari però no té check-ins
           expect(userResponse).to.have.property('token').and.not.to.eql(token);
           expect(userResponse).to.have.property('experience_of_next_level')
-            .and.to.be.at.least(0.60);
+            .and.to.be.at.least(utilsUserRelated.getNextLevelExperience(2));
           token = userResponse.token;
           done();
         }, done)
@@ -161,7 +162,7 @@ describe('Users route', function() {
           expect(user).to.have.property('has_preferences', false); // No és un nou usuari però no té preferències
           expect(user).to.have.property('number_checkins', 0); // No és un nou usuari però no té check-ins
           expect(user).to.have.property('experience_of_next_level')
-            .and.to.be.at.least(0.60);
+            .and.to.be.at.least(utilsUserRelated.getNextLevelExperience(2));
           done();
         }, done)
     });
