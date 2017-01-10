@@ -112,7 +112,7 @@ router
                                 WHERE users_uid = '${uid}' AND users_provider = '${provider}'
                               ) AS has_preferences,
                               (
-                                SELECT COUNT(DISTINCT 1)
+                                SELECT COUNT(1)
                                 FROM attendances
                                 WHERE users_uid = '${uid}' AND users_provider = '${provider}'
                                   AND checkin_done = 1
