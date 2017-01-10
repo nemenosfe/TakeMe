@@ -423,7 +423,7 @@ describe('route of events', function() {
     });
   });
 
-  describe('GET /events/:id', function() {
+  describe.only('GET /events/:id', function() {
     it('should not the event info without the api key', function(done) {
       request
         .get("/events/"+aux_id)
@@ -684,7 +684,7 @@ describe('route of events', function() {
     });
   });
 
-  describe.only('PUT /events/:id/user/ for the check-ins', function() {
+  describe('PUT /events/:id/user/ for the check-ins', function() {
     it('should not mark the check-in without the api key', function(done) {
       const params = {
         'token' : '5ba039ba572efb08d6442074d7d478d5',
