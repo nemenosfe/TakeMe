@@ -140,6 +140,7 @@ router
             eventsResponse[moment]["events"][indexesByMoment[moment]] = elementArray;
             ++indexesByMoment[moment];
           }
+          console.log("numberCheckins: " + numberCheckins);
           eventsResponse.number_checkins = numberCheckins;
 
           res.status(200).json(eventsResponse)
