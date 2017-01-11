@@ -20,7 +20,7 @@ router
       let user = {
         uid: req.body.uid.toString(),
         provider: req.body.provider,
-        name: req.body.name.match(/[\w*|ç*|ñ*|à*|á*|è*|é*|ì*|í*|ò*|ó*|ù*|ú*|ý*|ỳ*|ä*|ë*|ï*|ö*|ü*|ÿ*]+/gi)[0] || null,
+        name: req.body.name.match(/[\w*|ç*|ñ*|à*|á*|è*|é*|ì*|í*|ò*|ó*|ù*|ú*|ý*|ỳ*|ä*|ë*|ï*|ö*|ü*|ÿ*|\s*]+/gi)[0] || null,
         takes: 0,
         experience: 0,
         level: 1
